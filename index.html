@@ -44,22 +44,8 @@
         nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
         nav a.active { color: white; background: var(--accent); }
         
-                    <div class="form-group" style="background:#fef08a; padding:12px; border-radius:8px; border:1px solid #fde047;">
-                <h4 style="margin:0 0 8px 0; color:#854d0e;">📢 ለሰራተኞች መመሪያ ወይም ኮሜንት መላኪያ</h4>
-                
-                <!-- መልዕክቱ ለማን እንደሆነ መምረጫ አዲስ አማራጭ -->
-                <label style="font-weight:bold; color:#854d0e; display:block; margin-bottom:4px;">🎯 መልዕክቱ ለማን ይተላለፍ?፦</label>
-                <select id="notice-target" style="width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:1px solid #ca8a04; font-weight:bold;">
-                    <option value="all">ለሁሉም ሰራተኞች (Public)</option>
-                    <option value="waiter">ለአስተናጋጆች ብቻ (Waiters Only)</option>
-                    <option value="barman">ለባርማን ብቻ (Barman Only)</option>
-                    <option value="chef">ለሼፍ/ኩሽና ብቻ (Chef Only)</option>
-                    <option value="cashier">ለካሼር/ሂሳብ ብቻ (Cashier Only)</option>
-                </select>
-
-                <textarea id="owner-notice-input" rows="2" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ca8a04;" placeholder="የሚተላለፍ መመሪያ እዚህ ይጻፉ..."></textarea>
-                <button onclick="publishTargetedNotice()" style="background:#eab308; color:#1e293b; border:none; padding:8px 12px; font-weight:bold; border-radius:6px; margin-top:8px; cursor:pointer; width:100%;">ኮሜንት በይፋ ላክ 📣</button>
-            </div>
+        /* የሰራተኞች የቀጥታ መልዕክት ሰሌዳ (Noticeboard) */
+        .broadcast-banner { background: #fef3c7; border-left: 5px solid var(--warning); padding: 10px 15px; margin: 10px 12px 0 12px; border-radius: 6px; font-size: 0.9rem; color: #92400e; font-weight: 600; display: none; }
 
         /* የገጾች አቀማመጥ */
         .page-section { display: none; padding: 12px; animation: fadeIn 0.3s ease-in-out; }
