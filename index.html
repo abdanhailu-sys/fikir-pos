@@ -55,7 +55,7 @@
         .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
         .page-title { font-size: 1.25rem; margin-bottom: 15px; color: var(--primary); font-weight: 800; padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; }
         
-        /* አዲስ የምግብ እቃዎች ግሪድ ዲዛይን ከነ ፎቶ ጋር */
+        /* የምግብ እቃዎች ግሪድ ዲዛይን */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
         .btn-item { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: all 0.2s; position: relative; border-bottom: 4px solid var(--accent); }
         .btn-item.bar { border-bottom-color: var(--warning); }
@@ -90,7 +90,7 @@
         .btn-action.blue { background: var(--accent); }
         .btn-action.danger { background: var(--danger); }
         
-        /* የምስጋና ፖፕአፕ መልዕክት */
+        /* ፖፕአፕ መልዕክት */
         .thank-you-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); z-index: 5000; text-align: center; width: 85%; max-width: 340px; border: 3px solid var(--success); }
         .thank-you-popup h2 { color: var(--success); font-size: 1.4rem; margin-bottom: 10px; }
         .thank-you-popup p { color: var(--primary); font-weight: 600; font-size: 1.05rem; margin-bottom: 15px; }
@@ -122,7 +122,7 @@
         
         .btn-backup { background: #0284c7; color: white; border: none; padding: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; display: block; text-decoration: none; font-size: 0.9rem; }
         .list-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7 herom; font-weight: bold; color: white; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
         .badge-danger { background: var(--danger); }
         .badge-success { background: var(--success); }
         
@@ -130,7 +130,6 @@
         .tab-sub-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .tab-sub-btn.active { background: var(--accent); color: white; }
 
-        /* አዲስ ተጨማሪ የከስተመር ገጽ ስታይሎች */
         .map-box { background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 10px; margin-top: 15px; text-align: center; }
         .map-link { display: inline-flex; align-items: center; gap: 6px; background: #db2777; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; margin-top: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .share-box { background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center; }
@@ -201,7 +200,6 @@
             <h4 style="color:var(--success); margin-bottom:8px;">💳 የባንክ የክፍያ አማራጮች (ለመክፈት ይጫኑ)</h4>
             <p style="font-size:0.8rem; margin-bottom:10px; color:#475569;">ባንኩን ሲጫኑ ቀጥታ ወደ አፕሊኬሽኑ ይወስድዎታል። የሂሳብ ባለቤት ስም <b>አብዳን ሐይሉ ድባባ</b> መሆኑን ያረጋግጡ።</p>
             
-            <!-- ቀጥታ ወደ ባንክ ሲስተም የሚወስዱ የዲፕ ሊንክ ማስተካከያዎች -->
             <a href="cbebirr://" class="bank-details" onclick="copyAccountOnly('1000578698373', 'የኢትዮጵያ ንግድ ባንክ')">
                 <b>የኢትዮጵያ ንግድ ባንክ (CBE) 📱 [ለመክፈት ይጫኑ]</b><br>
                 ቁጥር፦ <strong style="color:var(--accent); font-size:1.05rem;">1000578698373</strong>
@@ -237,14 +235,12 @@
         </div>
     </div>
 
-    <!-- አዲስ የጎግል ማፕ መገኛ ቦታ ካርድ -->
     <div class="map-box">
         <h4 style="color:var(--primary);">📍 በአካል መምጣት ይፈልጋሉ?</h4>
         <p style="font-size:0.8rem; color:#475569;">ቀጥታ ወደ ፍቅር ባርና ሬስቶራንት የሚያመጣዎትን የጎግል ማፕ መገኛ ቦታ ይጫኑ።</p>
-        <a href="https://maps.google.com/?q=Hawassa,Ethiopia" target="_blank" class="map-link">🌐 ጎግል ማፕ ላይ አሳየኝ (Google Maps)</a>
+        <a href="https://maps.google.com" target="_blank" class="map-link">🌐 ጎግል ማፕ ላይ አሳየኝ (Google Maps)</a>
     </div>
 
-    <!-- አዲስ የአፑን ሊንክ በባርኮድ ለሌላ ሰው ማጋሪያ ካርድ -->
     <div class="share-box">
         <h4 style="color:var(--primary);">📲 ይህንን አፕ ለጓደኛዎ ያጋሩ</h4>
         <p style="font-size:0.8rem; color:#475569;">ሌሎች ሰዎችም ቀጥታ በስልካቸው እንዲያዙ ባርኮዱን ያሳዩዋቸው።</p>
@@ -344,7 +340,7 @@
                 <textarea id="owner-comment-input" rows="2" placeholder="መመሪያ ይጻፉ..."></textarea>
             </div>
             <button style="background:var(--accent); color:white; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:0.85rem;" onclick="postOwnerComment()">ኮሜንት በይፋ ላክ 📣</button>
-            <h4 style="margin-top:15px; font-size:0.9rem; color:#475569;">📚 የ防ኮሜንት ማህደር (ለስብሰባ መወያያ)</h4>
+            <h4 style="margin-top:15px; font-size:0.9rem; color:#475569;">📚 የመመሪያዎች ማህደር (ለስብሰባ መወያያ)</h4>
             <div id="owner-comment-archive" style="max-height:150px; overflow-y:auto; margin-top:5px; background:#f8fafc; padding:5px; border-radius:6px;"></div>
         </div>
 
@@ -514,7 +510,6 @@
 
     const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
 
-    // የምግብ ዝርዝር
     let currentMenu = JSON.parse(localStorage.getItem('f_menu_v4')) || [
         { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300", salesDay: 14, salesWeek: 92, salesMonth: 380, salesYear: 4560 },
         { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300", salesDay: 22, salesWeek: 145, salesMonth: 510, salesYear: 6120 },
@@ -674,13 +669,12 @@
     function copyAccountOnly(accNumber, bankName) {
         navigator.clipboard.writeText(accNumber).then(() => {
             playBeep(800, 0.1);
-            alert(`✅ የ${bankName} አካውንት ቁጥር (${accNumber}) በራሱ ኮፒ ሆኗል! አሁን ወደ ባንክ አፑ እየወሰደዎት ነው...`);
+            alert("✅ የ" + bankName + " አካውንት ቁጥር (" + accNumber + ") በራሱ ኮፒ ሆኗል! አሁን ወደ ባንክ አፑ እየወሰደዎት ነው...");
         }).catch(() => {});
     }
 
     document.getElementById('submit-pay-btn').onclick = function() {
         const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
         const routing = document.getElementById('cust-routing').value;
         const txId = document.getElementById('cust-tx-id').value.trim();
         const notes = document.getElementById('cust-notes').value.trim(); 
@@ -688,16 +682,15 @@
 
         if(!txId) return alert("እባክዎ የከፈሉበትን የትራንዛክሽን ቁጥር ያስገቡ!");
 
-        // ደረሰኝ መጫኑን ማረጋገጥ (ግዴታ ካልሆነ ይህንን ማስወገድ ትችላለህ)
         if(receiptFileInput.files.length === 0) {
             if(!confirm("የክፍያ ደረሰኝ ፎቶ አላያያዙም፣ ያለ ደረሰኝ ፎቶ ማለፍ ይፈልጋሉ?")) return;
         }
 
         if(routing === 'owner') {
-            triggerSignal(`ደንበኛ፡ ${name} አዘዘ፦ [${selectedCustomerItem.name}] (ማስታወሻ፡ ${notes || 'የለም'})`, 'active-blue');
+            triggerSignal("ደንበኛ፦ " + name + " አዘዘ፦ [" + selectedCustomerItem.name + "] (ማስታወሻ፦ " + (notes || 'የለም') + ")", 'active-blue');
         } else {
             pendingOrders.push({ 
-                id: Date.now(), table: `Takeaway (${name})`, name: selectedCustomerItem.name, 
+                id: Date.now(), table: "Takeaway (" + name + ")", name: selectedCustomerItem.name, 
                 price: selectedCustomerItem.price, cat: selectedCustomerItem.cat, tx: txId, notes: notes 
             });
             cloudSyncSimulator();
@@ -707,7 +700,7 @@
         document.getElementById('payment-gateway-box').style.display = 'none';
         document.getElementById('cust-tx-id').value = '';
         document.getElementById('cust-notes').value = '';
-        document.getElementById('cust-receipt-file').value = ''; // ፎርሙን ማጽዳት
+        document.getElementById('cust-receipt-file').value = ''; 
         showThankYouPopup();
     };
 
@@ -805,19 +798,19 @@
     function placeOrder(index) {
         const item = currentMenu[index];
         if(item.status === 'sold_out') {
-            alert(`⚠️ ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!`);
+            alert("⚠️ ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!");
             return;
         }
         const table = document.getElementById('table-id').value;
         pendingOrders.push({ id: Date.now(), table, name: item.name, price: item.price, cat: item.cat, notes: '' });
-        triggerSignal(`ትዕዛዝ ተላከ [${item.name}]`, 'active-orange');
+        triggerSignal("ትዕዛዝ ተላከ [" + item.name + "]", 'active-orange');
         playBeep(550, 0.1);
         cloudSyncSimulator(); updateAllDisplays();
     }
 
     function renderPendingApprovals() {
         const div = document.getElementById('pending-approval-list'); div.innerHTML = '';
-        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም。</p>'; return; }
+        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም።</p>'; return; }
         pendingOrders.forEach((order, index) => {
             div.innerHTML += `<div class="ticket">
                 <strong>${order.table}</strong> ➔ ${order.name}<br>
@@ -952,7 +945,7 @@
         
         attendanceData.unshift({ name: staff, date: dateStr, time: timeStr, status: status });
         cloudSyncSimulator(); updateAllDisplays();
-        alert(`✅ ${staff} በትክክል ${status} ተብሎ ተመዝግቧል!`);
+        alert("✅ " + staff + " በትክክል " + status + " ተብሎ ተመዝግቧል!");
     }
 
     function switchOwnerSubSection(sub) {
@@ -966,7 +959,7 @@
         let total = 0;
         salesLedger.forEach(l => total += Number(l.amount));
         playBeep(500, 0.3);
-        alert(`🤖 Fikir AI Analysis Report:\n---------------------------\n• ጠቅላላ የሽያጭ መጠን፦ ${total.toFixed(2)} ብር\n• የንግድ ፍጥነት ሁኔታ፦ እጅግ በጣም ጥሩ 🚀\n• ምክረ-ሀሳብ፦ የምግብ ማውጫዎ ላይ ብዙ የቁርስ አማራጮችን ቢጨምሩ ትርፋማነትዎ በ 15% ያድጋል።`);
+        alert("🤖 Fikir AI Analysis Report:\n---------------------------\n• ጠቅላላ የሽያጭ መጠን፦ " + total.toFixed(2) + " ብር\n• የንግድ ፍጥነት ሁኔታ፦ እጅግ በጣም ጥሩ 🚀\n• ምክረ-ሀሳብ፦ የምግብ ማውጫዎ ላይ ብዙ የቁርስ አማራጮችን ቢጨምሩ ትርፋማነትዎ በ 15% ያድጋል።");
     }
 
     function pressCalc(key) {
@@ -1026,7 +1019,7 @@
         }, null, 4));
         let dl = document.createElement('a');
         dl.setAttribute("href", dataStr);
-        dl.setAttribute("download", `Fikir_Enterprise_Backup.json`);
+        dl.setAttribute("download", "Fikir_Enterprise_Backup.json");
         dl.click();
     }
 
@@ -1036,7 +1029,6 @@
                 document.getElementById("qr-owner-box").innerHTML = "";
                 new QRCode(document.getElementById("qr-owner-box"), { text: window.location.href, width: 140, height: 140 });
                 
-                // ለከስተመር ገጽ ማጋሪያ ባርኮድ ማመንጫ
                 document.getElementById("qr-customer-share-box").innerHTML = "";
                 new QRCode(document.getElementById("qr-customer-share-box"), { text: window.location.href, width: 140, height: 140 });
             }
