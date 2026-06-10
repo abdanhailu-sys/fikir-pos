@@ -1,5 +1,581 @@
 <!DOCTYPE html>
+<html lang="am"><!DOCTYPE html>
 <html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fikir Bar & Restaurant - Enterprise POS v4.5</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            --accent: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--light-bg); color: #334155; padding-top: 200px; padding-bottom: 60px; -webkit-tap-highlight-color: transparent; }
+        
+        /* የላይኛው ቋሚ መቆጣጠሪያ */
+        .fixed-top { position: fixed; top: 0; left: 0; width: 100%; z-index: 3000; background: var(--primary); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        header { color: white; padding: 12px 20px; text-align: center; font-size: 1.3rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0f172a, #1e293b); letter-spacing: 0.5px; }
+        .app-mode { font-size: 0.75rem; background: var(--success); padding: 4px 12px; border-radius: 50px; color: white; font-weight: bold; text-transform: uppercase; }
+        
+        /* የቀጥታ ሁኔታ መግለጫ */
+        .live-notifier { background: #020617; color: #cbd5e1; padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1e293b; }
+        .signal-light { width: 10px; height: 10px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.3s ease; }
+        .signal-light.active-blue { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+        .signal-light.active-green { background: var(--success); box-shadow: 0 0 12px var(--success); }
+        .signal-light.active-orange { background: var(--warning); box-shadow: 0 0 12px var(--warning); }
+
+        /* የሰራተኞች ክፍል መለወጫ */
+        .role-bar { display: flex; background: #1e293b; overflow-x: auto; padding: 6px; gap: 6px; scrollbar-width: none; }
+        .role-bar::-webkit-scrollbar { display: none; }
+        .role-btn { background: #334155; color: #94a3b8; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .role-btn.active { background: var(--warning); color: #020617; font-weight: bold; transform: scale(1.02); }
+        
+        /* ዋናው የገጽ መምረጫ ማውጫ */
+        nav { display: flex; overflow-x: auto; white-space: nowrap; background: #0f172a; padding: 4px; scrollbar-width: none; }
+        nav::-webkit-scrollbar { display: none; }
+        nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
+        nav a.active { color: white; background: var(--accent); }
+        
+        /* የገጾች አቀማመጥ */
+        .page-section { display: none; padding: 12px; animation: fadeIn 0.3s ease-in-out; }
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
+        .page-title { font-size: 1.25rem; margin-bottom: 15px; color: var(--primary); font-weight: 800; padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; }
+        
+        /* 🔄 አዲሱ የግራና ቀኝ ተሸራታች ሜኑ አቀማመጥ (Split-Scroll View) */
+        .split-menu-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; height: 55vh; overflow: hidden; }
+        .menu-scroll-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; }
+        .column-header-sticky { position: sticky; top: 0; background: var(--primary); color: white; text-align: center; padding: 6px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .column-header-sticky.drink-head { background: var(--warning); color: #020617; }
+
+        /* አነስተኛና ውብ የምግብ ካርዶች */
+        .mini-item-card { background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; position: relative; border-bottom: 3px solid var(--accent); }
+        .mini-item-card.bar { border-bottom-color: var(--warning); }
+        .mini-item-card:active { transform: scale(0.97); }
+        .mini-img { width: 100%; height: 75px; object-fit: cover; background: #e2e8f0; }
+        .mini-info { padding: 6px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .mini-info .name { font-weight: 700; font-size: 0.8rem; color: var(--primary); line-height: 1.2; margin-bottom: 2px; }
+        .mini-info .price { color: var(--accent); font-weight: 800; font-size: 0.8rem; }
+        .mini-item-card.sold-out { border-bottom-color: var(--danger) !important; opacity: 0.6; }
+        .mini-item-card.sold-out .name { text-decoration: line-through; color: #94a3b8; }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85rem; color: #475569; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: white; color: black; outline: none; }
+        
+        /* የክፍያ ሳጥን ዲዛይን */
+        .payment-box { display: none; background: #f0fdf4; border: 2px dashed var(--success); padding: 14px; border-radius: 10px; margin-top: 15px; }
+        .bank-card-click { background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid var(--success); display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .bank-card-click:active { background: #f1f5f9; }
+        .copy-badge { background: var(--accent); color: white; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .copy-badge.copied { background: var(--success); }
+
+        .btn-action { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-action.blue { background: var(--accent); }
+        .btn-action.danger { background: var(--danger); }
+        
+        /* የምስጋና ፖፕአፕ */
+        .thank-you-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); z-index: 5000; text-align: center; width: 85%; max-width: 340px; border: 3px solid var(--success); }
+        .thank-you-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4999; }
+
+        .balance-summary { background: linear-gradient(135deg, var(--primary), #1e293b); color: white; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 12px; }
+        .balance-summary h1 { color: var(--success); font-size: 1.8rem; margin-top: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { padding: 8px; border: 1px solid #cbd5e0; text-align: left; font-size: 0.85rem; }
+        th { background: #f1f5f9; font-weight: bold; }
+        
+        .qr-holder { background: white; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; display: none; margin-top: 5px; }
+        .list-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
+        .badge-danger { background: var(--danger); }
+        .badge-success { background: var(--success); }
+        
+        .owner-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-sub-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .tab-sub-btn.active { background: var(--accent); color: white; }
+        
+        .ticket { background: #fffdeb; border-left: 5px solid var(--warning); padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; }
+    </style>
+</head>
+<body>
+
+<div class="fixed-top">
+    <header>
+        <span>Fikir Bar & Restaurant</span>
+        <span class="app-mode">Enterprise v4.5</span>
+    </header>
+    <div class="live-notifier">
+        <span class="signal-light active-green" id="owner-signal"></span>
+        <span id="owner-status-text">ሁኔታ፦ ሲስተሙ ዝግጁ ነው (Cloud Protected)</span>
+    </div>
+    <div class="role-bar">
+        <button class="role-btn active" id="role-customer" onclick="switchRoleSecure('customer')">የደንበኛ ማዘዣ (Takeaway)</button>
+        <button class="role-btn" id="role-waiter" onclick="switchRoleSecure('waiter')">አስተናጋጅ 🔐</button>
+        <button class="role-btn" id="role-barman" onclick="switchRoleSecure('barman')">ባርማን 🔐</button>
+        <button class="role-btn" id="role-chef" onclick="switchRoleSecure('chef')">ሼፍ 🔐</button>
+        <button class="role-btn" id="role-cashier" onclick="switchRoleSecure('cashier')">ካሼር / ሂሳብ 🔐</button>
+        <button class="role-btn" id="role-all" onclick="switchRoleSecure('all')">ማናجر / ባለቤት 🔐</button>
+    </div>
+    <nav id="top-nav">
+        <a href="javascript:void(0)" id="nav-customer-view" class="active" onclick="showSection('sec-customer-view')">የደንበኛ ገጽ</a>
+        <a href="javascript:void(0)" id="nav-order" onclick="showSection('sec-order')" style="display:none;">ትዕዛዝ ማዘዣ</a>
+        <a href="javascript:void(0)" id="nav-menu" onclick="showSection('sec-menu')" style="display:none;">የምግብ ማውጫ</a>
+        <a href="javascript:void(0)" id="nav-inventory" onclick="showSection('sec-inventory')" style="display:none;">መጋዘን ቁጥጥር</a>
+        <a href="javascript:void(0)" id="nav-approval" onclick="showSection('sec-cashier-approval')" style="display:none;">ትዕዛዝ ማጽደቂያ</a>
+        <a href="javascript:void(0)" id="nav-display" onclick="showSection('sec-display')" style="display:none;">ኩሽና/ባር ማሳያ</a>
+        <a href="javascript:void(0)" id="nav-cashbook" onclick="showSection('sec-cashbook')" style="display:none;">👑 ማናجر ሰሌዳ</a>
+        <a href="javascript:void(0)" id="nav-tax" onclick="showSection('sec-tax')" style="display:none;">ግብርና ቫት</a>
+    </nav>
+</div>
+
+<div class="thank-you-backdrop" id="thank-you-backdrop"></div>
+<div class="thank-you-popup" id="thank-you-popup">
+    <h2 style="color:var(--success); margin-bottom:10px;">የተሳካ ትዕዛዝ!</h2>
+    <p>ትዕዛዝዎና አስተያየትዎ ለባለቤቱና ለአስተናጋጁ ደርሷል!<br><b>ፍቅር ባርና ሬስቶራንት</b></p>
+    <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px;" onclick="closeThankYouPopup()">እሺ እናመሰግናለን</button>
+</div>
+
+<section id="sec-customer-view" class="page-section active">
+    <div class="card" style="background:#eff6ff; border:1px solid #bfdbfe; margin-bottom:10px;">
+        <h3 style="font-size:0.9rem; margin-bottom:8px; color:var(--primary);">1. የደንበኛ መረጃ</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <div class="form-group" style="margin:0;"><input type="text" id="cust-name" placeholder="ስምዎን ያስገቡ..."></div>
+            <div class="form-group" style="margin:0;"><input type="tel" id="cust-phone" placeholder="ስልክ ቁጥር..."></div>
+        </div>
+    </div>
+    
+    <div class="card" style="padding:10px; margin-bottom:10px;">
+        <h3 style="font-size:0.9rem; color:var(--primary); text-align:center;">2. ምግብና መጠጥ ይምረጡ (እስከ 200 አይነቶች ማስተናገድ የሚችል)</h3>
+        <div class="split-menu-wrapper">
+            <div class="menu-scroll-column" id="cust-food-column">
+                <div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>
+                </div>
+            <div class="menu-scroll-column" id="cust-drink-column">
+                <div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>
+                </div>
+        </div>
+    </div>
+    
+    <div class="payment-box" id="payment-gateway-box">
+        <h3 style="color:var(--success); margin-bottom:5px; font-size:1rem;" id="selected-item-title">የተመረጠ፦ -</h3>
+        <p style="font-size:0.75rem; margin-bottom:10px; color:#475569;">የሂሳብ ባለቤት ስም፦ <b style="color:black;">አብዳን ሐይሉ ድባባ</b>። ቁጥሩን ሲጫኑ በራሱ ኮፒ ይሆናል።</p>
+        
+        <div class="bank-card-click" onclick="copyAccountOnly('1000578698373', 'ንግድ ባንክ')">
+            <div>⚖️ <b>ንግድ ባንክ (CBE)</b><br><strong style="font-size:1.1rem; color:var(--accent);">1000578698373</strong></div>
+            <span class="copy-badge" id="badge-cbe">አንካፒ</span>
+        </div>
+        
+        <div class="bank-card-click" onclick="copyAccountOnly('013201405365100', 'አዋሽ ባንክ')">
+            <div>✨ <b>አዋሽ ባንክ (Awash)</b><br><strong style="font-size:1.1rem; color:var(--accent);">013201405365100</strong></div>
+            <span class="copy-badge" id="badge-awash">አንካፒ</span>
+        </div>
+        
+        <div class="bank-card-click" onclick="copyAccountOnly('217778549', 'አቢሲኒያ ባንክ')">
+            <div>🦅 <b>አቢሲኒያ ባንክ (BoA)</b><br><strong style="font-size:1.1rem; color:var(--accent);">217778549</strong></div>
+            <span class="copy-badge" id="badge-boa">አንካፒ</span>
+        </div>
+        
+        <div class="bank-card-click" style="border-left-color:var(--danger); background:#fff5f5;" onclick="copyAccountOnly('0911721116', 'ቴሌ ብር')">
+            <div>📱 <b>ቴሌ ብር (telebirr)</b><br><strong style="font-size:1.1rem; color:var(--danger);">0911721116</strong></div>
+            <span class="copy-badge" style="background:var(--danger);" id="badge-tele">አንካፒ</span>
+        </div>
+        
+        <div class="form-group" style="margin-top:12px;">
+            <label style="color:var(--primary); font-weight: bold;">✍️ ምግቡ እንዴት እንዲሰራሎት ይፈልጋሉ? (አስተያየት/ልዩ ፍላጎት)፦</label>
+            <textarea id="cust-notes" rows="2" placeholder="ምሳሌ፦ ቃሪያ አይቀላቀልበት፣ ስጋው በደንብ ይብሰል፣ ሰላጣ ይብዛበት..."></textarea>
+            <small style="color:#64748b; font-size:0.75rem;">የሚጽፉት ማስታወሻ በቀጥታ ለባለቤቱና ለአስተናጋጁ ይደርሳል።</small>
+        </div>
+        
+        <div class="form-group">
+            <label style="color:var(--danger); font-weight: bold;">የክፍያ ማረጋገጫ ቁጥር (Transaction ID)፦</label>
+            <input type="text" id="cust-tx-id" placeholder="የደረሰኝ ቁጥር ወይም የትራንዛክሽን ኮድ ያስገቡ...">
+        </div>
+        <button class="btn-action" style="background:var(--success); padding:12px; width:100%; font-size:1rem;" onclick="processCustomerFinalOrder()">ትዕዛዙን በይፋ አስተላልፍ 🚀</button>
+    </div>
+</section>
+
+<section id="sec-order" class="page-section">
+    <div class="page-title">የአስተናጋጅ ማዘዣ ሰሌዳ</div>
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <label style="font-weight:bold;">የጠረጴዛ ቁጥር፦</label>
+        <select id="table-id" style="width:50%; padding:8px; font-weight:bold;">
+            <option value="ጠረጴዛ 1">ጠረጴዛ 1</option>
+            <option value="ጠረጴዛ 2">ጠረጴዛ 2</option>
+            <option value="ጠረጴዛ 3">ጠረጴዛ 3</option>
+        </select>
+    </div>
+    <div id="waiter-pos-menu-grid" class="split-menu-wrapper" style="height:60vh;">
+        <div class="menu-scroll-column" id="waiter-food-col"></div>
+        <div class="menu-scroll-column" id="waiter-drink-col"></div>
+    </div>
+</section>
+
+<section id="sec-menu" class="page-section">
+    <div class="page-title">የምግብ ማውጫ ማስተዳደሪያ</div>
+    <div class="card">
+        <h3>አዲስ ምግብ ወይም መጠጥ መመዝገቢያ (እስከ 200 እቃዎች)</h3>
+        <div class="form-group"><label>የምግቡ/መጠጡ ስም</label><input type="text" id="menu-name" placeholder="ክትፎ ወይም ቢራ..."></div>
+        <div class="form-group"><label>ዋጋ (በብር)</label><input type="number" id="menu-price" placeholder="400"></div>
+        <div class="form-group">
+            <label>የሚዘጋጅበት ክፍል</label>
+            <select id="menu-cat">
+                <option value="kitchen">ወጥ ቤት / ኩሽና (ምግብ)</option>
+                <option value="bar">ባር / መጠጥ ማውጫ (መጠጥ)</option>
+            </select>
+        </div>
+        <div class="form-group"><label>የፎቶ ሊንክ (URL)</label><input type="text" id="menu-image-url" placeholder="https://..."></div>
+        <button style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addNewMenuItem()">ወደ ማውጫው አክል</button>
+    </div>
+</section>
+
+<section id="sec-inventory" class="page-section">
+    <div class="page-title">የመጋዘን ጥሬ ዕቃዎች ቁጥጥር</div>
+    <div class="card">
+        <h3>አዲስ የጥሬ ዕቃ ገቢ መመዝገቢያ</h3>
+        <div class="form-group"><label>የዕቃው ስም</label><input type="text" id="inv-item-name"></div>
+        <div class="form-group"><label>የገባው መጠን</label><input type="number" id="inv-item-qty"></div>
+        <div class="form-group"><label>ጠቅላላ ዋጋ</label><input type="number" id="inv-item-cost"></div>
+        <button style="background:var(--accent); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addInventoryItem()">ገቢ ዕቃ መዝግብ</button>
+    </div>
+</section>
+
+<section id="sec-cashier-approval" class="page-section">
+    <div class="page-title">የመጡ ትዕዛዞች ማጽደቂያ</div>
+    <div id="pending-approval-list"></div>
+</section>
+
+<section id="sec-display" class="page-section">
+    <div class="card" id="kitchen-box"><div class="page-title">የኩሽና ማዘዣዎች (Kitchen)</div><div id="kitchen-list"></div></div>
+    <div class="card" id="bar-box"><div class="page-title">የባር ማዘዣዎች (Bar)</div><div id="bar-list"></div></div>
+</section>
+
+<section id="sec-cashbook" class="page-section">
+    <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
+    <div class="owner-tabs">
+        <button class="tab-sub-btn active" id="sub-btn-cash" onclick="switchOwnerSubSection('cash')">💰 ካሽ ቡክ</button>
+        <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 ጥሬ ዕቃ</button>
+    </div>
+    <div id="owner-sub-cash" class="owner-sub-content">
+        <div class="balance-summary">
+            <div>ጠቅላላ በካሽ ሳጥን ያለው ንጹህ ገቢ</div>
+            <h1 id="total-cash-box">0.00 ETB</h1>
+        </div>
+        <div class="card">
+            <h3>የቀጥታ ገቢና ወጪ መዝገብ (Cashbook Ledger)</h3>
+            <div id="ledger-history"></div>
+        </div>
+    </div>
+    <div id="owner-sub-inv-list" class="owner-sub-content" style="display:none;">
+        <div class="card">
+            <table>
+                <thead><tr><th>የዕቃው ስም</th><th>ገቢ</th><th>ቀሪ ክምችት</th></tr></thead>
+                <tbody id="owner-inventory-table"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section id="sec-tax" class="page-section">
+    <div class="page-title">የፋይናንስና የታክስ ስሌት</div>
+    <div class="card">
+        <h4>ንጹሕ ሽያጭ (Net)</h4>
+        <h2 id="tax-neto" style="color:var(--accent);">0.00 ብር</h2>
+    </div>
+</section>
+
+<script>
+    let currentRole = "customer";
+    let selectedCustomerItem = null;
+
+    const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
+
+    // 200 እና ከዚያ በላይ ለሚሆኑ ምግቦች የሚሆን የምግብ ማውጫ ማከማቻ ዳታቤዝ
+    let currentMenu = JSON.parse(localStorage.getItem('f_menu_v45')) || [
+        { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
+        { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300" },
+        { name: "ቺኪን በርገር", price: 280, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
+        { name: "ቆጮ በስጋ", price: 400, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
+        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
+        { name: "ለስላሳ መጠጥ", price: 50, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" },
+        { name: "ሀበሻ ቢра", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
+        { name: "ወይን ጠጅ", price: 250, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" }
+    ];
+
+    let inventory = JSON.parse(localStorage.getItem('f_inventory_v45')) || [];
+    let pendingOrders = JSON.parse(localStorage.getItem('f_pending_v45')) || [];
+    let activeOrders = JSON.parse(localStorage.getItem('f_active_v45')) || [];
+    let salesLedger = JSON.parse(localStorage.getItem('f_ledger_v45')) || [];
+
+    window.onload = function() { updateAllDisplays(); };
+
+    function syncStorage() {
+        localStorage.setItem('f_menu_v45', JSON.stringify(currentMenu));
+        localStorage.setItem('f_inventory_v45', JSON.stringify(inventory));
+        localStorage.setItem('f_pending_v45', JSON.stringify(pendingOrders));
+        localStorage.setItem('f_active_v45', JSON.stringify(activeOrders));
+        localStorage.setItem('f_ledger_v45', JSON.stringify(salesLedger));
+    }
+
+    function updateAllDisplays() {
+        renderSplitCustomerMenu();
+        renderSplitWaiterMenu();
+        renderPendingApprovals();
+        renderLiveDisplays();
+        renderFinanceAndTax();
+        renderInventoryTable();
+    }
+
+    // 🔄 የደንበኛ ገፅ ባለሁለት አምድ ሜኑ አተገባበር (ግራ ምግብ ፣ ቀኝ መጠጥ)
+    function renderSplitCustomerMenu() {
+        const foodCol = document.getElementById('cust-food-column');
+        const drinkCol = document.getElementById('cust-drink-column');
+        
+        // ሄደሮቹን አስቀርቶ የቆየውን ማጽዳት
+        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
+        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
+
+        currentMenu.forEach((item, index) => {
+            let isSoldOut = item.status === 'sold_out';
+            let cardHtml = `
+            <div class="mini-item-card ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
+                <img src="${item.img}" class="mini-img">
+                <div class="mini-info">
+                    <span class="name">${item.name}</span>
+                    <span class="price">${item.price} ብር</span>
+                </div>
+            </div>`;
+            
+            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
+        });
+    }
+
+    function renderSplitWaiterMenu() {
+        const foodCol = document.getElementById('waiter-food-col');
+        const drinkCol = document.getElementById('waiter-drink-col');
+        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
+        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
+
+        currentMenu.forEach((item, index) => {
+            let cardHtml = `
+            <div class="mini-item-card ${item.cat}" onclick="placeOrder(${index})">
+                <img src="${item.img}" class="mini-img">
+                <div class="mini-info">
+                    <span class="name">${item.name}</span>
+                    <span class="price">${item.price} ብር</span>
+                </div>
+            </div>`;
+            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
+        });
+    }
+
+    // 📲 አንድ ክሊክ አካውንት ኮፒ ማድረጊያ ዘዴ
+    function copyAccountOnly(accNumber, badgeIdPrefix) {
+        navigator.clipboard.writeText(accNumber).then(() => {
+            // ሁሉንም ባጆች ወደ ነበረበት መመለስ
+            document.querySelectorAll('.copy-badge').forEach(b => { b.innerText = "አንካፒ"; b.classList.remove('copied'); });
+            alert(`✅ የ${badgeIdPrefix} ቁጥር (${accNumber}) በራሱ ስልክዎ ላይ ኮፒ ሆኗል! አሁን ወደ ባንክ አፕዎ በመሄድ "Paste" አድርገው መክፈል ይችላሉ።`);
+        });
+    }
+
+    function openPaymentGateway(index) {
+        const item = currentMenu[index];
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+
+        if(!name || !phone) {
+            alert("⚠️ እባክዎ መጀመሪያ ከላይ የደንበኛ ስም እና ስልክ ቁጥር ያስገቡ!");
+            return;
+        }
+        
+        selectedCustomerItem = item;
+        document.getElementById('selected-item-title').innerText = `የተመረጠ፦ ${item.name} (${item.price} ብር)`;
+        document.getElementById('payment-gateway-box').style.display = 'block';
+        document.getElementById('payment-gateway-box').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 🚀 ትዕዛዙን ከነኮሜንቱ ወደ ማናጀርና አስተናጋጅ መላኪያ
+    function processCustomerFinalOrder() {
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const txId = document.getElementById('cust-tx-id').value.trim();
+        const notes = document.getElementById('cust-notes').value.trim(); 
+
+        if(!selectedCustomerItem) return alert("⚠️ እባክዎ መጀመሪያ ምግብ ይምረጡ!");
+        if(!txId) return alert("⚠️ እባክዎ የከፈሉበትን የትራንዛክሽን ኮድ (Tx ID) ያስገቡ!");
+
+        let fullTableLabel = `Takeaway (${name})`;
+        let finalNotes = notes ? notes : "ልዩ ማስታወሻ የለም";
+
+        // ወደ ካሼር እና ማናጀር ሰሌዳ መላክ
+        pendingOrders.push({ 
+            id: Date.now(), 
+            table: fullTableLabel, 
+            name: selectedCustomerItem.name, 
+            price: selectedCustomerItem.price, 
+            cat: selectedCustomerItem.cat, 
+            tx: txId, 
+            notes: finalNotes 
+        });
+        
+        syncStorage();
+        updateAllDisplays();
+        
+        document.getElementById('payment-gateway-box').style.display = 'none';
+        document.getElementById('cust-tx-id').value = '';
+        document.getElementById('cust-notes').value = '';
+        selectedCustomerItem = null;
+        
+        // የምስጋና መልዕክት ማሳየት
+        document.getElementById('thank-you-backdrop').style.display = 'block';
+        document.getElementById('thank-you-popup').style.display = 'block';
+    }
+
+    function closeThankYouPopup() {
+        document.getElementById('thank-you-backdrop').style.display = 'none';
+        document.getElementById('thank-you-popup').style.display = 'none';
+    }
+
+    function renderPendingApprovals() {
+        const div = document.getElementById('pending-approval-list'); div.innerHTML = '';
+        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም።</p>'; return; }
+        pendingOrders.forEach((order, index) => {
+            div.innerHTML += `<div class="ticket">
+                <strong>${order.table}</strong> ➔ <b style="color:var(--accent);">${order.name}</b><br>
+                <small>ዋጋ፦ ${order.price} ብር | Tx ID፦ <b>${order.tx || 'የለም'}</b></small><br>
+                <span style="color:var(--danger); font-weight:bold; font-size:0.9rem;">💬 ደንበኛ ኮሜንት፦ ${order.notes}</span>
+                <button class="btn-action" style="position:absolute; right:10px; top:12px;" onclick="approveOrder(${index})">አጽድቅ</button>
+            </div>`;
+        });
+    }
+
+    function approveOrder(index) {
+        const order = pendingOrders[index];
+        activeOrders.push(order);
+        salesLedger.push({ desc: `${order.name} (${order.table})`, amount: order.price, time: new Date().toLocaleTimeString('am-ET') });
+        pendingOrders.splice(index, 1);
+        syncStorage(); updateAllDisplays();
+    }
+
+    function renderLiveDisplays() {
+        const kList = document.getElementById('kitchen-list'); kList.innerHTML = '';
+        const bList = document.getElementById('bar-list'); bList.innerHTML = '';
+        activeOrders.forEach((order, index) => {
+            let html = `<div class="ticket">
+                <strong>${order.table}</strong> ➔ <b>${order.name}</b><br>
+                <span style="color:var(--danger); font-size:0.85rem; font-weight:bold;">💬 ልዩ ፍላጎት፦ ${order.notes}</span>
+                <button class="btn-action blue" style="position:absolute; right:10px; top:12px;" onclick="completeOrder(${index})">ዝግጁ ነው</button>
+            </div>`;
+            if(order.cat === 'kitchen') kList.innerHTML += html; else bList.innerHTML += html;
+        });
+    }
+
+    function completeOrder(index) {
+        activeOrders.splice(index, 1);
+        syncStorage(); updateAllDisplays();
+    }
+
+    function addNewMenuItem() {
+        const name = document.getElementById('menu-name').value.trim();
+        const price = parseFloat(document.getElementById('menu-price').value);
+        const cat = document.getElementById('menu-cat').value;
+        let img = document.getElementById('menu-image-url').value.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300";
+        if(!name || isNaN(price)) return alert("መረጃ በትክክል ያስገቡ!");
+        currentMenu.push({ name, price, cat, status: "available", img });
+        syncStorage(); updateAllDisplays();
+        alert("✅ አዲስ ማውጫ በተሳካ ሁኔታ ተጨምሯል!");
+    }
+
+    function placeOrder(index) {
+        const item = currentMenu[index];
+        const table = document.getElementById('table-id').value;
+        pendingOrders.push({ id: Date.now(), table, name: item.name, price: item.price, cat: item.cat, notes: 'በአስተናጋጅ የታዘዘ' });
+        syncStorage(); updateAllDisplays();
+    }
+
+    function renderFinanceAndTax() {
+        let todaySales = 0;
+        const ledgerDiv = document.getElementById('ledger-history'); ledgerDiv.innerHTML = '';
+        salesLedger.forEach((log) => {
+            todaySales += Number(log.amount);
+            ledgerDiv.innerHTML += `<div class="list-row"><span>${log.time}</span> <span>${log.desc}</span> <strong>+${log.amount}</strong></div>`;
+        });
+        document.getElementById('total-cash-box').innerText = todaySales.toFixed(2) + " ETB";
+        document.getElementById('tax-neto').innerText = (todaySales / 1.25).toFixed(2) + " ብር";
+    }
+
+    function renderInventoryTable() {
+        const tbody = document.getElementById('owner-inventory-table'); tbody.innerHTML = '';
+        inventory.forEach((item) => {
+            tbody.innerHTML += `<tr><td><b>${item.name}</b></td><td>${item.in}</td><td><b>${item.remaining}</b></td></tr>`;
+        });
+    }
+
+    function addInventoryItem() {
+        const name = document.getElementById('inv-item-name').value.trim();
+        const qty = parseFloat(document.getElementById('inv-item-qty').value);
+        const cost = parseFloat(document.getElementById('inv-item-cost').value);
+        if(!name || isNaN(qty)) return;
+        inventory.push({ name, in: qty, cost, out: 0, remaining: qty });
+        syncStorage(); updateAllDisplays();
+    }
+
+    function switchOwnerSubSection(sub) {
+        document.querySelectorAll('.owner-sub-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.owner-tabs .tab-sub-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`owner-sub-${sub}`).style.display = 'block';
+        document.getElementById(`sub-btn-${sub}`).classList.add('active');
+    }
+
+    function switchRoleSecure(role) {
+        if (role === 'customer') { executeRoleSwitch(role); return; }
+        let enteredPin = prompt("የመክፈቻ ፒን ያስገቡ፦");
+        if (enteredPin === PIN_CONFIG[role] || enteredPin === PIN_CONFIG['all']) executeRoleSwitch(role); else alert("ፒን ስህተት ነው!");
+    }
+
+    function executeRoleSwitch(role) {
+        currentRole = role;
+        document.querySelectorAll('.role-bar button').forEach(b => b.classList.remove('active'));
+        document.getElementById('role-' + role).classList.add('active');
+        const nav = document.getElementById('top-nav');
+        nav.querySelectorAll('a').forEach(a => a.style.display = 'inline-block');
+        document.getElementById('nav-customer-view').style.display = 'none';
+        
+        if (role === 'customer') {
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-customer-view') a.style.display='none'; });
+            showSection('sec-customer-view');
+        } else if (role === 'waiter') {
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-order') a.style.display='none'; });
+            showSection('sec-order');
+        } else if (role === 'barman' || role === 'chef') {
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-display') a.style.display='none'; });
+            showSection('sec-display');
+        } else if (role === 'cashier') {
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook') a.style.display='none'; });
+            showSection('sec-cashier-approval');
+        } else {
+            showSection('sec-cashbook');
+        }
+    }
+
+    function showSection(id) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+</script>
+</body>
+</html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
