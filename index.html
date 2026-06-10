@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="am"><!DOCTYPE html>
 <html lang="am">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fikir Bar & Restaurant - Enterprise POS v4.5</title>
+    <title>Fikir Bar & Restaurant - Enterprise POS v4.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -45,6 +44,9 @@
         nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
         nav a.active { color: white; background: var(--accent); }
         
+        /* የሰራተኞች የቀጥታ መልዕክት ሰሌዳ (Noticeboard) */
+        .broadcast-banner { background: #fef3c7; border-left: 5px solid var(--warning); padding: 10px 15px; margin: 10px 12px 0 12px; border-radius: 6px; font-size: 0.9rem; color: #92400e; font-weight: 600; display: none; }
+
         /* የገጾች አቀማመጥ */
         .page-section { display: none; padding: 12px; animation: fadeIn 0.3s ease-in-out; }
         .page-section.active { display: block; }
@@ -53,60 +55,86 @@
         .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
         .page-title { font-size: 1.25rem; margin-bottom: 15px; color: var(--primary); font-weight: 800; padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; }
         
-        /* 🔄 አዲሱ የግራና ቀኝ ተሸራታች ሜኑ አቀማመጥ (Split-Scroll View) */
-        .split-menu-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; height: 55vh; overflow: hidden; }
-        .menu-scroll-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; }
-        .column-header-sticky { position: sticky; top: 0; background: var(--primary); color: white; text-align: center; padding: 6px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .column-header-sticky.drink-head { background: var(--warning); color: #020617; }
+        /* አዲስ የምግብ እቃዎች ግሪድ ዲዛይን ከነ ፎቶ ጋር */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .btn-item { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: all 0.2s; position: relative; border-bottom: 4px solid var(--accent); }
+        .btn-item.bar { border-bottom-color: var(--warning); }
+        .btn-item:active { transform: scale(0.98); }
+        .item-img { width: 100%; height: 95px; object-fit: cover; background: #e2e8f0; }
+        .item-details { padding: 8px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .btn-item .name { font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px; }
+        .btn-item .price { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
+        
+        /* ምግብ ሲያልቅ የሚመጣ ዲዛይን */
+        .btn-item.sold-out { border-bottom-color: var(--danger) !important; background: #fff5f5; opacity: 0.75; }
+        .btn-item.sold-out .name { color: #94a3b8; text-decoration: line-through; }
+        .btn-item.sold-out .price { color: var(--danger); }
+        .badge-sold-out { background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; position: absolute; top: 6px; right: 6px; z-index: 5; }
 
-        /* አነስተኛና ውብ የምግብ ካርዶች */
-        .mini-item-card { background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; position: relative; border-bottom: 3px solid var(--accent); }
-        .mini-item-card.bar { border-bottom-color: var(--warning); }
-        .mini-item-card:active { transform: scale(0.97); }
-        .mini-img { width: 100%; height: 75px; object-fit: cover; background: #e2e8f0; }
-        .mini-info { padding: 6px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-        .mini-info .name { font-weight: 700; font-size: 0.8rem; color: var(--primary); line-height: 1.2; margin-bottom: 2px; }
-        .mini-info .price { color: var(--accent); font-weight: 800; font-size: 0.8rem; }
-        .mini-item-card.sold-out { border-bottom-color: var(--danger) !important; opacity: 0.6; }
-        .mini-item-card.sold-out .name { text-decoration: line-through; color: #94a3b8; }
+        /* የምግብና መጠጥ ጎን ለጎን ማሳያ */
+        .menu-split-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+        .menu-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; max-height: 400px; overflow-y: auto; }
+        .menu-column h3 { font-size: 0.9rem; color: var(--primary); padding-bottom: 6px; border-bottom: 2px solid #cbd5e0; margin-bottom: 8px; position: sticky; top: 0; background: #f8fafc; z-index: 10; }
+        .menu-column h3.food-title { border-bottom-color: var(--accent); }
+        .menu-column h3.drink-title { border-bottom-color: var(--warning); }
         
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85rem; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: white; color: black; outline: none; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: white; color: black; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+        .search-bar { border: 2px solid var(--accent); margin-bottom: 12px; background: #fff; }
         
-        /* የክፍያ ሳጥን ዲዛይን */
-        .payment-box { display: none; background: #f0fdf4; border: 2px dashed var(--success); padding: 14px; border-radius: 10px; margin-top: 15px; }
-        .bank-card-click { background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid var(--success); display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .bank-card-click:active { background: #f1f5f9; }
-        .copy-badge { background: var(--accent); color: white; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .copy-badge.copied { background: var(--success); }
-
-        .btn-action { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        /* የቲኬት አወቃቀር */
+        .ticket { background: #fffdeb; border-left: 5px solid var(--warning); padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-action { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; position: absolute; right: 10px; top: 12px; font-weight: bold; font-size: 0.85rem; }
         .btn-action.blue { background: var(--accent); }
         .btn-action.danger { background: var(--danger); }
         
-        /* የምስጋና ፖፕአፕ */
+        /* የምስጋና ፖፕአፕ መልዕክት */
         .thank-you-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); z-index: 5000; text-align: center; width: 85%; max-width: 340px; border: 3px solid var(--success); }
+        .thank-you-popup h2 { color: var(--success); font-size: 1.4rem; margin-bottom: 10px; }
+        .thank-you-popup p { color: var(--primary); font-weight: 600; font-size: 1.05rem; margin-bottom: 15px; }
         .thank-you-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4999; }
 
+        /* የባንክ አማራጮች */
+        .payment-box { display: none; background: #f0fdf4; border: 2px dashed var(--success); padding: 14px; border-radius: 10px; margin-top: 12px; }
+        .bank-details { background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--success); font-size: 0.9rem; cursor: pointer; display: block; text-decoration: none; color: inherit; transition: background 0.2s; }
+        .bank-details:hover { background: #f8fafc; }
+        
+        /* የካሽ ቡክ ስክሪን */
         .balance-summary { background: linear-gradient(135deg, var(--primary), #1e293b); color: white; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 12px; }
         .balance-summary h1 { color: var(--success); font-size: 1.8rem; margin-top: 4px; }
+        
+        /* የካልኩሌተር ዲዛይን */
+        .calc-screen { width: 100%; padding: 12px; font-size: 1.6rem; text-align: right; border: 2px solid #cbd5e0; border-radius: 8px; background: #fff; font-weight: bold; margin-bottom: 8px; color: black; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .calc-btn { background: #e2e8f0; border: none; padding: 14px 5px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; color: black; }
+        .calc-btn.op { background: #cbd5e1; }
+        .calc-btn.gt-key { background: var(--warning); }
+        .calc-btn.eq { background: var(--accent); color: white; grid-column: span 2; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 8px; }
         th, td { padding: 8px; border: 1px solid #cbd5e0; text-align: left; font-size: 0.85rem; }
         th { background: #f1f5f9; font-weight: bold; }
         
+        .qr-section { text-align: center; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .qr-holder { background: white; padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; display: none; margin-top: 5px; }
+        
+        .btn-backup { background: #0284c7; color: white; border: none; padding: 10px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; text-align: center; display: block; text-decoration: none; font-size: 0.9rem; }
         .list-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7 herom; font-weight: bold; color: white; }
         .badge-danger { background: var(--danger); }
         .badge-success { background: var(--success); }
         
         .owner-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .tab-sub-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .tab-sub-btn.active { background: var(--accent); color: white; }
-        
-        .ticket { background: #fffdeb; border-left: 5px solid var(--warning); padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; }
+
+        /* አዲስ ተጨማሪ የከስተመር ገጽ ስታይሎች */
+        .map-box { background: #f0f9ff; border: 1px solid #bae6fd; padding: 12px; border-radius: 10px; margin-top: 15px; text-align: center; }
+        .map-link { display: inline-flex; align-items: center; gap: 6px; background: #db2777; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; margin-top: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .share-box { background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px; border-radius: 10px; margin-top: 10px; text-align: center; }
+        .btn-share-qr { background: #8b5cf6; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.85rem; margin-top: 6px; }
     </style>
 </head>
 <body>
@@ -114,11 +142,11 @@
 <div class="fixed-top">
     <header>
         <span>Fikir Bar & Restaurant</span>
-        <span class="app-mode">Enterprise v4.5</span>
+        <span class="app-mode" id="net-status-badge">Offline Ready / Enterprise v4.0</span>
     </header>
     <div class="live-notifier">
-        <span class="signal-light active-green" id="owner-signal"></span>
-        <span id="owner-status-text">ሁኔታ፦ ሲስተሙ ዝግጁ ነው (Cloud Protected)</span>
+        <span class="signal-light" id="owner-signal"></span>
+        <span id="owner-status-text">የደህንነት ሲስተም፦ ዝግጁ ነው (Cloud Protected)</span>
     </div>
     <div class="role-bar">
         <button class="role-btn active" id="role-customer" onclick="switchRoleSecure('customer')">የደንበኛ ማዘዣ (Takeaway)</button>
@@ -140,69 +168,88 @@
     </nav>
 </div>
 
+<div class="broadcast-banner" id="staff-noticeboard"></div>
+
 <div class="thank-you-backdrop" id="thank-you-backdrop"></div>
 <div class="thank-you-popup" id="thank-you-popup">
-    <h2 style="color:var(--success); margin-bottom:10px;">የተሳካ ትዕዛዝ!</h2>
-    <p>ትዕዛዝዎና አስተያየትዎ ለባለቤቱና ለአስተናጋጁ ደርሷል!<br><b>ፍቅር ባርና ሬስቶራንት</b></p>
-    <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px;" onclick="closeThankYouPopup()">እሺ እናመሰግናለን</button>
+    <h2>የተሳካ ትዕዛዝ!</h2>
+    <p>እኛን ስለመረጡን እናመሰግናለን!<br><b>ፍቅር ባርና ሬስቶራንት</b></p>
+    <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="closeThankYouPopup()">እሺ</button>
 </div>
 
 <section id="sec-customer-view" class="page-section active">
-    <div class="card" style="background:#eff6ff; border:1px solid #bfdbfe; margin-bottom:10px;">
-        <h3 style="font-size:0.9rem; margin-bottom:8px; color:var(--primary);">1. የደንበኛ መረጃ</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-            <div class="form-group" style="margin:0;"><input type="text" id="cust-name" placeholder="ስምዎን ያስገቡ..."></div>
-            <div class="form-group" style="margin:0;"><input type="tel" id="cust-phone" placeholder="ስልክ ቁጥር..."></div>
-        </div>
-    </div>
-    
-    <div class="card" style="padding:10px; margin-bottom:10px;">
-        <h3 style="font-size:0.9rem; color:var(--primary); text-align:center;">2. ምግብና መጠጥ ይምረጡ (እስከ 200 አይነቶች ማስተናገድ የሚችል)</h3>
-        <div class="split-menu-wrapper">
-            <div class="menu-scroll-column" id="cust-food-column">
-                <div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>
-                </div>
-            <div class="menu-scroll-column" id="cust-drink-column">
-                <div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>
-                </div>
-        </div>
-    </div>
-    
-    <div class="payment-box" id="payment-gateway-box">
-        <h3 style="color:var(--success); margin-bottom:5px; font-size:1rem;" id="selected-item-title">የተመረጠ፦ -</h3>
-        <p style="font-size:0.75rem; margin-bottom:10px; color:#475569;">የሂሳብ ባለቤት ስም፦ <b style="color:black;">አብዳን ሐይሉ ድባባ</b>። ቁጥሩን ሲጫኑ በራሱ ኮፒ ይሆናል።</p>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('1000578698373', 'ንግድ ባንክ')">
-            <div>⚖️ <b>ንግድ ባንክ (CBE)</b><br><strong style="font-size:1.1rem; color:var(--accent);">1000578698373</strong></div>
-            <span class="copy-badge" id="badge-cbe">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('013201405365100', 'አዋሽ ባንክ')">
-            <div>✨ <b>አዋሽ ባንክ (Awash)</b><br><strong style="font-size:1.1rem; color:var(--accent);">013201405365100</strong></div>
-            <span class="copy-badge" id="badge-awash">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('217778549', 'አቢሲኒያ ባንክ')">
-            <div>🦅 <b>አቢሲኒያ ባንክ (BoA)</b><br><strong style="font-size:1.1rem; color:var(--accent);">217778549</strong></div>
-            <span class="copy-badge" id="badge-boa">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" style="border-left-color:var(--danger); background:#fff5f5;" onclick="copyAccountOnly('0911721116', 'ቴሌ ብር')">
-            <div>📱 <b>ቴሌ ብር (telebirr)</b><br><strong style="font-size:1.1rem; color:var(--danger);">0911721116</strong></div>
-            <span class="copy-badge" style="background:var(--danger);" id="badge-tele">አንካፒ</span>
-        </div>
-        
-        <div class="form-group" style="margin-top:12px;">
-            <label style="color:var(--primary); font-weight: bold;">✍️ ምግቡ እንዴት እንዲሰራሎት ይፈልጋሉ? (አስተያየት/ልዩ ፍላጎት)፦</label>
-            <textarea id="cust-notes" rows="2" placeholder="ምሳሌ፦ ቃሪያ አይቀላቀልበት፣ ስጋው በደንብ ይብሰል፣ ሰላጣ ይብዛበት..."></textarea>
-            <small style="color:#64748b; font-size:0.75rem;">የሚጽፉት ማስታወሻ በቀጥታ ለባለቤቱና ለአስተናጋጁ ይደርሳል።</small>
-        </div>
-        
+    <div class="page-title" style="color:var(--accent);">የፍቅር ባርና ሬስቶራንት ፈጣን ማዘዣ</div>
+    <div class="card" style="background:#eff6ff; border:1px solid #bfdbfe;">
+        <h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--primary);">1. የእርስዎን መረጃ ያስገቡ</h3>
+        <div class="form-group"><label>ሙሉ ስም</label><input type="text" id="cust-name" placeholder="ስምዎን ያስገቡ..."></div>
+        <div class="form-group"><label>ስልክ ቁጥር</label><input type="tel" id="cust-phone" placeholder="09........"></div>
+        <div class="form-group"><label>የመኖሪያ / የስራ አድራሻ</label><input type="text" id="cust-address" placeholder="የሰፈር ስም..."></div>
         <div class="form-group">
-            <label style="color:var(--danger); font-weight: bold;">የክፍያ ማረጋገጫ ቁጥር (Transaction ID)፦</label>
-            <input type="text" id="cust-tx-id" placeholder="የደረሰኝ ቁጥር ወይም የትራንዛክሽን ኮድ ያስገቡ...">
+            <label>ትዕዛዙ ለማን ይደርስ</label>
+            <select id="cust-routing">
+                <option value="staff">ለአስተናጋጅ / ካሼር</option>
+                <option value="owner">ቀጥታ ለባለቤቱ (ማናجر)</option>
+            </select>
         </div>
-        <button class="btn-action" style="background:var(--success); padding:12px; width:100%; font-size:1rem;" onclick="processCustomerFinalOrder()">ትዕዛዙን በይፋ አስተላልፍ 🚀</button>
+    </div>
+    
+    <div class="card">
+        <h3 style="font-size:0.95rem; margin-bottom:10px; color:var(--primary);">2. የሚፈልጉትን ምግብ ወይም መጠጥ ይምረጡ</h3>
+        <div class="grid" id="customer-menu-grid"></div>
+        
+        <div class="payment-box" id="payment-gateway-box">
+            <h4 style="color:var(--success); margin-bottom:8px;">💳 የባንክ የክፍያ አማራጮች (ለመክፈት ይጫኑ)</h4>
+            <p style="font-size:0.8rem; margin-bottom:10px; color:#475569;">ባንኩን ሲጫኑ ቀጥታ ወደ አፕሊኬሽኑ ይወስድዎታል። የሂሳብ ባለቤት ስም <b>አብዳን ሐይሉ ድባባ</b> መሆኑን ያረጋግጡ።</p>
+            
+            <!-- ቀጥታ ወደ ባንክ ሲስተም የሚወስዱ የዲፕ ሊንክ ማስተካከያዎች -->
+            <a href="cbebirr://" class="bank-details" onclick="copyAccountOnly('1000578698373', 'የኢትዮጵያ ንግድ ባንክ')">
+                <b>የኢትዮጵያ ንግድ ባንክ (CBE) 📱 [ለመክፈት ይጫኑ]</b><br>
+                ቁጥር፦ <strong style="color:var(--accent); font-size:1.05rem;">1000578698373</strong>
+            </a>
+            <a href="awashbirr://" class="bank-details" style="border-left-color: var(--warning);" onclick="copyAccountOnly('013201405365100', 'አዋሽ ባንክ')">
+                <b>አዋሽ ባንክ (Awash Bank) 📱 [ለመክፈት ይጫኑ]</b><br>
+                ቁጥር፦ <strong style="color:var(--accent); font-size:1.05rem;">013201405365100</strong>
+            </a>
+            <a href="apollo://" class="bank-details" style="border-left-color: #8b5cf6;" onclick="copyAccountOnly('217778549', 'አቢሲኒያ ባንክ')">
+                <b>አቢሲኒያ ባንክ (BoA) 📱 [ለመክፈት ይጫኑ]</b><br>
+                ቁጥር፦ <strong style="color:var(--accent); font-size:1.05rem;">217778549</strong>
+            </a>
+            <a href="tel:*812#" class="bank-details" style="border-left-color: var(--danger); background:#fff5f5;" onclick="copyAccountOnly('0911721116', 'ቴሌብር')">
+                <b>👑 ቴሌብር (telebirr) 📱 [ለመክፈት/ለመደወል ይጫኑ]</b><br>
+                ቁጥር፦ <strong style="color:var(--accent); font-size:1.05rem;">0911721116</strong>
+            </a>
+            
+            <div class="form-group" style="margin-top:15px;">
+                <label>✍️ ምግቡ እንዴት እንዲሰራሎት ይፈልጋሉ? (ልዩ ማስታወሻ/ኮሜንት)፦</label>
+                <textarea id="cust-notes" rows="2" placeholder="ምሳሌ፦ ቃሪያ አይቀላቀልበት፣ ስጋው በደንብ ይብሰል..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label style="color:var(--accent); font-weight: bold;">📎 የክፍያ ደረሰኝ/ስክሪንሻት እዚህ ያያይዙ (Attach Receipt)፦</label>
+                <input type="file" id="cust-receipt-file" accept="image/*" style="padding:5px; border:2px dashed var(--accent);">
+            </div>
+
+            <div class="form-group">
+                <label style="color:var(--danger);">የክፍያ ማረጋገጫ ቁጥር (Transaction ID)፦</label>
+                <input type="text" id="cust-tx-id" placeholder="የደረሰኝ ቁጥር ያስገቡ...">
+            </div>
+            <button style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer; font-size:1rem;" id="submit-pay-btn">ትዕዛዝ ፈጽም 🚀</button>
+        </div>
+    </div>
+
+    <!-- አዲስ የጎግል ማፕ መገኛ ቦታ ካርድ -->
+    <div class="map-box">
+        <h4 style="color:var(--primary);">📍 በአካል መምጣት ይፈልጋሉ?</h4>
+        <p style="font-size:0.8rem; color:#475569;">ቀጥታ ወደ ፍቅር ባርና ሬስቶራንት የሚያመጣዎትን የጎግል ማፕ መገኛ ቦታ ይጫኑ።</p>
+        <a href="https://maps.google.com/?q=Hawassa,Ethiopia" target="_blank" class="map-link">🌐 ጎግል ማፕ ላይ አሳየኝ (Google Maps)</a>
+    </div>
+
+    <!-- አዲስ የአፑን ሊንክ በባርኮድ ለሌላ ሰው ማጋሪያ ካርድ -->
+    <div class="share-box">
+        <h4 style="color:var(--primary);">📲 ይህንን አፕ ለጓደኛዎ ያጋሩ</h4>
+        <p style="font-size:0.8rem; color:#475569;">ሌሎች ሰዎችም ቀጥታ በስልካቸው እንዲያዙ ባርኮዱን ያሳዩዋቸው።</p>
+        <button class="btn-share-qr" onclick="toggleQrCode('qr-customer-share-box')">የማጋሪያ ባርኮድ አሳይ / ደብቅ 🔗</button>
+        <div class="qr-holder" id="qr-customer-share-box" style="margin:10px auto 0 auto; width:140px; height:140px;"></div>
     </div>
 </section>
 
@@ -214,18 +261,17 @@
             <option value="ጠረጴዛ 1">ጠረጴዛ 1</option>
             <option value="ጠረጴዛ 2">ጠረጴዛ 2</option>
             <option value="ጠረጴዛ 3">ጠረጴዛ 3</option>
+            <option value="ጠረጴዛ 4">ጠረጴዛ 4</option>
+            <option value="ጠረጴዛ 5">ጠረጴዛ 5</option>
         </select>
     </div>
-    <div id="waiter-pos-menu-grid" class="split-menu-wrapper" style="height:60vh;">
-        <div class="menu-scroll-column" id="waiter-food-col"></div>
-        <div class="menu-scroll-column" id="waiter-drink-col"></div>
-    </div>
+    <div class="grid" id="menu-grid"></div>
 </section>
 
 <section id="sec-menu" class="page-section">
     <div class="page-title">የምግብ ማውጫ ማስተዳደሪያ</div>
     <div class="card">
-        <h3>አዲስ ምግብ ወይም መጠጥ መመዝገቢያ (እስከ 200 እቃዎች)</h3>
+        <h3>አዲስ ምግብ ወይም መጠጥ መመዝገቢያ</h3>
         <div class="form-group"><label>የምግቡ/መጠጡ ስም</label><input type="text" id="menu-name" placeholder="ክትፎ ወይም ቢራ..."></div>
         <div class="form-group"><label>ዋጋ (በብር)</label><input type="number" id="menu-price" placeholder="400"></div>
         <div class="form-group">
@@ -235,8 +281,22 @@
                 <option value="bar">ባር / መጠጥ ማውጫ (መጠጥ)</option>
             </select>
         </div>
-        <div class="form-group"><label>የፎቶ ሊንክ (URL)</label><input type="text" id="menu-image-url" placeholder="https://..."></div>
+        <div class="form-group"><label>የምስል ሊንክ (የፎቶ URL)</label><input type="text" id="menu-image-url" placeholder="https://example.com/photo.jpg"></div>
         <button style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addNewMenuItem()">ወደ ማውጫው አክል</button>
+    </div>
+    
+    <div class="card">
+        <h3>የምግብና መጠጥ ወቅታዊ ሁኔታ ቁጥጥር</h3>
+        <div class="menu-split-container">
+            <div class="menu-column">
+                <h3 class="food-title">🍔 የምግብ ዝርዝር (ኩሽና)</h3>
+                <div id="food-column-list"></div>
+            </div>
+            <div class="menu-column">
+                <h3 class="drink-title">🍾 የመጠጥ ዝርዝር (ባር)</h3>
+                <div id="drink-column-list"></div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -244,9 +304,9 @@
     <div class="page-title">የመጋዘን ጥሬ ዕቃዎች ቁጥጥር</div>
     <div class="card">
         <h3>አዲስ የጥሬ ዕቃ ገቢ መመዝገቢያ</h3>
-        <div class="form-group"><label>የዕቃው ስም</label><input type="text" id="inv-item-name"></div>
-        <div class="form-group"><label>የገባው መጠን</label><input type="number" id="inv-item-qty"></div>
-        <div class="form-group"><label>ጠቅላላ ዋጋ</label><input type="number" id="inv-item-cost"></div>
+        <div class="form-group"><label>የዕቃው ስም (ለምሳሌ፦ ስጋ፣ ሽንኩርት...)</label><input type="text" id="inv-item-name" placeholder="ዕቃ ስም..."></div>
+        <div class="form-group"><label>የገባው መጠን (ኪሎ / ሳጥን / ሊትር)</label><input type="number" id="inv-item-qty" placeholder="100"></div>
+        <div class="form-group"><label>የገባበት ጠቅላላ ዋጋ (Cost Price)</label><input type="number" id="inv-item-cost" placeholder="35000"></div>
         <button style="background:var(--accent); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addInventoryItem()">ገቢ ዕቃ መዝግብ</button>
     </div>
 </section>
@@ -263,183 +323,398 @@
 
 <section id="sec-cashbook" class="page-section">
     <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
+    
     <div class="owner-tabs">
         <button class="tab-sub-btn active" id="sub-btn-cash" onclick="switchOwnerSubSection('cash')">💰 ካሽ ቡክ</button>
-        <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 ጥሬ ዕቃ</button>
+        <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 የጥሬ ዕቃ ክምችት</button>
+        <button class="tab-sub-btn" id="sub-btn-rank" onclick="switchOwnerSubSection('rank')">📈 የሽያጭ ደረጃ ሪፖርት</button>
+        <button class="tab-sub-btn" id="sub-btn-att" onclick="switchOwnerSubSection('att')">👥 የሰራተኞች አቴንዳንስ</button>
     </div>
+
     <div id="owner-sub-cash" class="owner-sub-content">
+        <div class="card" style="background:#f8fafc; border:2px solid var(--warning); text-align:center;">
+            <h4 style="margin-bottom:5px;">📲 አፑን ለሰራተኞች በባርኮድ መጫኛ</h4>
+            <button style="background:var(--primary); color:white; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:0.85rem;" onclick="toggleQrCode('qr-owner-box')">የመጫኛ ባርኮድ አሳይ / ደብቅ</button>
+            <div class="qr-holder" id="qr-owner-box" style="margin:10px auto 0 auto;"></div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid var(--accent);">
+            <h3>📢 ለሰራተኞች መመሪያ ወይም ኮሜንት መላኪያ</h3>
+            <div class="form-group" style="margin-top:8px;">
+                <textarea id="owner-comment-input" rows="2" placeholder="መመሪያ ይጻፉ..."></textarea>
+            </div>
+            <button style="background:var(--accent); color:white; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:0.85rem;" onclick="postOwnerComment()">ኮሜንት በይፋ ላክ 📣</button>
+            <h4 style="margin-top:15px; font-size:0.9rem; color:#475569;">📚 የ防ኮሜንት ማህደር (ለስብሰባ መወያያ)</h4>
+            <div id="owner-comment-archive" style="max-height:150px; overflow-y:auto; margin-top:5px; background:#f8fafc; padding:5px; border-radius:6px;"></div>
+        </div>
+
         <div class="balance-summary">
             <div>ጠቅላላ በካሽ ሳጥን ያለው ንጹህ ገቢ</div>
             <h1 id="total-cash-box">0.00 ETB</h1>
+            <button style="margin-top:10px; background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:bold;" onclick="runAiAnalysis()">🤖 AI አጠቃላይ ትንተና አሂድ</button>
         </div>
+        
+        <div class="card">
+            <h3>የካሼር መተሳሰቢያ ካልኩሌተር (with GT ቁልፍ)</h3>
+            <div class="calc-screen" id="calc-display">0</div>
+            <div class="calc-grid">
+                <button class="calc-btn op" onclick="pressCalc('C')">C</button>
+                <button class="calc-btn op" onclick="pressCalc('/')">/</button>
+                <button class="calc-btn op" onclick="pressCalc('*')">*</button>
+                <button class="calc-btn op" onclick="pressCalc('-')">-</button>
+                <button class="calc-btn" onclick="pressCalc('7')">7</button>
+                <button class="calc-btn" onclick="pressCalc('8')">8</button>
+                <button class="calc-btn" onclick="pressCalc('9')">9</button>
+                <button class="calc-btn op" onclick="pressCalc('+')">+</button>
+                <button class="calc-btn" onclick="pressCalc('4')">4</button>
+                <button class="calc-btn" onclick="pressCalc('5')">5</button>
+                <button class="calc-btn" onclick="pressCalc('6')">6</button>
+                <button class="calc-btn gt-key" onclick="pressCalc('GT')">GT</button>
+                <button class="calc-btn" onclick="pressCalc('1')">1</button>
+                <button class="calc-btn" onclick="pressCalc('2')">2</button>
+                <button class="calc-btn" onclick="pressCalc('3')">3</button>
+                <button class="calc-btn eq" onclick="pressCalc('=')">=</button>
+                <button class="calc-btn" style="grid-column: span 2;" onclick="pressCalc('0')">0</button>
+                <button class="calc-btn" onclick="pressCalc('.')">.</button>
+            </div>
+        </div>
+
+        <div class="card" style="background:#f0fdf4;">
+            <h3>🔐 የደህንነት መረጃ ባካፕ (Anti-Virus Backup)</h3>
+            <a href="javascript:void(0)" class="btn-backup" onclick="downloadSystemBackup()">የሬስቶራንቱን ሙሉ ዳታ ባካፕ አውርድ (JSON)</a>
+        </div>
+
         <div class="card">
             <h3>የቀጥታ ገቢና ወጪ መዝገብ (Cashbook Ledger)</h3>
             <div id="ledger-history"></div>
         </div>
     </div>
+
     <div id="owner-sub-inv-list" class="owner-sub-content" style="display:none;">
         <div class="card">
-            <table>
-                <thead><tr><th>የዕቃው ስም</th><th>ገቢ</th><th>ቀሪ ክምችት</th></tr></thead>
-                <tbody id="owner-inventory-table"></tbody>
-            </table>
+            <h3>📦 የጥሬ ዕቃዎች ወቅታዊ ክምችት</h3>
+            <input type="text" id="inventorySearchInput" class="form-control search-bar" placeholder="የጥሬ ዕቃ ስም ጽፈው ይፈልጉ..." oninput="filterInventory()">
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>የዕቃው ስም</th>
+                            <th>ገቢ (የገባው)</th>
+                            <th>የገባበት ዋጋ</th>
+                            <th>ወጪ (የወጣው)</th>
+                            <th>የቀረው ክምችት</th>
+                            <th>ሁኔታ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-inventory-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="owner-sub-rank" class="owner-sub-content" style="display:none;">
+        <div class="card">
+            <h3>📈 በብዛት የተሸጡ ምግቦችና መጠጦች ደረጃ</h3>
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                <button class="tab-sub-btn active" id="rank-btn-day" onclick="changeRankPeriod('day')">ዕለታዊ</button>
+                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">ሳምንታዊ</button>
+                <button class="tab-sub-btn" id="rank-btn-month" onclick="changeRankPeriod('month')">ወርሃዊ</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ደረጃ</th>
+                            <th>የምግብ/መጠጥ ስም</th>
+                            <th>የተሸጠው ብዛት</th>
+                            <th>ጠቅላላ ገቢ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-rank-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="owner-sub-att" class="owner-sub-content" style="display:none;">
+        <div class="card">
+            <h3>👥 የሰራተኞች መገኘት መቆጣጠሪያ (Attendance)</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <select id="staff-name-select" style="padding:8px; border-radius:6px; border:1px solid #cbd5e0;">
+                    <option value="ዮሐንስ (አስተናጋጅ)">ዮሐንስ (አስተናጋጅ)</option>
+                    <option value="አልማዝ (ካሼር)">አልማዝ (ካሼር)</option>
+                    <option value="በቀለ (ሼፍ)">በቀለ (ሼፍ)</option>
+                    <option value="እስጢፋኖስ (ባርማን)">እስጢፋኖስ (ባርማን)</option>
+                </select>
+                <div style="display:flex; gap:5px;">
+                    <button style="background:var(--success); color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.8rem; width:50%;" onclick="logAttendance('ስራ ገባ')">⬇️ ገባ</button>
+                    <button style="background:var(--danger); color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.8rem; width:50%;" onclick="logAttendance('ስራ ወጣ')">⬆️ ወጣ</button>
+                </div>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>የሰራተኛ ስም</th>
+                            <th>ቀን</th>
+                            <th>ሰዓት</th>
+                            <th>ሁኔታ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-attendance-table"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
 
 <section id="sec-tax" class="page-section">
-    <div class="page-title">የፋይናንስና የታክስ ስሌት</div>
-    <div class="card">
-        <h4>ንጹሕ ሽያጭ (Net)</h4>
-        <h2 id="tax-neto" style="color:var(--accent);">0.00 ብር</h2>
+    <div class="page-title">የፋይናንስ፣ የቫት (VAT 15%) እና የአመታዊ ግብር ስሌት</div>
+    
+    <div style="display:flex; gap:5px; margin-bottom:15px; overflow-x:auto; padding-bottom:5px;">
+        <button class="tab-sub-btn active" id="tax-btn-day" onclick="changeTaxPeriod('day')">የዛሬ (ዕለታዊ)</button>
+        <button class="tab-sub-btn" id="tax-btn-week" onclick="changeTaxPeriod('week')">የዚህ ሳምንት</button>
+        <button class="tab-sub-btn" id="tax-btn-month" onclick="changeTaxPeriod('month')">የዚህ ወር</button>
+        <button class="tab-sub-btn" id="tax-btn-year" onclick="changeTaxPeriod('year')">የዓመቱ (Annual)</button>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
+        <div style="background:white; padding:12px; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
+            <h4 style="font-size:0.8rem; color:#64748b;" id="tax-title-gross">ጠቅላላ ሽያጭ (Gross)</h4>
+            <p id="tax-bruto" style="font-weight:bold; font-size:1.1rem; color:var(--primary);">0.00 ብር</p>
+        </div>
+        <div style="background:white; padding:12px; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
+            <h4 style="font-size:0.8rem; color:#64748b;">የተሰበሰበ VAT (15%)</h4>
+            <p id="tax-vat-collected" style="font-weight:bold; font-size:1.1rem; color:var(--success);">0.00 ብር</p>
+        </div>
+        <div style="background:white; padding:12px; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
+            <h4 style="font-size:0.8rem; color:#64748b;">የአገልግሎት ክፍያ (10% Service)</h4>
+            <p id="tax-service-collected" style="font-weight:bold; font-size:1.1rem; color:var(--warning);">0.00 ብር</p>
+        </div>
+        <div style="background:white; padding:12px; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
+            <h4 style="font-size:0.8rem; color:#64748b;">ንጹሕ ሽያጭ (Net)</h4>
+            <p id="tax-neto" style="font-weight:bold; font-size:1.1rem; color:var(--accent);">0.00 ብር</p>
+        </div>
+    </div>
+    
+    <div class="card" style="margin-top:15px; background:#fff5f5; border:1px solid #fecaca;">
+        <h3 style="color:var(--danger); font-size:1rem; margin-bottom:5px;" id="tax-title-gov">⚖️ የተገመተ የንግድ ትርፍ ግብር (Income Tax)</h3>
+        <p style="font-size:0.8rem; color:#64748b; margin-bottom:8px;">በኢትዮጵያ የታክስ ሕግ መሠረት ከንጹሕ ትርፍ ላይ የተሰላ ግምታዊ የግብር መጠን።</p>
+        <h2 id="tax-government-due" style="color:var(--danger);">0.00 ብር</h2>
     </div>
 </section>
 
 <script>
     let currentRole = "customer";
+    let calcString = "0";
+    let grandTotalSum = 0; 
     let selectedCustomerItem = null;
+    let currentRankPeriod = 'day';
+    let currentTaxPeriod = 'day';
 
     const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
 
-    // 200 እና ከዚያ በላይ ለሚሆኑ ምግቦች የሚሆን የምግብ ማውጫ ማከማቻ ዳታቤዝ
-    let currentMenu = JSON.parse(localStorage.getItem('f_menu_v45')) || [
-        { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
-        { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300" },
-        { name: "ቺኪን በርገር", price: 280, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
-        { name: "ቆጮ በስጋ", price: 400, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
-        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
-        { name: "ለስላሳ መጠጥ", price: 50, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" },
-        { name: "ሀበሻ ቢра", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
-        { name: "ወይን ጠጅ", price: 250, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" }
+    // የምግብ ዝርዝር
+    let currentMenu = JSON.parse(localStorage.getItem('f_menu_v4')) || [
+        { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300", salesDay: 14, salesWeek: 92, salesMonth: 380, salesYear: 4560 },
+        { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300", salesDay: 22, salesWeek: 145, salesMonth: 510, salesYear: 6120 },
+        { name: "ቺኪን በርገር", price: 280, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300", salesDay: 9, salesWeek: 54, salesMonth: 190, salesYear: 2280 },
+        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300", salesDay: 45, salesWeek: 310, salesMonth: 1200, salesYear: 14400 },
+        { name: "ለስላሳ መጠጥ", price: 50, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300", salesDay: 30, salesWeek: 185, salesMonth: 740, salesYear: 8880 },
+        { name: "ወይን ማክሲም", price: 800, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=300", salesDay: 4, salesWeek: 28, salesMonth: 105, salesYear: 1260 }
     ];
 
-    let inventory = JSON.parse(localStorage.getItem('f_inventory_v45')) || [];
-    let pendingOrders = JSON.parse(localStorage.getItem('f_pending_v45')) || [];
-    let activeOrders = JSON.parse(localStorage.getItem('f_active_v45')) || [];
-    let salesLedger = JSON.parse(localStorage.getItem('f_ledger_v45')) || [];
+    let inventory = JSON.parse(localStorage.getItem('f_inventory_v4')) || [
+        { name: "ስጋ (ኪሎ)", in: 100, cost: 35000, out: 45, remaining: 55 },
+        { name: "ሽንኩርት (ኪሎ)", in: 50, cost: 4000, out: 12, remaining: 38 },
+        { name: "ቢራ (ሳጥን)", in: 40, cost: 28000, out: 15, remaining: 25 },
+        { name: "ዘይት (ሊትር)", in: 20, cost: 3200, out: 5, remaining: 15 }
+    ];
 
-    window.onload = function() { updateAllDisplays(); };
+    let pendingOrders = JSON.parse(localStorage.getItem('f_pending_v4')) || [];
+    let activeOrders = JSON.parse(localStorage.getItem('f_active_v4')) || [];
+    let salesLedger = JSON.parse(localStorage.getItem('f_ledger_v4')) || [];
+    let ownerComments = JSON.parse(localStorage.getItem('f_comments_v4')) || [];
+    let attendanceData = JSON.parse(localStorage.getItem('f_attendance_v4')) || [
+        { name: 'ዮሐንስ (አስተናጋጅ)', date: '2026-06-10', time: '02:15 AM', status: 'ስራ ገባ' },
+        { name: 'አልማዝ (ካሼር)', date: '2026-06-10', time: '02:30 AM', status: 'ስራ ገባ' }
+    ];
 
-    function syncStorage() {
-        localStorage.setItem('f_menu_v45', JSON.stringify(currentMenu));
-        localStorage.setItem('f_inventory_v45', JSON.stringify(inventory));
-        localStorage.setItem('f_pending_v45', JSON.stringify(pendingOrders));
-        localStorage.setItem('f_active_v45', JSON.stringify(activeOrders));
-        localStorage.setItem('f_ledger_v45', JSON.stringify(salesLedger));
+    window.onload = function() { 
+        updateAllDisplays(); 
+        triggerSignal('ሲስተሙ ዝግጁ ነው (Offline Ready)', 'active-green');
+        generateAllQRCodes();
+    };
+
+    function cloudSyncSimulator() {
+        localStorage.setItem('f_menu_v4', JSON.stringify(currentMenu));
+        localStorage.setItem('f_inventory_v4', JSON.stringify(inventory));
+        localStorage.setItem('f_pending_v4', JSON.stringify(pendingOrders));
+        localStorage.setItem('f_active_v4', JSON.stringify(activeOrders));
+        localStorage.setItem('f_ledger_v4', JSON.stringify(salesLedger));
+        localStorage.setItem('f_comments_v4', JSON.stringify(ownerComments));
+        localStorage.setItem('f_attendance_v4', JSON.stringify(attendanceData));
     }
 
     function updateAllDisplays() {
-        renderSplitCustomerMenu();
-        renderSplitWaiterMenu();
+        renderPOSMenu();
+        renderCustomerMenu();
+        renderAdminMenuList();
+        renderInventoryTable(inventory);
         renderPendingApprovals();
         renderLiveDisplays();
         renderFinanceAndTax();
-        renderInventoryTable();
+        renderCommentBoard();
+        renderTopSalesRank();
+        renderAttendanceTable();
     }
 
-    // 🔄 የደንበኛ ገፅ ባለሁለት አምድ ሜኑ አተገባበር (ግራ ምግብ ፣ ቀኝ መጠጥ)
-    function renderSplitCustomerMenu() {
-        const foodCol = document.getElementById('cust-food-column');
-        const drinkCol = document.getElementById('cust-drink-column');
-        
-        // ሄደሮቹን አስቀርቶ የቆየውን ማጽዳት
-        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
-        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
+    function playBeep(freq = 600, dur = 0.15) {
+        try {
+            let ctx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = ctx.createOscillator();
+            let gain = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + dur);
+        } catch(e){}
+    }
 
+    function triggerSignal(msg, colorClass) {
+        document.getElementById('owner-signal').className = 'signal-light ' + colorClass;
+        document.getElementById('owner-status-text').innerText = "ሁኔታ፦ " + msg;
+    }
+
+    function renderCommentBoard() {
+        const board = document.getElementById('staff-noticeboard');
+        const archive = document.getElementById('owner-comment-archive');
+        
+        if(ownerComments.length > 0) {
+            let latest = ownerComments[ownerComments.length - 1];
+            board.innerText = `📢 የማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
+            board.style.display = 'block';
+        } else {
+            board.style.display = 'none';
+        }
+
+        archive.innerHTML = '';
+        [...ownerComments].reverse().forEach(c => {
+            archive.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #e2e8f0; padding:4px 0;">
+                <span style="color:#64748b;">[${c.time}]</span> <b>${c.text}</b>
+            </div>`;
+        });
+    }
+
+    function postOwnerComment() {
+        const input = document.getElementById('owner-comment-input');
+        const text = input.value.trim();
+        if(!text) return alert("እባክዎ መጀመሪያ መልዕክት ይጻፉ!");
+        ownerComments.push({ text: text, time: new Date().toLocaleTimeString('am-ET') });
+        input.value = '';
+        cloudSyncSimulator();
+        updateAllDisplays();
+        playBeep(750, 0.2);
+        alert("✅ መመሪያው ለሁሉም ሰራተኞች ወዲያውኑ እንዲታይ ተደርጓል!");
+    }
+
+    function renderPOSMenu() {
+        const div = document.getElementById('menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            let cardHtml = `
-            <div class="mini-item-card ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
-                <img src="${item.img}" class="mini-img">
-                <div class="mini-info">
+            div.innerHTML += `
+            <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
+                <img src="${item.img}" class="item-img">
+                <div class="item-details">
                     <span class="name">${item.name}</span>
-                    <span class="price">${item.price} ብር</span>
+                    <span class="price">${Number(item.price).toFixed(2)} ብር</span>
                 </div>
+                ${isSoldOut ? '<span class="badge-sold-out">ያለቀ</span>' : ''}
             </div>`;
-            
-            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
         });
     }
 
-    function renderSplitWaiterMenu() {
-        const foodCol = document.getElementById('waiter-food-col');
-        const drinkCol = document.getElementById('waiter-drink-col');
-        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
-        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
-
+    function renderCustomerMenu() {
+        const div = document.getElementById('customer-menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
-            let cardHtml = `
-            <div class="mini-item-card ${item.cat}" onclick="placeOrder(${index})">
-                <img src="${item.img}" class="mini-img">
-                <div class="mini-info">
+            let isSoldOut = item.status === 'sold_out';
+            div.innerHTML += `
+            <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
+                <img src="${item.img}" class="item-img">
+                <div class="item-details">
                     <span class="name">${item.name}</span>
-                    <span class="price">${item.price} ብር</span>
+                    <span class="price">${Number(item.price).toFixed(2)} ብር</span>
+                    <span style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">${isSoldOut ? '❌ አልቋል' : '🛒 ለመግዛት ይጫኑ'}</span>
                 </div>
+                ${isSoldOut ? '<span class="badge-sold-out">ያለቀ</span>' : ''}
             </div>`;
-            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
-        });
-    }
-
-    // 📲 አንድ ክሊክ አካውንት ኮፒ ማድረጊያ ዘዴ
-    function copyAccountOnly(accNumber, badgeIdPrefix) {
-        navigator.clipboard.writeText(accNumber).then(() => {
-            // ሁሉንም ባጆች ወደ ነበረበት መመለስ
-            document.querySelectorAll('.copy-badge').forEach(b => { b.innerText = "አንካፒ"; b.classList.remove('copied'); });
-            alert(`✅ የ${badgeIdPrefix} ቁጥር (${accNumber}) በራሱ ስልክዎ ላይ ኮፒ ሆኗል! አሁን ወደ ባንክ አፕዎ በመሄድ "Paste" አድርገው መክፈል ይችላሉ።`);
         });
     }
 
     function openPaymentGateway(index) {
         const item = currentMenu[index];
-        const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
-
-        if(!name || !phone) {
-            alert("⚠️ እባክዎ መጀመሪያ ከላይ የደንበኛ ስም እና ስልክ ቁጥር ያስገቡ!");
+        if(item.status === 'sold_out') {
+            playBeep(300, 0.4);
+            alert(`⚠️ ይቅርታ፣ "${item.name}" በአሁን ሰአት አልቋል። እባክዎ ሌላ ምግብ ይምረጡ!`);
             return;
         }
-        
-        selectedCustomerItem = item;
-        document.getElementById('selected-item-title').innerText = `የተመረጠ፦ ${item.name} (${item.price} ብር)`;
-        document.getElementById('payment-gateway-box').style.display = 'block';
-        document.getElementById('payment-gateway-box').scrollIntoView({ behavior: 'smooth' });
-    }
 
-    // 🚀 ትዕዛዙን ከነኮሜንቱ ወደ ማናጀርና አስተናጋጅ መላኪያ
-    function processCustomerFinalOrder() {
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
+        const address = document.getElementById('cust-address').value.trim();
+
+        if(!name || !phone || !address) return alert("እባክዎ መጀመሪያ ከላይ ሙሉ ስም፣ ስልክ ቁጥር እና አድራሻዎን ያስገቡ!");
+        
+        selectedCustomerItem = item;
+        document.getElementById('payment-gateway-box').style.display = 'block';
+        document.getElementById('payment-gateway-box').scrollIntoView({ behavior: 'smooth' });
+        playBeep(450, 0.1);
+    }
+
+    function copyAccountOnly(accNumber, bankName) {
+        navigator.clipboard.writeText(accNumber).then(() => {
+            playBeep(800, 0.1);
+            alert(`✅ የ${bankName} አካውንት ቁጥር (${accNumber}) በራሱ ኮፒ ሆኗል! አሁን ወደ ባንክ አፑ እየወሰደዎት ነው...`);
+        }).catch(() => {});
+    }
+
+    document.getElementById('submit-pay-btn').onclick = function() {
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const routing = document.getElementById('cust-routing').value;
         const txId = document.getElementById('cust-tx-id').value.trim();
         const notes = document.getElementById('cust-notes').value.trim(); 
+        const receiptFileInput = document.getElementById('cust-receipt-file');
 
-        if(!selectedCustomerItem) return alert("⚠️ እባክዎ መጀመሪያ ምግብ ይምረጡ!");
-        if(!txId) return alert("⚠️ እባክዎ የከፈሉበትን የትራንዛክሽን ኮድ (Tx ID) ያስገቡ!");
+        if(!txId) return alert("እባክዎ የከፈሉበትን የትራንዛክሽን ቁጥር ያስገቡ!");
 
-        let fullTableLabel = `Takeaway (${name})`;
-        let finalNotes = notes ? notes : "ልዩ ማስታወሻ የለም";
+        // ደረሰኝ መጫኑን ማረጋገጥ (ግዴታ ካልሆነ ይህንን ማስወገድ ትችላለህ)
+        if(receiptFileInput.files.length === 0) {
+            if(!confirm("የክፍያ ደረሰኝ ፎቶ አላያያዙም፣ ያለ ደረሰኝ ፎቶ ማለፍ ይፈልጋሉ?")) return;
+        }
 
-        // ወደ ካሼር እና ማናጀር ሰሌዳ መላክ
-        pendingOrders.push({ 
-            id: Date.now(), 
-            table: fullTableLabel, 
-            name: selectedCustomerItem.name, 
-            price: selectedCustomerItem.price, 
-            cat: selectedCustomerItem.cat, 
-            tx: txId, 
-            notes: finalNotes 
-        });
-        
-        syncStorage();
-        updateAllDisplays();
+        if(routing === 'owner') {
+            triggerSignal(`ደንበኛ፡ ${name} አዘዘ፦ [${selectedCustomerItem.name}] (ማስታወሻ፡ ${notes || 'የለም'})`, 'active-blue');
+        } else {
+            pendingOrders.push({ 
+                id: Date.now(), table: `Takeaway (${name})`, name: selectedCustomerItem.name, 
+                price: selectedCustomerItem.price, cat: selectedCustomerItem.cat, tx: txId, notes: notes 
+            });
+            cloudSyncSimulator();
+            updateAllDisplays();
+        }
         
         document.getElementById('payment-gateway-box').style.display = 'none';
         document.getElementById('cust-tx-id').value = '';
         document.getElementById('cust-notes').value = '';
-        selectedCustomerItem = null;
-        
-        // የምስጋና መልዕክት ማሳየት
+        document.getElementById('cust-receipt-file').value = ''; // ፎርሙን ማጽዳት
+        showThankYouPopup();
+    };
+
+    function showThankYouPopup() {
         document.getElementById('thank-you-backdrop').style.display = 'block';
         document.getElementById('thank-you-popup').style.display = 'block';
+        playBeep(900, 0.3);
     }
 
     function closeThankYouPopup() {
@@ -447,15 +722,108 @@
         document.getElementById('thank-you-popup').style.display = 'none';
     }
 
+    function renderAdminMenuList() {
+        const foodDiv = document.getElementById('food-column-list');
+        const drinkDiv = document.getElementById('drink-column-list');
+        foodDiv.innerHTML = ''; drinkDiv.innerHTML = '';
+        
+        currentMenu.forEach((item, index) => {
+            let isSoldOut = item.status === 'sold_out';
+            let html = `<div class="list-row">
+                <div>
+                    <span style="${isSoldOut ? 'text-decoration:line-through; color:#94a3b8;' : 'font-weight:600;'}">${item.name}</span><br>
+                    <small style="color:var(--accent);">${item.price} ብር</small>
+                </div>
+                <button style="background:${isSoldOut ? 'var(--success)' : 'var(--danger)'}; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="toggleMenuStatus(${index})">
+                    ${isSoldOut ? 'አለ አድርግ' : 'አልቋል በል'}
+                </button>
+            </div>`;
+            if(item.cat === 'kitchen') foodDiv.innerHTML += html; else drinkDiv.innerHTML += html;
+        });
+    }
+
+    function toggleMenuStatus(index) {
+        currentMenu[index].status = currentMenu[index].status === 'sold_out' ? 'available' : 'sold_out';
+        cloudSyncSimulator();
+        updateAllDisplays();
+        playBeep(600, 0.1);
+    }
+
+    function addNewMenuItem() {
+        const name = document.getElementById('menu-name').value.trim();
+        const price = parseFloat(document.getElementById('menu-price').value);
+        const cat = document.getElementById('menu-cat').value;
+        let img = document.getElementById('menu-image-url').value.trim();
+        if(!img) img = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300";
+        if(!name || isNaN(price)) return alert("እባክዎ መረጃ በትክክል ያስገቡ!");
+        
+        currentMenu.push({ name, price, cat, status: "available", img: img, salesDay: 0, salesWeek: 0, salesMonth: 0, salesYear: 0 });
+        cloudSyncSimulator(); updateAllDisplays();
+        document.getElementById('menu-name').value = ''; document.getElementById('menu-price').value = ''; document.getElementById('menu-image-url').value = '';
+    }
+
+    function renderInventoryTable(data) {
+        const tbody = document.getElementById('owner-inventory-table'); tbody.innerHTML = '';
+        data.forEach((item) => {
+            let isLow = item.remaining < 15;
+            tbody.innerHTML += `<tr>
+                <td><b>${item.name}</b></td>
+                <td>${item.in}</td>
+                <td>${Number(item.cost).toLocaleString()} ብር</td>
+                <td>${item.out}</td>
+                <td><b style="color:var(--accent);">${item.remaining}</b></td>
+                <td><span class="badge ${isLow ? 'badge-danger' : 'badge-success'}">${isLow ? '⚠️ አነስተኛ' : '✅ በቂ ነው'}</span></td>
+            </tr>`;
+        });
+    }
+
+    function filterInventory() {
+        const query = document.getElementById('inventorySearchInput').value.toLowerCase();
+        const filtered = inventory.filter(item => item.name.toLowerCase().includes(query));
+        renderInventoryTable(filtered);
+    }
+
+    function addInventoryItem() {
+        const name = document.getElementById('inv-item-name').value.trim();
+        const qty = parseFloat(document.getElementById('inv-item-qty').value);
+        const cost = parseFloat(document.getElementById('inv-item-cost').value);
+        if(!name || isNaN(qty) || isNaN(cost)) return alert("እባክዎ መረጃ በትክክል ያስገቡ!");
+        
+        let found = inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+        if(found) { 
+            found.in += qty; 
+            found.cost += cost;
+            found.remaining += qty;
+        } else { 
+            inventory.push({ name, in: qty, cost: cost, out: 0, remaining: qty }); 
+        }
+        cloudSyncSimulator(); updateAllDisplays();
+        document.getElementById('inv-item-name').value = ''; document.getElementById('inv-item-qty').value = ''; document.getElementById('inv-item-cost').value = '';
+        alert("✅ የጥሬ ዕቃ ገቢ በትክክል ተመዝግቧል!");
+    }
+
+    function placeOrder(index) {
+        const item = currentMenu[index];
+        if(item.status === 'sold_out') {
+            alert(`⚠️ ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!`);
+            return;
+        }
+        const table = document.getElementById('table-id').value;
+        pendingOrders.push({ id: Date.now(), table, name: item.name, price: item.price, cat: item.cat, notes: '' });
+        triggerSignal(`ትዕዛዝ ተላከ [${item.name}]`, 'active-orange');
+        playBeep(550, 0.1);
+        cloudSyncSimulator(); updateAllDisplays();
+    }
+
     function renderPendingApprovals() {
         const div = document.getElementById('pending-approval-list'); div.innerHTML = '';
-        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም።</p>'; return; }
+        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም。</p>'; return; }
         pendingOrders.forEach((order, index) => {
             div.innerHTML += `<div class="ticket">
-                <strong>${order.table}</strong> ➔ <b style="color:var(--accent);">${order.name}</b><br>
-                <small>ዋጋ፦ ${order.price} ብር | Tx ID፦ <b>${order.tx || 'የለም'}</b></small><br>
-                <span style="color:var(--danger); font-weight:bold; font-size:0.9rem;">💬 ደንበኛ ኮሜንት፦ ${order.notes}</span>
-                <button class="btn-action" style="position:absolute; right:10px; top:12px;" onclick="approveOrder(${index})">አጽድቅ</button>
+                <strong>${order.table}</strong> ➔ ${order.name}<br>
+                <small>${order.price} ብር | Tx: ${order.tx || 'የለም'}</small><br>
+                ${order.notes ? `<small style="color:var(--danger);">💬 ${order.notes}</small>` : ''}
+                <button class="btn-action" onclick="approveOrder(${index})">አጽድቅ</button>
             </div>`;
         });
     }
@@ -463,9 +831,16 @@
     function approveOrder(index) {
         const order = pendingOrders[index];
         activeOrders.push(order);
+        
+        let menuMatch = currentMenu.find(m => m.name === order.name);
+        if(menuMatch) {
+            menuMatch.salesDay += 1; menuMatch.salesWeek += 1; menuMatch.salesMonth += 1; menuMatch.salesYear += 1;
+        }
+
         salesLedger.push({ desc: `${order.name} (${order.table})`, amount: order.price, time: new Date().toLocaleTimeString('am-ET') });
         pendingOrders.splice(index, 1);
-        syncStorage(); updateAllDisplays();
+        cloudSyncSimulator(); updateAllDisplays();
+        playBeep(700, 0.2);
     }
 
     function renderLiveDisplays() {
@@ -474,8 +849,8 @@
         activeOrders.forEach((order, index) => {
             let html = `<div class="ticket">
                 <strong>${order.table}</strong> ➔ <b>${order.name}</b><br>
-                <span style="color:var(--danger); font-size:0.85rem; font-weight:bold;">💬 ልዩ ፍላጎት፦ ${order.notes}</span>
-                <button class="btn-action blue" style="position:absolute; right:10px; top:12px;" onclick="completeOrder(${index})">ዝግጁ ነው</button>
+                ${order.notes ? `<span style="color:var(--danger); font-size:0.8rem;">💬 ማስታወሻ፦ ${order.notes}</span>` : ''}
+                <button class="btn-action blue" onclick="completeOrder(${index})">ዝግጁ ነው</button>
             </div>`;
             if(order.cat === 'kitchen') kList.innerHTML += html; else bList.innerHTML += html;
         });
@@ -483,25 +858,8 @@
 
     function completeOrder(index) {
         activeOrders.splice(index, 1);
-        syncStorage(); updateAllDisplays();
-    }
-
-    function addNewMenuItem() {
-        const name = document.getElementById('menu-name').value.trim();
-        const price = parseFloat(document.getElementById('menu-price').value);
-        const cat = document.getElementById('menu-cat').value;
-        let img = document.getElementById('menu-image-url').value.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300";
-        if(!name || isNaN(price)) return alert("መረጃ በትክክል ያስገቡ!");
-        currentMenu.push({ name, price, cat, status: "available", img });
-        syncStorage(); updateAllDisplays();
-        alert("✅ አዲስ ማውጫ በተሳካ ሁኔታ ተጨምሯል!");
-    }
-
-    function placeOrder(index) {
-        const item = currentMenu[index];
-        const table = document.getElementById('table-id').value;
-        pendingOrders.push({ id: Date.now(), table, name: item.name, price: item.price, cat: item.cat, notes: 'በአስተናጋጅ የታዘዘ' });
-        syncStorage(); updateAllDisplays();
+        cloudSyncSimulator(); updateAllDisplays();
+        playBeep(850, 0.1);
     }
 
     function renderFinanceAndTax() {
@@ -509,779 +867,92 @@
         const ledgerDiv = document.getElementById('ledger-history'); ledgerDiv.innerHTML = '';
         salesLedger.forEach((log) => {
             todaySales += Number(log.amount);
-            ledgerDiv.innerHTML += `<div class="list-row"><span>${log.time}</span> <span>${log.desc}</span> <strong>+${log.amount}</strong></div>`;
+            ledgerDiv.innerHTML += `<div class="list-row"><span>${log.time}</span> <span>${log.desc}</span> <strong style="color:var(--success);">+${log.amount}</strong></div>`;
         });
         document.getElementById('total-cash-box').innerText = todaySales.toFixed(2) + " ETB";
-        document.getElementById('tax-neto').innerText = (todaySales / 1.25).toFixed(2) + " ብር";
+        
+        let targetSales = todaySales;
+        if(currentTaxPeriod === 'week') targetSales = todaySales * 5.8;
+        if(currentTaxPeriod === 'month') targetSales = todaySales * 26;
+        if(currentTaxPeriod === 'year') targetSales = todaySales * 312;
+
+        let baseSales = targetSales / 1.25; 
+        let vatCollected = baseSales * 0.15;
+        let serviceCollected = baseSales * 0.10;
+        let netProfit = baseSales * 0.40; 
+
+        document.getElementById('tax-bruto').innerText = targetSales.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
+        document.getElementById('tax-vat-collected').innerText = vatCollected.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
+        document.getElementById('tax-service-collected').innerText = serviceCollected.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
+        document.getElementById('tax-neto').innerText = baseSales.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
+        
+        document.getElementById('tax-government-due').innerText = (netProfit * 0.30).toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
     }
 
-    function renderInventoryTable() {
-        const tbody = document.getElementById('owner-inventory-table'); tbody.innerHTML = '';
-        inventory.forEach((item) => {
-            tbody.innerHTML += `<tr><td><b>${item.name}</b></td><td>${item.in}</td><td><b>${item.remaining}</b></td></tr>`;
+    function changeTaxPeriod(period) {
+        currentTaxPeriod = period;
+        document.querySelectorAll('#sec-tax .tab-sub-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`tax-btn-${period}`).classList.add('active');
+        
+        let t = "ጠቅላላ ሽያጭ";
+        if(period==='day') t="የዛሬ ጠቅላላ ሽያጭ (Gross)";
+        if(period==='week') t="የሳምንቱ ጠቅላላ ሽያጭ (ግምት)";
+        if(period==='month') t="የወሩ ጠቅላላ ሽያጭ (ግምት)";
+        if(period==='year') t="የዓመቱ ጠቅላላ ሽያጭ (Annual)";
+        document.getElementById('tax-title-gross').innerText = t;
+        renderFinanceAndTax();
+    }
+
+    function renderTopSalesRank() {
+        const tbody = document.getElementById('owner-rank-table'); tbody.innerHTML = '';
+        let sorted = [...currentMenu].sort((a, b) => {
+            if(currentRankPeriod === 'day') return b.salesDay - a.salesDay;
+            if(currentRankPeriod === 'week') return b.salesWeek - a.salesWeek;
+            if(currentRankPeriod === 'month') return b.salesMonth - a.salesMonth;
+            return b.salesYear - a.salesYear;
+        });
+
+        sorted.forEach((item, index) => {
+            let qty = item.salesDay;
+            if(currentRankPeriod === 'week') qty = item.salesWeek;
+            if(currentRankPeriod === 'month') qty = item.salesMonth;
+            tbody.innerHTML += `<tr>
+                <td>🏆 ${index + 1}</td>
+                <td><b>${item.name}</b></td>
+                <td>${qty} ጊዜ</td>
+                <td>${(qty * item.price).toLocaleString()} ብር</td>
+            </tr>`;
         });
     }
 
-    function addInventoryItem() {
-        const name = document.getElementById('inv-item-name').value.trim();
-        const qty = parseFloat(document.getElementById('inv-item-qty').value);
-        const cost = parseFloat(document.getElementById('inv-item-cost').value);
-        if(!name || isNaN(qty)) return;
-        inventory.push({ name, in: qty, cost, out: 0, remaining: qty });
-        syncStorage(); updateAllDisplays();
+    function changeRankPeriod(period) {
+        currentRankPeriod = period;
+        document.querySelectorAll('#owner-sub-rank .tab-sub-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`rank-btn-${period}`).classList.add('active');
+        renderTopSalesRank();
     }
 
-    function switchOwnerSubSection(sub) {
-        document.querySelectorAll('.owner-sub-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.owner-tabs .tab-sub-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`owner-sub-${sub}`).style.display = 'block';
-        document.getElementById(`sub-btn-${sub}`).classList.add('active');
-    }
-
-    function switchRoleSecure(role) {
-        if (role === 'customer') { executeRoleSwitch(role); return; }
-        let enteredPin = prompt("የመክፈቻ ፒን ያስገቡ፦");
-        if (enteredPin === PIN_CONFIG[role] || enteredPin === PIN_CONFIG['all']) executeRoleSwitch(role); else alert("ፒን ስህተት ነው!");
-    }
-
-    function executeRoleSwitch(role) {
-        currentRole = role;
-        document.querySelectorAll('.role-bar button').forEach(b => b.classList.remove('active'));
-        document.getElementById('role-' + role).classList.add('active');
-        const nav = document.getElementById('top-nav');
-        nav.querySelectorAll('a').forEach(a => a.style.display = 'inline-block');
-        document.getElementById('nav-customer-view').style.display = 'none';
-        
-        if (role === 'customer') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-customer-view') a.style.display='none'; });
-            showSection('sec-customer-view');
-        } else if (role === 'waiter') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-order') a.style.display='none'; });
-            showSection('sec-order');
-        } else if (role === 'barman' || role === 'chef') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-display') a.style.display='none'; });
-            showSection('sec-display');
-        } else if (role === 'cashier') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook') a.style.display='none'; });
-            showSection('sec-cashier-approval');
-        } else {
-            showSection('sec-cashbook');
-        }
-    }
-
-    function showSection(id) {
-        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-</script>
-</body>
-</html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fikir Bar & Restaurant - Enterprise POS v4.6</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        :root {
-            --primary: #0f172a;
-            --secondary: #1e293b;
-            --accent: #2563eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --light-bg: #f8fafc;
-            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--light-bg); color: #334155; padding-top: 200px; padding-bottom: 60px; -webkit-tap-highlight-color: transparent; }
-        
-        /* የላይኛው ቋሚ መቆጣጠሪያ */
-        .fixed-top { position: fixed; top: 0; left: 0; width: 100%; z-index: 3000; background: var(--primary); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        header { color: white; padding: 12px 20px; text-align: center; font-size: 1.3rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0f172a, #1e293b); letter-spacing: 0.5px; }
-        .app-mode { font-size: 0.75rem; background: var(--success); padding: 4px 12px; border-radius: 50px; color: white; font-weight: bold; text-transform: uppercase; }
-        
-        /* የቀጥታ ሁኔታ መግለጫ */
-        .live-notifier { background: #020617; color: #cbd5e1; padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1e293b; }
-        .signal-light { width: 10px; height: 10px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.3s ease; }
-        .signal-light.active-green { background: var(--success); box-shadow: 0 0 12px var(--success); }
-
-        /* የሰራተኞች ክፍል መለወጫ */
-        .role-bar { display: flex; background: #1e293b; overflow-x: auto; padding: 6px; gap: 6px; scrollbar-width: none; }
-        .role-bar::-webkit-scrollbar { display: none; }
-        .role-btn { background: #334155; color: #94a3b8; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
-        .role-btn.active { background: var(--warning); color: #020617; font-weight: bold; transform: scale(1.02); }
-        
-        /* ዋናው የገጽ መምረጫ ማውጫ */
-        nav { display: flex; overflow-x: auto; white-space: nowrap; background: #0f172a; padding: 4px; scrollbar-width: none; }
-        nav::-webkit-scrollbar { display: none; }
-        nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
-        nav a.active { color: white; background: var(--accent); }
-        
-        /* የገጾች አቀማመጥ */
-        .page-section { display: none; padding: 12px; animation: fadeIn 0.3s ease-in-out; }
-        .page-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
-        .page-title { font-size: 1.25rem; margin-bottom: 15px; color: var(--primary); font-weight: 800; padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; }
-        
-        /* 🔄 የግራና ቀኝ ተሸራታች ሜኑ አቀማመጥ */
-        .split-menu-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; height: 55vh; overflow: hidden; }
-        .menu-scroll-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; }
-        .column-header-sticky { position: sticky; top: 0; background: var(--primary); color: white; text-align: center; padding: 6px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .column-header-sticky.drink-head { background: var(--warning); color: #020617; }
-
-        /* የምግብ ካርዶች */
-        .mini-item-card { background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.1s; position: relative; border-bottom: 3px solid var(--accent); }
-        .mini-item-card.bar { border-bottom-color: var(--warning); }
-        .mini-item-card:active { transform: scale(0.97); }
-        .mini-img { width: 100%; height: 75px; object-fit: cover; background: #e2e8f0; }
-        .mini-info { padding: 6px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-        .mini-info .name { font-weight: 700; font-size: 0.8rem; color: var(--primary); line-height: 1.2; margin-bottom: 2px; }
-        .mini-info .price { color: var(--accent); font-weight: 800; font-size: 0.8rem; }
-        
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85rem; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; background: white; color: black; outline: none; }
-        
-        /* የክፍያ ሳጥን ዲዛይን */
-        .payment-box { display: none; background: #f0fdf4; border: 2px dashed var(--success); padding: 14px; border-radius: 10px; margin-top: 15px; }
-        .bank-card-click { background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid var(--success); display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .bank-card-click:active { background: #f1f5f9; }
-        .copy-badge { background: var(--accent); color: white; font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-
-        .btn-action { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
-        .btn-action.blue { background: var(--accent); }
-        
-        /* 🧮 አዲሱ ዘመናዊ ካልኩሌተር ዲዛይን */
-        .calc-container { background: #0f172a; border-radius: 14px; padding: 12px; max-width: 280px; margin: 10px auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
-        .calc-screen { background: #334155; color: #10b981; text-align: right; padding: 12px; font-size: 1.4rem; font-family: monospace; border-radius: 8px; margin-bottom: 10px; overflow: hidden; font-weight: bold; min-height: 50px; word-break: break-all; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .calc-btn { background: #1e293b; color: white; border: none; padding: 14px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
-        .calc-btn:active { background: #475569; }
-        .calc-btn.op { background: var(--warning); color: #020617; }
-        .calc-btn.eq { background: var(--accent); grid-column: span 2; }
-        .calc-btn.clear { background: var(--danger); }
-
-        /* የምስጋና ፖፕአፕ */
-        .thank-you-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); z-index: 5000; text-align: center; width: 85%; max-width: 340px; border: 3px solid var(--success); }
-        .thank-you-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4999; }
-
-        .balance-summary { background: linear-gradient(135deg, var(--primary), #1e293b); color: white; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 12px; }
-        .balance-summary h1 { color: var(--success); font-size: 1.8rem; margin-top: 4px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 12px; }
-        th, td { padding: 8px; border: 1px solid #cbd5e0; text-align: center; font-size: 0.85rem; }
-        th { background: #f1f5f9; font-weight: bold; color: var(--primary); }
-        
-        .list-row { display: flex; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
-        .owner-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-sub-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        .tab-sub-btn.active { background: var(--accent); color: white; }
-        
-        .ticket { background: #fffdeb; border-left: 5px solid var(--warning); padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; }
-    </style>
-</head>
-<body>
-
-<div class="fixed-top">
-    <header>
-        <span>Fikir Bar & Restaurant</span>
-        <span class="app-mode">Enterprise v4.6</span>
-    </header>
-    <div class="live-notifier">
-        <span class="signal-light active-green"></span>
-        <span>ሁኔታ፦ ሲስተሙ ዝግጁ ነው (Tax & Calc Integrated)</span>
-    </div>
-    <div class="role-bar">
-        <button class="role-btn active" id="role-customer" onclick="switchRoleSecure('customer')">የደንበኛ ማዘዣ (Takeaway)</button>
-        <button class="role-btn" id="role-waiter" onclick="switchRoleSecure('waiter')">አስተናጋጅ 🔐</button>
-        <button class="role-btn" id="role-barman" onclick="switchRoleSecure('barman')">ባርማን 🔐</button>
-        <button class="role-btn" id="role-chef" onclick="switchRoleSecure('chef')">ሼፍ 🔐</button>
-        <button class="role-btn" id="role-cashier" onclick="switchRoleSecure('cashier')">ካሼር / ሂሳብ 🔐</button>
-        <button class="role-btn" id="role-all" onclick="switchRoleSecure('all')">ማናجر / ባለቤት 🔐</button>
-    </div>
-    <nav id="top-nav">
-        <a href="javascript:void(0)" id="nav-customer-view" class="active" onclick="showSection('sec-customer-view')">የደንበኛ ገጽ</a>
-        <a href="javascript:void(0)" id="nav-order" onclick="showSection('sec-order')" style="display:none;">ትዕዛዝ ማዘዣ</a>
-        <a href="javascript:void(0)" id="nav-menu" onclick="showSection('sec-menu')" style="display:none;">የምግብ ማውጫ</a>
-        <a href="javascript:void(0)" id="nav-inventory" onclick="showSection('sec-inventory')" style="display:none;">መጋዘን ቁጥጥር</a>
-        <a href="javascript:void(0)" id="nav-approval" onclick="showSection('sec-cashier-approval')" style="display:none;">ትዕዛዝ ማጽደቂያ</a>
-        <a href="javascript:void(0)" id="nav-display" onclick="showSection('sec-display')" style="display:none;">ኩሽና/ባር ማሳያ</a>
-        <a href="javascript:void(0)" id="nav-cashbook" onclick="showSection('sec-cashbook')" style="display:none;">👑 ማናجر ሰሌዳ</a>
-    </nav>
-</div>
-
-<div class="thank-you-backdrop" id="thank-you-backdrop"></div>
-<div class="thank-you-popup" id="thank-you-popup">
-    <h2 style="color:var(--success); margin-bottom:10px;">የተሳካ ትዕዛዝ!</h2>
-    <p>ትዕዛዝዎና አስተያየትዎ ለባለቤቱና ለአስተናጋጁ ደርሷል!<br><b>ፍቅር ባርና ሬስቶራንት</b></p>
-    <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:15px;" onclick="closeThankYouPopup()">እሺ እናመሰግናለን</button>
-</div>
-
-<section id="sec-customer-view" class="page-section active">
-    <div class="card" style="background:#eff6ff; border:1px solid #bfdbfe; margin-bottom:10px;">
-        <h3 style="font-size:0.9rem; margin-bottom:8px; color:var(--primary);">1. የደንበኛ መረጃ</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-            <div class="form-group" style="margin:0;"><input type="text" id="cust-name" placeholder="ስምዎን ያስገቡ..."></div>
-            <div class="form-group" style="margin:0;"><input type="tel" id="cust-phone" placeholder="ስልክ ቁጥር..."></div>
-        </div>
-    </div>
-    
-    <div class="card" style="padding:10px; margin-bottom:10px;">
-        <h3 style="font-size:0.9rem; color:var(--primary); text-align:center;">2. ምግብና መጠጥ ይምረጡ (ወደ ላይ/ታች እያሸራተቱ ይመልከቱ)</h3>
-        <div class="split-menu-wrapper">
-            <div class="menu-scroll-column" id="cust-food-column">
-                <div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>
-            </div>
-            <div class="menu-scroll-column" id="cust-drink-column">
-                <div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="payment-box" id="payment-gateway-box">
-        <h3 style="color:var(--success); margin-bottom:5px; font-size:1rem;" id="selected-item-title">የተመረጠ፦ -</h3>
-        <p style="font-size:0.75rem; margin-bottom:10px; color:#475569;">የሂሳብ ባለቤት ስም፦ <b style="color:black;">አብዳን ሐይሉ ድባባ</b></p>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('1000578698373', 'ንግድ ባንክ')">
-            <div>⚖️ <b>ንግድ ባንክ (CBE)</b><br><strong style="font-size:1.1rem; color:var(--accent);">1000578698373</strong></div>
-            <span class="copy-badge" id="badge-cbe">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('013201405365100', 'አዋሽ ባንክ')">
-            <div>✨ <b>አዋሽ ባንክ (Awash)</b><br><strong style="font-size:1.1rem; color:var(--accent);">013201405365100</strong></div>
-            <span class="copy-badge" id="badge-awash">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" onclick="copyAccountOnly('217778549', 'አቢሲኒያ ባንክ')">
-            <div>🦅 <b>አቢሲኒያ ባንክ (BoA)</b><br><strong style="font-size:1.1rem; color:var(--accent);">217778549</strong></div>
-            <span class="copy-badge" id="badge-boa">አንካፒ</span>
-        </div>
-        
-        <div class="bank-card-click" style="border-left-color:var(--danger); background:#fff5f5;" onclick="copyAccountOnly('0911721116', 'ቴሌ ብር')">
-            <div>📱 <b>ቴሌ ብር (telebirr)</b><br><strong style="font-size:1.1rem; color:var(--danger);">0911721116</strong></div>
-            <span class="copy-badge" style="background:var(--danger);" id="badge-tele">አንካፒ</span>
-        </div>
-        
-        <div class="form-group" style="margin-top:12px;">
-            <label style="color:var(--primary); font-weight: bold;">✍️ ምግቡ እንዴት እንዲሰራሎት ይፈልጋሉ? (አስተያየት ለባለቤቱና ለአስተናጋጁ)፦</label>
-            <textarea id="cust-notes" rows="2" placeholder="ምሳሌ፦ ቃሪያ አይቀላቀልበት፣ ስጋው በደንብ ይብሰል..."></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label style="color:var(--danger); font-weight: bold;">የክፍያ ማረጋገጫ ቁጥር (Transaction ID)፦</label>
-            <input type="text" id="cust-tx-id" placeholder="የደረሰኝ ቁጥር ወይም የትራንዛክሽን ኮድ ያስገቡ...">
-        </div>
-        <button class="btn-action" style="background:var(--success); padding:12px; width:100%; font-size:1rem;" onclick="processCustomerFinalOrder()">ትዕዛዙን በይፋ አስተላልፍ 🚀</button>
-    </div>
-</section>
-
-<section id="sec-order" class="page-section">
-    <div class="page-title">የአስተናጋጅ ማዘዣ ሰሌዳ</div>
-    <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <label style="font-weight:bold;">የጠረጴዛ ቁጥር፦</label>
-        <select id="table-id" style="width:50%; padding:8px; font-weight:bold;">
-            <option value="ጠረጴዛ 1">ጠረጴዛ 1</option>
-            <option value="ጠረጴዛ 2">ጠረጴዛ 2</option>
-            <option value="ጠረጴዛ 3">ጠረጴዛ 3</option>
-        </select>
-    </div>
-    <div class="split-menu-wrapper" style="height:60vh;">
-        <div class="menu-scroll-column" id="waiter-food-col"></div>
-        <div class="menu-scroll-column" id="waiter-drink-col"></div>
-    </div>
-</section>
-
-<section id="sec-menu" class="page-section">
-    <div class="page-title">የምግብ ማውጫ ማስተዳደሪያ</div>
-    <div class="card">
-        <h3>አዲስ ምግብ ወይም መጠጥ መመዝገቢያ</h3>
-        <div class="form-group"><label>የምግቡ/መጠጡ ስም</label><input type="text" id="menu-name" placeholder="ክትፎ ወይም ቢራ..."></div>
-        <div class="form-group"><label>ዋጋ (በብር)</label><input type="number" id="menu-price" placeholder="400"></div>
-        <div class="form-group">
-            <label>የሚዘጋጅበት ክፍል</label>
-            <select id="menu-cat">
-                <option value="kitchen">ወጥ ቤት / ኩሽና (ምግብ)</option>
-                <option value="bar">ባር / መጠጥ ማውጫ (መጠጥ)</option>
-            </select>
-        </div>
-        <div class="form-group"><label>የፎቶ ሊንክ (URL)</label><input type="text" id="menu-image-url" placeholder="https://..."></div>
-        <button style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addNewMenuItem()">ወደ ማውጫው አክል</button>
-    </div>
-</section>
-
-<section id="sec-inventory" class="page-section">
-    <div class="page-title">የመጋዘን ጥሬ ዕቃዎች ቁጥጥር</div>
-    <div class="card">
-        <h3>አዲስ የጥሬ ዕቃ ገቢ መመዝገቢያ</h3>
-        <div class="form-group"><label>የዕቃው ስም</label><input type="text" id="inv-item-name"></div>
-        <div class="form-group"><label>የገባው መጠን</label><input type="number" id="inv-item-qty"></div>
-        <div class="form-group"><label>ጠቅላላ ዋጋ</label><input type="number" id="inv-item-cost"></div>
-        <button style="background:var(--accent); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addInventoryItem()">ገቢ ዕቃ መዝግብ</button>
-    </div>
-</section>
-
-<section id="sec-cashier-approval" class="page-section">
-    <div class="page-title">ትዕዛዝ ማጽደቂያ እና ፈጣን ስሌት</div>
-    
-    <div class="card" style="background:#f1f5f9; padding:10px;">
-        <h4 style="text-align:center; font-size:0.85rem; margin-bottom:5px; color:var(--primary);">🧮 ፈጣን የሂሳብ መደምደሚያ ካልኩሌተር</h4>
-        <div class="calc-container">
-            <div class="calc-screen" id="calc-screen-cashier">0</div>
-            <div class="calc-grid">
-                <button class="calc-btn clear" onclick="pressCalc('C', 'cashier')">C</button>
-                <button class="calc-btn op" onclick="pressCalc('/', 'cashier')">/</button>
-                <button class="calc-btn op" onclick="pressCalc('*', 'cashier')">*</button>
-                <button class="calc-btn op" onclick="pressCalc('-', 'cashier')">-</button>
-                <button class="calc-btn" onclick="pressCalc('7', 'cashier')">7</button>
-                <button class="calc-btn" onclick="pressCalc('8', 'cashier')">8</button>
-                <button class="calc-btn" onclick="pressCalc('9', 'cashier')">9</button>
-                <button class="calc-btn op" onclick="pressCalc('+', 'cashier')">+</button>
-                <button class="calc-btn" onclick="pressCalc('4', 'cashier')">4</button>
-                <button class="calc-btn" onclick="pressCalc('5', 'cashier')">5</button>
-                <button class="calc-btn" onclick="pressCalc('6', 'cashier')">6</button>
-                <button class="calc-btn eq" onclick="pressCalc('=', 'cashier')">=</button>
-                <button class="calc-btn" onclick="pressCalc('1', 'cashier')">1</button>
-                <button class="calc-btn" onclick="pressCalc('2', 'cashier')">2</button>
-                <button class="calc-btn" onclick="pressCalc('3', 'cashier')">3</button>
-                <button class="calc-btn" onclick="pressCalc('0', 'cashier')">0</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="pending-approval-list"></div>
-</section>
-
-<section id="sec-display" class="page-section">
-    <div class="card" id="kitchen-box"><div class="page-title">የኩሽና ማዘዣዎች (Kitchen)</div><div id="kitchen-list"></div></div>
-    <div class="card" id="bar-box"><div class="page-title">የባር ማዘዣዎች (Bar)</div><div id="bar-list"></div></div>
-</section>
-
-<section id="sec-cashbook" class="page-section">
-    <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
-    <div class="owner-tabs">
-        <button class="tab-sub-btn active" id="sub-btn-cash" onclick="switchOwnerSubSection('cash')">💰 ካሽ ቡክ</button>
-        <button class="tab-sub-btn" id="sub-btn-tax" onclick="switchOwnerSubSection('tax')">📊 ታክስና ግብር ሪፖርት</button>
-        <button class="tab-sub-btn" id="sub-btn-notes" onclick="switchOwnerSubSection('notes')">📝 ልዩ ማስታወሻ</button>
-        <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 ጥሬ ዕቃ</button>
-    </div>
-    
-    <div id="owner-sub-cash" class="owner-sub-content">
-        <div class="balance-summary">
-            <div>ጠቅላላ በካሽ ሳጥን ያለው ንጹህ ገቢ</div>
-            <h1 id="total-cash-box">0.00 ETB</h1>
-        </div>
-        
-        <div class="card" style="background:#f1f5f9; padding:10px; margin-bottom:15px;">
-            <h4 style="text-align:center; font-size:0.85rem; margin-bottom:5px;">🧮 የባለቤት ፈጣን ካልኩሌተር</h4>
-            <div class="calc-container">
-                <div class="calc-screen" id="calc-screen-owner">0</div>
-                <div class="calc-grid">
-                    <button class="calc-btn clear" onclick="pressCalc('C', 'owner')">C</button>
-                    <button class="calc-btn op" onclick="pressCalc('/', 'owner')">/</button>
-                    <button class="calc-btn op" onclick="pressCalc('*', 'owner')">*</button>
-                    <button class="calc-btn op" onclick="pressCalc('-', 'owner')">-</button>
-                    <button class="calc-btn" onclick="pressCalc('7', 'owner')">7</button>
-                    <button class="calc-btn" onclick="pressCalc('8', 'owner')">8</button>
-                    <button class="calc-btn" onclick="pressCalc('9', 'owner')">9</button>
-                    <button class="calc-btn op" onclick="pressCalc('+', 'owner')">+</button>
-                    <button class="calc-btn" onclick="pressCalc('4', 'owner')">4</button>
-                    <button class="calc-btn" onclick="pressCalc('5', 'owner')">5</button>
-                    <button class="calc-btn" onclick="pressCalc('6', 'owner')">6</button>
-                    <button class="calc-btn eq" onclick="pressCalc('=', 'owner')">=</button>
-                    <button class="calc-btn" onclick="pressCalc('1', 'owner')">1</button>
-                    <button class="calc-btn" onclick="pressCalc('2', 'owner')">2</button>
-                    <button class="calc-btn" onclick="pressCalc('3', 'owner')">3</button>
-                    <button class="calc-btn" onclick="pressCalc('0', 'owner')">0</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>የቀጥታ ገቢና ወጪ መዝገብ (Cashbook Ledger)</h3>
-            <div id="ledger-history"></div>
-        </div>
-    </div>
-
-    <div id="owner-sub-tax" class="owner-sub-content" style="display:none;">
-        <div class="card">
-            <h3 style="font-size:1rem; margin-bottom:10px; color:var(--accent);">📊 የእለታዊ፣ ሳምንታዊ፣ ወራዊ እና አመታዊ የታክስ ስሌት ሪፖርት</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ጊዜ (Period)</th>
-                        <th>ጠቅላላ ሽያጭ (Gross)</th>
-                        <th>የተጣራ ሽያጭ (Net)</th>
-                        <th>ቫት (VAT 15%)</th>
-                        <th>ግብር (Turnover 2%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><b>ዕለታዊ (Today)</b></td>
-                        <td id="tax-gross-day">0.00</td>
-                        <td id="tax-net-day">0.00</td>
-                        <td id="tax-vat-day">0.00</td>
-                        <td id="tax-tot-day">0.00</td>
-                    </tr>
-                    <tr>
-                        <td><b>ሳምንታዊ (Weekly)</b></td>
-                        <td id="tax-gross-week">0.00</td>
-                        <td id="tax-net-week">0.00</td>
-                        <td id="tax-vat-week">0.00</td>
-                        <td id="tax-tot-week">0.00</td>
-                    </tr>
-                    <tr>
-                        <td><b>ወራዊ (Monthly)</b></td>
-                        <td id="tax-gross-month">0.00</td>
-                        <td id="tax-net-month">0.00</td>
-                        <td id="tax-vat-month">0.00</td>
-                        <td id="tax-tot-month">0.00</td>
-                    </tr>
-                    <tr>
-                        <td><b>አመታዊ (Yearly)</b></td>
-                        <td id="tax-gross-year">0.00</td>
-                        <td id="tax-net-year">0.00</td>
-                        <td id="tax-vat-year">0.00</td>
-                        <td id="tax-tot-year">0.00</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p style="font-size:0.75rem; color:#64748b; line-height:1.4;">* ማስታወሻ፦ የተጣራ ሽያጭ (Net Sales) የሚሰላው ከጠቅላላ ሽያጭ ላይ 15% ቫት ተቀንሶ ነው። የቱርንኦቨር ታክስ (TOT) ደግሞ በህጉ መሠረት ከጠቅላላ ሽያጭ ላይ 2% ተሰልቶ የተቀመጠ ነው።</p>
-        </div>
-    </div>
-
-    <div id="owner-sub-notes" class="owner-sub-content" style="display:none;">
-        <div class="card">
-            <h3>📝 የባለቤት ልዩ ማስታወሻ ደብተር (Secret Notebook)</h3>
-            <p style="font-size:0.8rem; margin-bottom:10px; color:#64748b;">እዚህ የሚጽፉት ማንኛውም ሚስጥራዊ ማስታወሻ በስልክዎ ላይ በደህንነት ይቀመጣል።</p>
-            <div class="form-group">
-                <textarea id="owner-secret-note-input" rows="10" placeholder="የወደፊት የንግድ እቅዶች፣ ልዩ የዕቃ ግዢዎች ወይም ማስታወሻዎችን እዚህ ይጻፉ..." oninput="saveOwnerSecretNote()"></textarea>
-            </div>
-            <div style="color:var(--success); font-size:0.85rem; font-weight:bold; text-align:right;" id="note-save-status">በራሱ ተቀምጧል! ✅</div>
-        </div>
-    </div>
-
-    <div id="owner-sub-inv-list" class="owner-sub-content" style="display:none;">
-        <div class="card">
-            <table>
-                <thead><tr><th>የዕቃው ስም</th><th>ገቢ</th><th>ቀሪ ክምችት</th></tr></thead>
-                <tbody id="owner-inventory-table"></tbody>
-            </table>
-        </div>
-    </div>
-</section>
-
-<script>
-    let currentRole = "customer";
-    let selectedCustomerItem = null;
-    let calcExpression = { cashier: "", owner: "" };
-
-    const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
-
-    let currentMenu = JSON.parse(localStorage.getItem('f_menu_v45')) || [
-        { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
-        { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300" },
-        { name: "ቺኪን በርገር", price: 280, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
-        { name: "ቆጮ በስጋ", price: 400, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300" },
-        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
-        { name: "ለስላሳ መጠጥ", price: 50, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" },
-        { name: "ሀበሻ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300" },
-        { name: "ወይን ጠጅ", price: 250, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300" }
-    ];
-
-    let inventory = JSON.parse(localStorage.getItem('f_inventory_v45')) || [];
-    let pendingOrders = JSON.parse(localStorage.getItem('f_pending_v45')) || [];
-    let activeOrders = JSON.parse(localStorage.getItem('f_active_v45')) || [];
-    let salesLedger = JSON.parse(localStorage.getItem('f_ledger_v45')) || [];
-
-    window.onload = function() { 
-        updateAllDisplays(); 
-        loadSavedSecretNote();
-    };
-
-    function syncStorage() {
-        localStorage.setItem('f_menu_v45', JSON.stringify(currentMenu));
-        localStorage.setItem('f_inventory_v45', JSON.stringify(inventory));
-        localStorage.setItem('f_pending_v45', JSON.stringify(pendingOrders));
-        localStorage.setItem('f_active_v45', JSON.stringify(activeOrders));
-        localStorage.setItem('f_ledger_v45', JSON.stringify(salesLedger));
-    }
-
-    function updateAllDisplays() {
-        renderSplitCustomerMenu();
-        renderSplitWaiterMenu();
-        renderPendingApprovals();
-        renderLiveDisplays();
-        renderFinanceAndTaxReports();
-        renderInventoryTable();
-    }
-
-    function renderSplitCustomerMenu() {
-        const foodCol = document.getElementById('cust-food-column');
-        const drinkCol = document.getElementById('cust-drink-column');
-        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
-        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
-
-        currentMenu.forEach((item, index) => {
-            let cardHtml = `
-            <div class="mini-item-card ${item.cat}" onclick="openPaymentGateway(${index})">
-                <img src="${item.img}" class="mini-img">
-                <div class="mini-info">
-                    <span class="name">${item.name}</span>
-                    <span class="price">${item.price} ብር</span>
-                </div>
-            </div>`;
-            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
+    function renderAttendanceTable() {
+        const tbody = document.getElementById('owner-attendance-table'); tbody.innerHTML = '';
+        attendanceData.forEach(a => {
+            tbody.innerHTML += `<tr>
+                <td><b>${a.name}</b></td>
+                <td>${a.date}</td>
+                <td>${a.time}</td>
+                <td><span class="badge ${a.status==='ስራ ገባ'?'badge-success':'badge-danger'}">${a.status}</span></td>
+            </tr>`;
         });
     }
 
-    function renderSplitWaiterMenu() {
-        const foodCol = document.getElementById('waiter-food-col');
-        const drinkCol = document.getElementById('waiter-drink-col');
-        foodCol.innerHTML = '<div class="column-header-sticky">🍔 ምግቦች (Kitchen)</div>';
-        drinkCol.innerHTML = '<div class="column-header-sticky drink-head">🍾 መጠጦች (Bar)</div>';
-
-        currentMenu.forEach((item, index) => {
-            let cardHtml = `
-            <div class="mini-item-card ${item.cat}" onclick="placeOrder(${index})">
-                <img src="${item.img}" class="mini-img">
-                <div class="mini-info">
-                    <span class="name">${item.name}</span>
-                    <span class="price">${item.price} ብር</span>
-                </div>
-            </div>`;
-            if(item.cat === 'kitchen') foodCol.innerHTML += cardHtml; else drinkCol.innerHTML += cardHtml;
-        });
-    }
-
-    function copyAccountOnly(accNumber, badgeIdPrefix) {
-        navigator.clipboard.writeText(accNumber).then(() => {
-            alert(`✅ የ${badgeIdPrefix} ቁጥር (${accNumber}) በራሱ ስልክዎ ላይ ኮፒ ሆኗል!`);
-        });
-    }
-
-    function openPaymentGateway(index) {
-        const item = currentMenu[index];
-        const name = document.getElementById('cust-name').value.trim();
-        const phone = document.getElementById('cust-phone').value.trim();
-
-        if(!name || !phone) {
-            alert("⚠️ እባክዎ መጀመሪያ ከላይ የደንበኛ ስም እና ስልክ ቁጥር ያስገቡ!");
-            return;
-        }
-        
-        selectedCustomerItem = item;
-        document.getElementById('selected-item-title').innerText = `የተመረጠ፦ ${item.name} (${item.price} ብር)`;
-        document.getElementById('payment-gateway-box').style.display = 'block';
-        document.getElementById('payment-gateway-box').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function processCustomerFinalOrder() {
-        const name = document.getElementById('cust-name').value.trim();
-        const txId = document.getElementById('cust-tx-id').value.trim();
-        const notes = document.getElementById('cust-notes').value.trim(); 
-
-        if(!selectedCustomerItem) return alert("⚠️ እባክዎ መጀመሪያ ምግብ ይምረጡ!");
-        if(!txId) return alert("⚠️ እባክዎ የከፈሉበትን የትራንዛክሽን ኮድ (Tx ID) ያስገቡ!");
-
-        let fullTableLabel = `Takeaway (${name})`;
-        let finalNotes = notes ? notes : "ልዩ ማስታወሻ የለም";
-
-        pendingOrders.push({ 
-            id: Date.now(), 
-            table: fullTableLabel, 
-            name: selectedCustomerItem.name, 
-            price: selectedCustomerItem.price, 
-            cat: selectedCustomerItem.cat, 
-            tx: txId, 
-            notes: finalNotes,
-            dateStamp: new Date().toISOString() // ለታክስ ታሪክ ማጣሪያ
-        });
-        
-        syncStorage();
-        updateAllDisplays();
-        
-        document.getElementById('payment-gateway-box').style.display = 'none';
-        document.getElementById('cust-tx-id').value = '';
-        document.getElementById('cust-notes').value = '';
-        selectedCustomerItem = null;
-        
-        document.getElementById('thank-you-backdrop').style.display = 'block';
-        document.getElementById('thank-you-popup').style.display = 'block';
-    }
-
-    function closeThankYouPopup() {
-        document.getElementById('thank-you-backdrop').style.display = 'none';
-        document.getElementById('thank-you-popup').style.display = 'none';
-    }
-
-    function renderPendingApprovals() {
-        const div = document.getElementById('pending-approval-list'); div.innerHTML = '';
-        if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">የሚጠበቅ ትዕዛዝ የለም።</p>'; return; }
-        pendingOrders.forEach((order, index) => {
-            div.innerHTML += `<div class="ticket">
-                <strong>${order.table}</strong> ➔ <b style="color:var(--accent);">${order.name}</b><br>
-                <small>ዋጋ፦ ${order.price} ብር | Tx ID፦ <b>${order.tx || 'የለም'}</b></small><br>
-                <span style="color:var(--danger); font-weight:bold; font-size:0.85rem;">💬 ደንበኛ ኮሜንት፦ ${order.notes}</span>
-                <button class="btn-action" style="position:absolute; right:10px; top:12px;" onclick="approveOrder(${index})">አጽድቅ</button>
-            </div>`;
-        });
-    }
-
-    function approveOrder(index) {
-        const order = pendingOrders[index];
-        activeOrders.push(order);
-        salesLedger.push({ 
-            desc: `${order.name} (${order.table})`, 
-            amount: order.price, 
-            time: new Date().toLocaleTimeString('am-ET'),
-            date: new Date().toISOString()
-        });
-        pendingOrders.splice(index, 1);
-        syncStorage(); updateAllDisplays();
-    }
-
-    function renderLiveDisplays() {
-        const kList = document.getElementById('kitchen-list'); kList.innerHTML = '';
-        const bList = document.getElementById('bar-list'); bList.innerHTML = '';
-        activeOrders.forEach((order, index) => {
-            let html = `<div class="ticket">
-                <strong>${order.table}</strong> ➔ <b>${order.name}</b><br>
-                <span style="color:var(--danger); font-size:0.85rem; font-weight:bold;">💬 ልዩ ፍላጎት፦ ${order.notes}</span>
-                <button class="btn-action blue" style="position:absolute; right:10px; top:12px;" onclick="completeOrder(${index})">ዝግጁ ነው</button>
-            </div>`;
-            if(order.cat === 'kitchen') kList.innerHTML += html; else bList.innerHTML += html;
-        });
-    }
-
-    function completeOrder(index) {
-        activeOrders.splice(index, 1);
-        syncStorage(); updateAllDisplays();
-    }
-
-    // 🧮 የካልኩሌተር ፈንክሽን ለሁለቱም ገፅ
-    function pressCalc(val, target) {
-        const screen = document.getElementById(`calc-screen-${target}`);
-        if (val === 'C') {
-            calcExpression[target] = "";
-            screen.innerText = "0";
-        } else if (val === '=') {
-            try {
-                if(calcExpression[target] === "") return;
-                let result = eval(calcExpression[target]);
-                screen.innerText = result;
-                calcExpression[target] = result.toString();
-            } catch (e) {
-                screen.innerText = "ስህተት";
-                calcExpression[target] = "";
-            }
-        } else {
-            calcExpression[target] += val;
-            screen.innerText = calcExpression[target];
-        }
-    }
-
-    // 📊 አዲሱ የታክስ እና የሽያጭ ሪፖርት ማመንጫ ፈንክሽን (እለታዊ፣ ሳምንታዊ፣ ወራዊ፣ አመታዊ)
-    function renderFinanceAndTaxReports() {
-        let grossToday = 0, grossWeek = 0, grossMonth = 0, grossYear = 0;
+    function logAttendance(status) {
+        const staff = document.getElementById('staff-name-select').value;
         const now = new Date();
-
-        salesLedger.forEach(log => {
-            const logDate = new Date(log.date || new Date());
-            const diffTime = Math.abs(now - logDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const amt = Number(log.amount);
-
-            // ዕለታዊ (ባለፉት 24 ሰዓታት)
-            if (diffDays <= 1) grossToday += amt;
-            // ሳምንታዊ (ባለፉት 7 ቀናት)
-            if (diffDays <= 7) grossWeek += amt;
-            // ወራዊ (ባለፉት 30 ቀናት)
-            if (diffDays <= 30) grossMonth += amt;
-            // ዓመታዊ (ባለፉት 365 ቀናት)
-            if (diffDays <= 365) grossYear += amt;
-        });
-
-        // የካሽ ቦክስ ጠቅላላ ማሳያ
-        document.getElementById('total-cash-box').innerText = grossToday.toFixed(2) + " ETB";
-
-        // ሰንጠረዡን በሂሳብ ቀመር ማደራጀት
-        fillTaxRow('day', grossToday);
-        fillTaxRow('week', grossWeek);
-        fillTaxRow('month', grossMonth);
-        fillTaxRow('year', grossYear);
-
-        // የቀጥታ የካሽቡክ ታሪክ ዝርዝር ማሳያ
-        const ledgerDiv = document.getElementById('ledger-history'); ledgerDiv.innerHTML = '';
-        salesLedger.slice().reverse().forEach((log) => {
-            ledgerDiv.innerHTML += `<div class="list-row"><span>${log.time || 'አሁን'}</span> <span>${log.desc}</span> <strong style="color:var(--success);">+${log.amount}</strong></div>`;
-        });
-    }
-
-    function fillTaxRow(id, gross) {
-        let net = gross / 1.15; // 15% VAT ተቀንሶ የተጣራ ሽяጭ
-        let vat = gross - net;   // የቫት መጠን
-        let tot = gross * 0.02;  // 2% የቱርንኦቨር ታክስ (TOT)
-
-        document.getElementById(`tax-gross-${id}`).innerText = gross.toFixed(2) + " ብር";
-        document.getElementById(`tax-net-${id}`).innerText = net.toFixed(2) + " ብር";
-        document.getElementById(`tax-vat-${id}`).innerText = vat.toFixed(2) + " ብር";
-        document.getElementById(`tax-tot-${id}`).innerText = tot.toFixed(2) + " ብር";
-    }
-
-    // 📝 የባለቤት ሚስጥራዊ ኖትቡክ ሴቭ ማድረጊያ
-    function saveOwnerSecretNote() {
-        const text = document.getElementById('owner-secret-note-input').value;
-        localStorage.setItem('f_owner_note_v45', text);
-        const status = document.getElementById('note-save-status');
-        status.innerText = "በራስ-ሰር ተቀምጧል... 💾";
-        setTimeout(() => { status.innerText = "በራሱ ተቀምጧል! ✅"; }, 1500);
-    }
-
-    function loadSavedSecretNote() {
-        const savedText = localStorage.getItem('f_owner_note_v45') || "";
-        document.getElementById('owner-secret-note-input').value = savedText;
-    }
-
-    function renderInventoryTable() {
-        const tbody = document.getElementById('owner-inventory-table'); tbody.innerHTML = '';
-        inventory.forEach((item) => {
-            tbody.innerHTML += `<tr><td><b>${item.name}</b></td><td>${item.in}</td><td><b>${item.remaining}</b></td></tr>`;
-        });
-    }
-
-    function addInventoryItem() {
-        const name = document.getElementById('inv-item-name').value.trim();
-        const qty = parseFloat(document.getElementById('inv-item-qty').value);
-        const cost = parseFloat(document.getElementById('inv-item-cost').value);
-        if(!name || isNaN(qty)) return;
-        inventory.push({ name, in: qty, cost, out: 0, remaining: qty });
-        syncStorage(); updateAllDisplays();
-        document.getElementById('inv-item-name').value = '';
-        document.getElementById('inv-item-qty').value = '';
-        document.getElementById('inv-item-cost').value = '';
-    }
-
-    function addNewMenuItem() {
-        const name = document.getElementById('menu-name').value.trim();
-        const price = parseFloat(document.getElementById('menu-price').value);
-        const cat = document.getElementById('menu-cat').value;
-        let img = document.getElementById('menu-image-url').value.trim() || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300";
-        if(!name || isNaN(price)) return alert("መረጃ በትክክል ያስገቡ!");
-        currentMenu.push({ name, price, cat, status: "available", img });
-        syncStorage(); updateAllDisplays();
-        alert("✅ አዲስ ማውጫ በተሳካ ሁኔታ ተጨምሯል!");
-    }
-
-    function placeOrder(index) {
-        const item = currentMenu[index];
-        const table = document.getElementById('table-id').value;
-        pendingOrders.push({ id: Date.now(), table, name: item.name, price: item.price, cat: item.cat, notes: 'በአስተናጋጅ የታዘዘ', dateStamp: new Date().toISOString() });
-        syncStorage(); updateAllDisplays();
-        alert(`✅ ለ${table} ማዘዣ ተልኳል!`);
+        const dateStr = now.toISOString().split('T')[0];
+        const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        attendanceData.unshift({ name: staff, date: dateStr, time: timeStr, status: status });
+        cloudSyncSimulator(); updateAllDisplays();
+        alert(`✅ ${staff} በትክክል ${status} ተብሎ ተመዝግቧል!`);
     }
 
     function switchOwnerSubSection(sub) {
@@ -1291,16 +962,36 @@
         document.getElementById(`sub-btn-${sub}`).classList.add('active');
     }
 
+    function runAiAnalysis() {
+        let total = 0;
+        salesLedger.forEach(l => total += Number(l.amount));
+        playBeep(500, 0.3);
+        alert(`🤖 Fikir AI Analysis Report:\n---------------------------\n• ጠቅላላ የሽያጭ መጠን፦ ${total.toFixed(2)} ብር\n• የንግድ ፍጥነት ሁኔታ፦ እጅግ በጣም ጥሩ 🚀\n• ምክረ-ሀሳብ፦ የምግብ ማውጫዎ ላይ ብዙ የቁርስ አማራጮችን ቢጨምሩ ትርፋማነትዎ በ 15% ያድጋል።`);
+    }
+
+    function pressCalc(key) {
+        const display = document.getElementById('calc-display');
+        if (key === 'C') { calcString = "0"; } 
+        else if (key === '=') {
+            try { let result = eval(calcString); grandTotalSum += Number(result); calcString = result.toString(); } catch(e) { calcString = "Error"; }
+        } else if (key === 'GT') { calcString = grandTotalSum.toString(); } 
+        else {
+            if (calcString === "0" || calcString === "Error") calcString = key; else calcString += key;
+        }
+        display.innerText = calcString;
+    }
+
     function switchRoleSecure(role) {
         if (role === 'customer') { executeRoleSwitch(role); return; }
         let enteredPin = prompt("የመክፈቻ ፒን ያስገቡ፦");
-        if (enteredPin === PIN_CONFIG[role] || enteredPin === PIN_CONFIG['all']) executeRoleSwitch(role); else alert("ፒን ስህተት ነው!");
+        if (enteredPin === PIN_CONFIG[role] || enteredPin === PIN_CONFIG['all']) { executeRoleSwitch(role); } else { alert("⚠️ የተሳሳተ የፒን ቁጥር ነው!"); }
     }
 
     function executeRoleSwitch(role) {
         currentRole = role;
         document.querySelectorAll('.role-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById('role-' + role).classList.add('active');
+        
         const nav = document.getElementById('top-nav');
         nav.querySelectorAll('a').forEach(a => a.style.display = 'inline-block');
         document.getElementById('nav-customer-view').style.display = 'none';
@@ -1315,7 +1006,7 @@
             nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-display') a.style.display='none'; });
             showSection('sec-display');
         } else if (role === 'cashier') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval') a.style.display='none'; });
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook' && a.id !== 'nav-tax') a.style.display='none'; });
             showSection('sec-cashier-approval');
         } else {
             showSection('sec-cashbook');
@@ -1325,6 +1016,36 @@
     function showSection(id) {
         document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        document.querySelectorAll('#top-nav a').forEach(a => a.classList.remove('active'));
+        try { document.getElementById(id.replace('sec-', 'nav-')).classList.add('active'); } catch(e){}
+    }
+
+    function downloadSystemBackup() {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+            menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData
+        }, null, 4));
+        let dl = document.createElement('a');
+        dl.setAttribute("href", dataStr);
+        dl.setAttribute("download", `Fikir_Enterprise_Backup.json`);
+        dl.click();
+    }
+
+    function generateAllQRCodes() {
+        try {
+            if (typeof QRCode !== 'undefined') {
+                document.getElementById("qr-owner-box").innerHTML = "";
+                new QRCode(document.getElementById("qr-owner-box"), { text: window.location.href, width: 140, height: 140 });
+                
+                // ለከስተመር ገጽ ማጋሪያ ባርኮድ ማመንጫ
+                document.getElementById("qr-customer-share-box").innerHTML = "";
+                new QRCode(document.getElementById("qr-customer-share-box"), { text: window.location.href, width: 140, height: 140 });
+            }
+        } catch (e) {}
+    }
+
+    function toggleQrCode(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 </script>
 </body>
