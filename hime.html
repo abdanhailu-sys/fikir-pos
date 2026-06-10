@@ -1,1 +1,893 @@
 
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fikir Bar & Restaurant v4.0 - Full System</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2ed573;
+            --dark: #2f3542;
+            --light: #f1f2f6;
+            --warning: #ffa502;
+            --danger: #ff6b6b;
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        @keyframes flashEffect {
+            0% { background-color: rgba(255, 71, 87, 0.5); }
+            50% { background-color: rgba(46, 213, 115, 0.5); }
+            100% { background-color: transparent; }
+        }
+        .flash-active {
+            animation: flashEffect 0.5s ease 4;
+        }
+
+        header {
+            background: var(--dark);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .update-status {
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .role-selector {
+            display: flex;
+            background: #e4e7eb;
+            overflow-x: auto;
+            padding: 10px;
+            gap: 10px;
+            border-bottom: 2px solid #ccc;
+        }
+
+        .role-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: white;
+            color: var(--dark);
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .role-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--glass);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-item.out-of-stock {
+            border: 2px solid var(--danger);
+            background: #ffeaea;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-danger { background: var(--danger); }
+        .badge-success { background: var(--secondary); }
+
+        .order-list-item {
+            border-left: 5px solid var(--warning);
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .btn-sec { background: var(--secondary); }
+        .btn-dark { background: var(--dark); }
+        .btn-danger { background: var(--danger); }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .archive-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .archive-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body id="appBody">
+
+    <header>
+        ፍቅር ባርና ሬስቶራንት
+        <div class="update-status" id="networkStatus">✓ የላቀ ኦፍላይን ሲስተም (ከመስመር ውጭ በጥራት ይሰራል)</div>
+    </header>
+
+    <div class="role-selector">
+        <button class="role-btn active" onclick="switchRole('customer')">ደንበኛ (Customer)</button>
+        <button class="role-btn" onclick="switchRole('waiter')">አስተናጋጅ (Waiter)</button>
+        <button class="role-btn" onclick="switchRole('barman')">ባርማን (Barman)</button>
+        <button class="role-btn" onclick="switchRole('chef')">ሼፍ (Chef)</button>
+        <button class="role-btn" onclick="switchRole('cashier')">ካሼር (Cashier)</button>
+        <button class="role-btn" onclick="switchRole('owner')">ባለቤት/ማናጀር (Owner)</button>
+    </div>
+
+    <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" preload="auto"></audio>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="customModal">
+        <h3 id="modalTitle" style="color: var(--primary); margin-bottom: 10px;"></h3>
+        <p id="modalMessage" style="margin-bottom: 15px; font-weight: 500;"></p>
+        <button class="btn btn-dark" onclick="closeModal()">እሺ ተረዳሁ</button>
+    </div>
+
+    <div id="customer" class="container active">
+        <div class="card" style="background: #eef2f7; border-left: 5px solid #4a90e2;">
+            <h3 style="font-size: 14px; color: #4a90e2;">🤖 የAI ምግብ አማካሪ</h3>
+            <p id="aiRecommendation" style="font-size: 13px; margin: 5px 0;">የቀኑን ምርጥ ምግብ ለማየት እባክዎ መጀመሪያ ጠረጴዛ ቁጥር ይምረጡ።</p>
+        </div>
+
+        <div class="card">
+            <h2>የምግብ ማዘዣ ገፅ</h2>
+            <label>የጠረጴዛ ቁጥር ይምረጡ፡</label>
+            <select id="custTable" onchange="updateAIRecommendation()">
+                <option value="1">ጠረጴዛ 1</option>
+                <option value="2">ጠረጴዛ 2</option>
+                <option value="3">ጠረጴዛ 3</option>
+                <option value="4">ጠረጴዛ 4</option>
+                <option value="5">ጠረጴዛ 5</option>
+            </select>
+            <div class="menu-grid" id="customerMenuGrid"></div>
+        </div>
+
+        <div class="card">
+            <h2>የእርስዎ የትዕዛዝ ቅርጫት</h2>
+            <div id="cartItems">ቅርጫቱ ባዶ ነው</div>
+            <button class="btn btn-sec" onclick="submitCustomerOrder()">ትዕዛዝ አስተላልፍ (Order)</button>
+        </div>
+    </div>
+
+    <div id="waiter" class="container">
+        <div class="card">
+            <h2>የአስተናጋጅ ማዘዣና መከታተያ ገፅ</h2>
+            <label>ለደንበኛ ማዘዣ ጠረጴዛ፡</label>
+            <select id="waiterTable">
+                <option value="1">ጠረጴዛ 1</option>
+                <option value="2">ጠረጴዛ 2</option>
+                <option value="3">ጠረጴዛ 3</option>
+            </select>
+            <label>የምግብ አይነት መምረጫ፡</label>
+            <select id="waiterFoodSelect"></select>
+            <button class="btn" onclick="addWaiterOrder()">ትዕዛዝ ጨምር</button>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="waiterComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>    <div id="barman" class="container">
+        <div class="card">
+            <h2>የመጠጥ ማዘዣዎች መከታተያ (ባርማን)</h2>
+            <div id="barmanOrderList">ምንም የመጠጥ ትዕዛዝ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="barmanComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="chef" class="container">
+        <div class="card">
+            <h2>የምግብ ማዘዣዎች መከታተያ (ወጥ ቤት)</h2>
+            <div id="chefOrderList">ምንም የምግብ ትዕዛዝ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="chefComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="cashier" class="container">
+        <div class="card">
+            <h2>ሂሳብ መሰብሰቢያና የክፍያ ገፅ (ካሼር)</h2>
+            <div id="cashierOrderList">ምንም ያልተከፈለ ሂሳብ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="cashierComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="owner" class="container">
+        <div class="card">
+            <h2>የምግቦች መገኘት ቁጥጥር (In/Out of Stock)</h2>
+            <div id="stockManagerList"></div>
+        </div>
+
+        <div class="card">
+            <h2>ለሰራተኞች ቀጥታ መመሪያ/ኮሜንት መላኪያ</h2>
+            <select id="commentTarget">
+                <option value="waiter">አስተናጋጆች (Waiters)</option>
+                <option value="barman">ባርማን (Barman)</option>
+                <option value="chef">ሼፎች (Chefs)</option>
+                <option value="cashier">ካሼሮች (Cashiers)</option>
+                <option value="all">ለሁሉም ሰራተኞች (All)</option>
+            </select>
+            <textarea id="managerCommentText" placeholder="ለምሳሌ፡ በምሳ ሰአት ፈጣን አገልግሎት ስጡ..."></textarea>
+            <button class="btn btn-sec" onclick="sendManagerComment()">መመሪያውን በፈጣን ላክ</button>
+        </div>
+
+        <div class="card">
+            <h2>የኮሜንት ማህደር (ለስብሰባ መወያያ ቋሚ ማህደር)</h2>
+            <div class="archive-list" id="meetingCommentArchive">ምንም የተቀመጠ ኮሜንት የለም።</div>
+            <button class="btn btn-danger" style="margin-top: 10px; padding: 5px;" onclick="clearCommentArchive()">የኮሜንት ማህደሩን አጽዳ</button>
+        </div>
+
+        <div class="card">
+            <h2>የሽያጭ ማጠቃለያ ሪፖርት</h2>
+            <p id="totalSalesText" style="font-size: 18px; font-weight: bold; color: var(--secondary);">ጠቅላላ ሽያጭ: 0 ETB</p>
+            <div class="archive-list" id="salesArchiveList" style="margin-top: 10px;">ምንም የተመዘገበ ሽያጭ የለም</div>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_REPO_URL = "https://abdanhailu-sys.github.io/fikir-p";
+        
+        const defaultMenu = [
+            { id: 1, name: "ክትፎ", price: 350, type: "food", available: true },
+            { id: 2, name: "የቀን ምሳ (በየአይነቱ)", price: 150, type: "food", available: true },
+            { id: 3, name: "ፍልፍል ጥብስ", price: 280, type: "food", available: true },
+            { id: 4, name: "ልዩ ቁርስ", price: 180, type: "food", available: true },
+            { id: 5, name: "ቅቅል ወጥ", price: 220, type: "food", available: true },
+            { id: 6, name: "ሀበሻ ቢራ", price: 90, type: "drink", available: true },
+            { id: 7, name: "ለስላሳ መጠጥ", price: 50, type: "drink", available: true },
+            { id: 8, name: "ውሃ (ትልቅ)", price: 40, type: "drink", available: true }
+        ];
+
+        let menuItems = JSON.parse(localStorage.getItem('fikir_menu')) || defaultMenu;
+        let activeOrders = JSON.parse(localStorage.getItem('fikir_orders')) || [];
+        let commentsArchive = JSON.parse(localStorage.getItem('fikir_comments')) || [];
+        let completedSales = JSON.parse(localStorage.getItem('fikir_sales')) || [];
+        let currentCart = [];
+
+        window.onload = function() {
+            saveToLocalStorage();
+            renderCustomerMenu();
+            renderStockManager();
+            renderOrderDashboards();
+            renderComments();
+            renderSales();
+            checkForUpdates();
+        };
+
+        function checkForUpdates() {
+            if (navigator.onLine) {
+                fetch(`${GITHUB_REPO_URL}/?nocache=${Date.now()}`)
+                    .then(response => {
+                        if(response.ok) {
+                            document.getElementById('networkStatus').innerText = "✓ አፑ ከGitHub ጋር ተገናኝቷል (ሁልጊዜም አዲስ ነው)";
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('networkStatus').innerText = "✓ ኦፍላይን ሞድ - ከስልክ ሜሞሪ እየሰራ ነው (ፈጣን)";
+                    });
+            } else {
+                document.getElementById('networkStatus').innerText = "✓ ኦፍላይን ሞድ - ከስልክ ሜሞሪ እየሰራ ነው (ፈጣን)";
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('fikir_menu', JSON.stringify(menuItems));
+            localStorage.setItem('fikir_orders', JSON.stringify(activeOrders));
+            localStorage.setItem('fikir_comments', JSON.stringify(commentsArchive));
+            localStorage.setItem('fikir_sales', JSON.stringify(completedSales));
+        }
+
+        function switchRole(roleId) {
+            if (roleId !== 'customer') {
+                const pin = prompt("እባክዎ መግቢያ ፒን (PIN) ያስገቡ፡");
+                if (pin !== "1234") {
+                    alert("⚠️ የተሳሳተ የፒን ቁጥር ነው! መግባት አይችሉም።");
+                    return;
+                }
+            }
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(roleId).classList.add('active');
+            event.target.classList.add('active');
+            renderOrderDashboards();
+            renderComments();
+        }
+
+        function showNotification(title, message) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('customModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        function triggerSignals() {
+            const alarm = document.getElementById('alarmSound');
+            if(alarm) alarm.play().catch(() => {});
+            const body = document.getElementById('appBody');
+            body.classList.add('flash-active');
+            setTimeout(() => body.classList.remove('flash-active'), 2000);
+        }
+
+        function updateAIRecommendation() {
+            const table = document.getElementById('custTable').value;
+            const hours = new Date().getHours();
+            let rec = hours < 12 ? "🌅 ለቁርስ ሰአት 'ልዩ ቁርስ' ይመረጣል!" : "☀️ ለምሳ ሰአት 'ክትፎ' ወይም 'የቀን ምሳ' ዝግጁ ነው!";
+            document.getElementById('aiRecommendation').innerText = `ጠረጴዛ ${table} ፡ ${rec}`;
+        }
+
+        function renderCustomerMenu() {
+            const grid = document.getElementById('customerMenuGrid');
+            const waiterSelect = document.getElementById('waiterFoodSelect');
+            grid.innerHTML = "";
+            if(waiterSelect) waiterSelect.innerHTML = "";
+
+            menuItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `menu-item ${item.available ? '' : 'out-of-stock'}`;
+                const badge = item.available ? `<span class="status-badge badge-success">አለ</span>` : `<span class="status-badge badge-danger">አልቋል</span>`;
+
+                div.innerHTML = `
+                    ${badge}
+                    <div style="font-weight: bold; margin-top: 15px;">${item.name}</div>
+                    <div style="color: var(--primary); font-weight: bold;">${item.price} ETB</div>
+                    <button class="btn ${item.available ? '' : 'btn-dark'}" style="padding: 5px; font-size: 12px;" onclick="addToCart(${item.id})">
+                        ${item.available ? 'ቅርጫት ውስጥ ክተት' : 'አልቋል'}
+                    </button>
+                `;
+                grid.appendChild(div);
+
+                if(waiterSelect && item.available) {
+                    waiterSelect.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                }
+            });
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(m => m.id === itemId);
+            if(!item.available) {
+                showNotification("⛔ አልቋል", `ይቅርታ '${item.name}' በአሁን ሰአት ስለሌለ ማዘዝ አይቻልም።`);
+                return;
+            }
+            currentCart.push(item);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartDiv = document.getElementById('cartItems');
+            if(currentCart.length === 0) { cartDiv.innerText = "ቅርጫቱ ባዶ ነው"; return; }
+            cartDiv.innerHTML = "";
+            currentCart.forEach((item, index) => {
+                cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${item.name}</span><span style="color:red; cursor:pointer;" onclick="removeFromCart(${index})">❌ አውጣ</span></div>`;
+            });
+        }
+
+        function removeFromCart(index) { currentCart.splice(index, 1); renderCart(); }
+
+        function submitCustomerOrder() {
+            if(currentCart.length === 0) return;
+            activeOrders.push({ id: Date.now(), table: document.getElementById('custTable').value, items: [...currentCart], status: 'pending', time: new Date().toLocaleTimeString() });
+            saveToLocalStorage();
+            triggerSignals();
+            showNotification("🎉 እናመሰግናለን!", "እኛን ስለመረጡን እናመሰግናለን! - ፍቅር ባርና ሬስቶራንት");
+            currentCart = []; renderCart(); renderOrderDashboards();
+        }
+
+        function addWaiterOrder() {
+            const foodId = document.getElementById('waiterFoodSelect').value;
+            if(!foodId) return;
+            activeOrders.push({ id: Date.now(), table: document.getElementById('waiterTable').value, items: [menuItems.find(m => m.id == foodId)], status: 'pending', time: new Date().toLocaleTimeString() });
+            saveToLocalStorage(); triggerSignals(); renderOrderDashboards();
+        }
+
+        function renderOrderDashboards() {
+            const chefList = document.getElementById('chefOrderList');
+            const barmanList = document.getElementById('barmanOrderList');
+            const cashierList = document.getElementById('cashierOrderList');
+            if(chefList) chefList.innerHTML = ""; if(barmanList) barmanList.innerHTML = ""; if(cashierList) cashierList.innerHTML = "";
+
+            activeOrders.forEach(order => {
+                const foods = order.items.filter(i => i.type === 'food');
+                const drinks = order.items.filter(i => i.type === 'drink');
+
+                if(chefList && foods.length > 0 && order.status === 'pending') {
+                    chefList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><ul>${foods.map(i=>`<li>${i.name}</li>`).join('')}</ul><button class="btn btn-sec" onclick="advanceOrder(${order.id}, 'served')">ተዘጋጅቷል</button></div>`;
+                }
+                if(barmanList && drinks.length > 0 && order.status === 'pending') {
+                    barmanList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><ul>${drinks.map(i=>`<li>${i.name}</li>`).join('')}</ul><button class="btn btn-sec" onclick="advanceOrder(${order.id}, 'served')">ቀርቧል</button></div>`;
+                }
+                if(cashierList && (order.status === 'served' || order.status === 'pending')) {
+                    const total = order.items.reduce((sum, i) => sum + i.price, 0);
+                    cashierList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><br>ድምር፡ ${total} ETB<br><button class="btn btn-sec" onclick="settleBill(${order.id}, ${total})">ሂሳብ ተከፈለ</button></div>`;
+                }
+            });
+        }
+
+        function advanceOrder(id, status) { const o = activeOrders.find(order=>order.id===id); if(o){ o.status=status; saveToLocalStorage(); triggerSignals(); renderOrderDashboards(); }}
+
+        function settleBill(id, total) {
+            const i = activeOrders.findIndex(o=>o.id===id);
+            if(i > -1) {
+                const comp = activeOrders.splice(i, 1)[0];
+                completedSales.push({ id: comp.id, table: comp.table, amount: total, time: new Date().toLocaleTimeString() });
+                saveToLocalStorage(); triggerSignals(); renderOrderDashboards(); renderSales();
+            }
+        }
+
+        function renderStockManager() {
+            const con = document.getElementById('stockManagerList'); if(!con) return; con.innerHTML = "";
+            menuItems.forEach(item => {
+                con.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #ddd;"><span>${item.name} - ${item.available?'አለ':'አልቋል'}</span><button class="btn" style="width:auto; margin:0; padding:2px 5px;" onclick="toggleStock(${item.id})">ቀይር</button></div>`;
+            });
+        }
+
+        function toggleStock(id) { const item = menuItems.find(m=>m.id===id); if(item){ item.available = !item.available; saveToLocalStorage(); renderStockManager(); renderCustomerMenu(); }}
+
+        function sendManagerComment() {
+            const target = document.getElementById('commentTarget').value;
+            const text = document.getElementById('managerCommentText').value;
+            if(!text.trim()) return;
+            commentsArchive.push({ id: Date.now(), target: target, text: text, time: new Date().toLocaleTimeString() });
+            saveToLocalStorage(); triggerSignals(); document.getElementById('managerCommentText').value = ""; renderComments();
+        }
+
+        function renderComments() {
+            const w = document.getElementById('waiterComments'); const b = document.getElementById('barmanComments'); const ch = document.getElementById('chefComments'); const ca = document.getElementById('cashierComments'); const ma = document.getElementById('meetingCommentArchive');
+            if(w)w.innerHTML=""; if(b)b.innerHTML=""; if(ch)ch.innerHTML=""; if(ca)ca.innerHTML=""; if(ma)ma.innerHTML="";
+
+            commentsArchive.forEach(c => {
+                const html = `<div>🕒 <strong>${c.time}</strong>: ${c.text}</div>`;
+                if((c.target==='waiter'||c.target==='all')&&w) w.innerHTML+=html;
+                if((c.target==='barman'||c.target==='all')&&b) b.innerHTML+=html;
+                if((c.target==='chef'||c.target==='all')&&ch) ch.innerHTML+=html;
+                if((c.target==='cashier'||c.target==='all')&&ca) ca.innerHTML+=html;
+                if(ma) ma.innerHTML+=`<div style="margin-bottom:5px;">📌 <strong>ለ${c.target}</strong> (${c.time}): ${c.text}</div>`;
+            });
+        }
+
+        function clearCommentArchive() { commentsArchive = []; saveToLocalStorage(); renderComments(); }
+
+        function renderSales() {
+            const txt = document.getElementById('totalSalesText'); const lst = document.getElementById('salesArchiveList'); if(!txt||!lst) return;
+            const sum = completedSales.reduce((s, i) => s + i.amount, 0); txt.innerText = `ጠቅላላ ሽያጭ: ${sum} ETB`;
+            lst.innerHTML = completedSales.map(s => `<div>💰 ጠረጴዛ ${s.table}: ${s.amount} ETB (${s.time})</div>`).join('');
+        }
+    </script>
+</body>
+</html>    <div id="barman" class="container">
+        <div class="card">
+            <h2>የመጠጥ ማዘዣዎች መከታተያ (ባርማን)</h2>
+            <div id="barmanOrderList">ምንም የመጠጥ ትዕዛዝ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="barmanComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="chef" class="container">
+        <div class="card">
+            <h2>የምግብ ማዘዣዎች መከታተያ (ወጥ ቤት)</h2>
+            <div id="chefOrderList">ምንም የምግብ ትዕዛዝ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="chefComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="cashier" class="container">
+        <div class="card">
+            <h2>ሂሳብ መሰብሰቢያና የክፍያ ገፅ (ካሼር)</h2>
+            <div id="cashierOrderList">ምንም ያልተከፈለ ሂሳብ የለም</div>
+        </div>
+        <div class="card">
+            <h2>የማናጀር መመሪያዎችና ኮሜንቶች</h2>
+            <div class="archive-list" id="cashierComments">ምንም መልእክት የለም</div>
+        </div>
+    </div>
+
+    <div id="owner" class="container">
+        <div class="card">
+            <h2>የምግቦች መገኘት ቁጥጥር (In/Out of Stock)</h2>
+            <div id="stockManagerList"></div>
+        </div>
+
+        <div class="card">
+            <h2>ለሰራተኞች ቀጥታ መመሪያ/ኮሜንት መላኪያ</h2>
+            <select id="commentTarget">
+                <option value="waiter">አስተናጋጆች (Waiters)</option>
+                <option value="barman">ባርማን (Barman)</option>
+                <option value="chef">ሼፎች (Chefs)</option>
+                <option value="cashier">ካሼሮች (Cashiers)</option>
+                <option value="all">ለሁሉም ሰራተኞች (All)</option>
+            </select>
+            <textarea id="managerCommentText" placeholder="ለምሳሌ፡ በምሳ ሰአት ፈጣን አገልግሎት ስጡ..."></textarea>
+            <button class="btn btn-sec" onclick="sendManagerComment()">መመሪያውን በፈጣን ላክ</button>
+        </div>
+
+        <div class="card">
+            <h2>የኮሜንት ማህደር (ለስብሰባ መወያያ ቋሚ ማህደር)</h2>
+            <div class="archive-list" id="meetingCommentArchive">ምንም የተቀመጠ ኮሜንት የለም።</div>
+            <button class="btn btn-danger" style="margin-top: 10px; padding: 5px;" onclick="clearCommentArchive()">የኮሜንት ማህደሩን አጽዳ</button>
+        </div>
+
+        <div class="card">
+            <h2>የሽያጭ ማጠቃለያ ሪፖርት</h2>
+            <p id="totalSalesText" style="font-size: 18px; font-weight: bold; color: var(--secondary);">ጠቅላላ ሽያጭ: 0 ETB</p>
+            <div class="archive-list" id="salesArchiveList" style="margin-top: 10px;">ምንም የተመዘገበ ሽያጭ የለም</div>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_REPO_URL = "https://abdanhailu-sys.github.io/fikir-p";
+        
+        const defaultMenu = [
+            { id: 1, name: "ክትፎ", price: 350, type: "food", available: true },
+            { id: 2, name: "የቀን ምሳ (በየአይነቱ)", price: 150, type: "food", available: true },
+            { id: 3, name: "ፍልፍል ጥብስ", price: 280, type: "food", available: true },
+            { id: 4, name: "ልዩ ቁርስ", price: 180, type: "food", available: true },
+            { id: 5, name: "ቅቅል ወጥ", price: 220, type: "food", available: true },
+            { id: 6, name: "ሀበሻ ቢራ", price: 90, type: "drink", available: true },
+            { id: 7, name: "ለስላሳ መጠጥ", price: 50, type: "drink", available: true },
+            { id: 8, name: "ውሃ (ትልቅ)", price: 40, type: "drink", available: true }
+        ];
+
+        let menuItems = JSON.parse(localStorage.getItem('fikir_menu')) || defaultMenu;
+        let activeOrders = JSON.parse(localStorage.getItem('fikir_orders')) || [];
+        let commentsArchive = JSON.parse(localStorage.getItem('fikir_comments')) || [];
+        let completedSales = JSON.parse(localStorage.getItem('fikir_sales')) || [];
+        let currentCart = [];
+
+        window.onload = function() {
+            saveToLocalStorage();
+            renderCustomerMenu();
+            renderStockManager();
+            renderOrderDashboards();
+            renderComments();
+            renderSales();
+            checkForUpdates();
+        };
+
+        function checkForUpdates() {
+            if (navigator.onLine) {
+                fetch(`${GITHUB_REPO_URL}/?nocache=${Date.now()}`)
+                    .then(response => {
+                        if(response.ok) {
+                            document.getElementById('networkStatus').innerText = "✓ አፑ ከGitHub ጋር ተገናኝቷል (ሁልጊዜም አዲስ ነው)";
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('networkStatus').innerText = "✓ ኦፍላይን ሞድ - ከስልክ ሜሞሪ እየሰራ ነው (ፈጣን)";
+                    });
+            } else {
+                document.getElementById('networkStatus').innerText = "✓ ኦፍላይን ሞድ - ከስልክ ሜሞሪ እየሰራ ነው (ፈጣን)";
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('fikir_menu', JSON.stringify(menuItems));
+            localStorage.setItem('fikir_orders', JSON.stringify(activeOrders));
+            localStorage.setItem('fikir_comments', JSON.stringify(commentsArchive));
+            localStorage.setItem('fikir_sales', JSON.stringify(completedSales));
+        }
+
+        function switchRole(roleId) {
+            if (roleId !== 'customer') {
+                const pin = prompt("እባክዎ መግቢያ ፒን (PIN) ያስገቡ፡");
+                if (pin !== "1234") {
+                    alert("⚠️ የተሳሳተ የፒን ቁጥር ነው! መግባት አይችሉም።");
+                    return;
+                }
+            }
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(roleId).classList.add('active');
+            event.target.classList.add('active');
+            renderOrderDashboards();
+            renderComments();
+        }
+
+        function showNotification(title, message) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('customModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        function triggerSignals() {
+            const alarm = document.getElementById('alarmSound');
+            if(alarm) alarm.play().catch(() => {});
+            const body = document.getElementById('appBody');
+            body.classList.add('flash-active');
+            setTimeout(() => body.classList.remove('flash-active'), 2000);
+        }
+
+        function updateAIRecommendation() {
+            const table = document.getElementById('custTable').value;
+            const hours = new Date().getHours();
+            let rec = hours < 12 ? "🌅 ለቁርስ ሰአት 'ልዩ ቁርስ' ይመረጣል!" : "☀️ ለምሳ ሰአት 'ክትፎ' ወይም 'የቀን ምሳ' ዝግጁ ነው!";
+            document.getElementById('aiRecommendation').innerText = `ጠረጴዛ ${table} ፡ ${rec}`;
+        }
+
+        function renderCustomerMenu() {
+            const grid = document.getElementById('customerMenuGrid');
+            const waiterSelect = document.getElementById('waiterFoodSelect');
+            grid.innerHTML = "";
+            if(waiterSelect) waiterSelect.innerHTML = "";
+
+            menuItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `menu-item ${item.available ? '' : 'out-of-stock'}`;
+                const badge = item.available ? `<span class="status-badge badge-success">አለ</span>` : `<span class="status-badge badge-danger">አልቋል</span>`;
+
+                div.innerHTML = `
+                    ${badge}
+                    <div style="font-weight: bold; margin-top: 15px;">${item.name}</div>
+                    <div style="color: var(--primary); font-weight: bold;">${item.price} ETB</div>
+                    <button class="btn ${item.available ? '' : 'btn-dark'}" style="padding: 5px; font-size: 12px;" onclick="addToCart(${item.id})">
+                        ${item.available ? 'ቅርጫት ውስጥ ክተት' : 'አልቋል'}
+                    </button>
+                `;
+                grid.appendChild(div);
+
+                if(waiterSelect && item.available) {
+                    waiterSelect.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                }
+            });
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(m => m.id === itemId);
+            if(!item.available) {
+                showNotification("⛔ አልቋል", `ይቅርታ '${item.name}' በአሁን ሰአት ስለሌለ ማዘዝ አይቻልም።`);
+                return;
+            }
+            currentCart.push(item);
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartDiv = document.getElementById('cartItems');
+            if(currentCart.length === 0) { cartDiv.innerText = "ቅርጫቱ ባዶ ነው"; return; }
+            cartDiv.innerHTML = "";
+            currentCart.forEach((item, index) => {
+                cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${item.name}</span><span style="color:red; cursor:pointer;" onclick="removeFromCart(${index})">❌ አውጣ</span></div>`;
+            });
+        }
+
+        function removeFromCart(index) { currentCart.splice(index, 1); renderCart(); }
+
+        function submitCustomerOrder() {
+            if(currentCart.length === 0) return;
+            activeOrders.push({ id: Date.now(), table: document.getElementById('custTable').value, items: [...currentCart], status: 'pending', time: new Date().toLocaleTimeString() });
+            saveToLocalStorage();
+            triggerSignals();
+            showNotification("🎉 እናመሰግናለን!", "እኛን ስለመረጡን እናመሰግናለን! - ፍቅር ባርና ሬስቶራንት");
+            currentCart = []; renderCart(); renderOrderDashboards();
+        }
+
+        function addWaiterOrder() {
+            const foodId = document.getElementById('waiterFoodSelect').value;
+            if(!foodId) return;
+            activeOrders.push({ id: Date.now(), table: document.getElementById('waiterTable').value, items: [menuItems.find(m => m.id == foodId)], status: 'pending', time: new Date().toLocaleTimeString() });
+            saveToLocalStorage(); triggerSignals(); renderOrderDashboards();
+        }
+
+        function renderOrderDashboards() {
+            const chefList = document.getElementById('chefOrderList');
+            const barmanList = document.getElementById('barmanOrderList');
+            const cashierList = document.getElementById('cashierOrderList');
+            if(chefList) chefList.innerHTML = ""; if(barmanList) barmanList.innerHTML = ""; if(cashierList) cashierList.innerHTML = "";
+
+            activeOrders.forEach(order => {
+                const foods = order.items.filter(i => i.type === 'food');
+                const drinks = order.items.filter(i => i.type === 'drink');
+
+                if(chefList && foods.length > 0 && order.status === 'pending') {
+                    chefList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><ul>${foods.map(i=>`<li>${i.name}</li>`).join('')}</ul><button class="btn btn-sec" onclick="advanceOrder(${order.id}, 'served')">ተዘጋጅቷል</button></div>`;
+                }
+                if(barmanList && drinks.length > 0 && order.status === 'pending') {
+                    barmanList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><ul>${drinks.map(i=>`<li>${i.name}</li>`).join('')}</ul><button class="btn btn-sec" onclick="advanceOrder(${order.id}, 'served')">ቀርቧል</button></div>`;
+                }
+                if(cashierList && (order.status === 'served' || order.status === 'pending')) {
+                    const total = order.items.reduce((sum, i) => sum + i.price, 0);
+                    cashierList.innerHTML += `<div class="order-list-item"><strong>ጠረጴዛ ${order.table}</strong><br>ድምር፡ ${total} ETB<br><button class="btn btn-sec" onclick="settleBill(${order.id}, ${total})">ሂሳብ ተከፈለ</button></div>`;
+                }
+            });
+        }
+
+        function advanceOrder(id, status) { const o = activeOrders.find(order=>order.id===id); if(o){ o.status=status; saveToLocalStorage(); triggerSignals(); renderOrderDashboards(); }}
+
+        function settleBill(id, total) {
+            const i = activeOrders.findIndex(o=>o.id===id);
+            if(i > -1) {
+                const comp = activeOrders.splice(i, 1)[0];
+                completedSales.push({ id: comp.id, table: comp.table, amount: total, time: new Date().toLocaleTimeString() });
+                saveToLocalStorage(); triggerSignals(); renderOrderDashboards(); renderSales();
+            }
+        }
+
+        function renderStockManager() {
+            const con = document.getElementById('stockManagerList'); if(!con) return; con.innerHTML = "";
+            menuItems.forEach(item => {
+                con.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #ddd;"><span>${item.name} - ${item.available?'አለ':'አልቋል'}</span><button class="btn" style="width:auto; margin:0; padding:2px 5px;" onclick="toggleStock(${item.id})">ቀይር</button></div>`;
+            });
+        }
+
+        function toggleStock(id) { const item = menuItems.find(m=>m.id===id); if(item){ item.available = !item.available; saveToLocalStorage(); renderStockManager(); renderCustomerMenu(); }}
+
+        function sendManagerComment() {
+            const target = document.getElementById('commentTarget').value;
+            const text = document.getElementById('managerCommentText').value;
+            if(!text.trim()) return;
+            commentsArchive.push({ id: Date.now(), target: target, text: text, time: new Date().toLocaleTimeString() });
+            saveToLocalStorage(); triggerSignals(); document.getElementById('managerCommentText').value = ""; renderComments();
+        }
+
+        function renderComments() {
+            const w = document.getElementById('waiterComments'); const b = document.getElementById('barmanComments'); const ch = document.getElementById('chefComments'); const ca = document.getElementById('cashierComments'); const ma = document.getElementById('meetingCommentArchive');
+            if(w)w.innerHTML=""; if(b)b.innerHTML=""; if(ch)ch.innerHTML=""; if(ca)ca.innerHTML=""; if(ma)ma.innerHTML="";
+
+            commentsArchive.forEach(c => {
+                const html = `<div>🕒 <strong>${c.time}</strong>: ${c.text}</div>`;
+                if((c.target==='waiter'||c.target==='all')&&w) w.innerHTML+=html;
+                if((c.target==='barman'||c.target==='all')&&b) b.innerHTML+=html;
+                if((c.target==='chef'||c.target==='all')&&ch) ch.innerHTML+=html;
+                if((c.target==='cashier'||c.target==='all')&&ca) ca.innerHTML+=html;
+                if(ma) ma.innerHTML+=`<div style="margin-bottom:5px;">📌 <strong>ለ${c.target}</strong> (${c.time}): ${c.text}</div>`;
+            });
+        }
+
+        function clearCommentArchive() { commentsArchive = []; saveToLocalStorage(); renderComments(); }
+
+        function renderSales() {
+            const txt = document.getElementById('totalSalesText'); const lst = document.getElementById('salesArchiveList'); if(!txt||!lst) return;
+            const sum = completedSales.reduce((s, i) => s + i.amount, 0); txt.innerText = `ጠቅላላ ሽያጭ: ${sum} ETB`;
+            lst.innerHTML = completedSales.map(s => `<div>💰 ጠረጴዛ ${s.table}: ${s.amount} ETB (${s.time})</div>`).join('');
+        }
+    </script>
+</body>
+</html>
