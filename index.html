@@ -200,7 +200,7 @@
         <div class="form-group">
             <label>ትዕዛዙ ለማን ይደርስ</label>
             <select id="cust-routing">
-                <option value="staff">ለአስተናጋጅ /探 ካሼር</option>
+                <option value="staff">ለአስተናጋጅ / ካሼር</option>
                 <option value="owner">ቀጥታ ለባለቤቱ (ማናجر)</option>
             </select>
         </div>
@@ -251,7 +251,7 @@
 
     <div class="map-box">
         <h4 style="color:var(--primary);">📍 በአካል መምጣት ይፈልጋሉ?</h4>
-        <p style="font-size:0.8rem; color:#475569;">ቀጥታ ወደ ፍቅር ባርና ሬስቶራንት የሚያመጣዎትን የጎግል ማፕ መገኛ ቦታ ይጫኑ biographies.</p>
+        <p style="font-size:0.8rem; color:#475569;">ቀጥታ ወደ ፍቅር ባርና ሬስቶራንት የሚያመጣዎትን የጎግል ማፕ መገኛ ቦታ ይጫኑ።</p>
         <a href="https://maps.google.com" target="_blank" class="map-link">🌐 ጎግል ማፕ ላይ አሳየኝ (Google Maps)</a>
     </div>
 
@@ -373,7 +373,7 @@
     </div>
 
     <div class="card" style="border: 2px solid var(--success);">
-        <h3>🧮 የምግብና መጠጥ እለታዊ የሽያጭ ማስያ (Calculator)</h3>
+        <h3>🧮 የምግብና መጠጥ እለታዊ የሽያጭ ማስያ (Calculator) <span style="color:var(--danger); font-size:0.8rem;">[🔒 ባለቤት ብቻ]</span></h3>
         <div class="form-group" style="margin-top:10px;">
             <label>ምግብ ወይም መጠጥ ይምረጡ</label>
             <select id="calc-item-select" onchange="autoFillCalcPrice()"></select>
@@ -390,7 +390,7 @@
             <label>ጠቅላላ ድምር (Total)</label>
             <input type="number" id="calc-item-total" readonly style="font-weight:bold; color:var(--success); font-size:1.1rem;">
         </div>
-        <button onclick="saveCalcTransaction()" style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">ሽያጩን መዝግብ (Save) 💾</button>
+        <button onclick="saveCalcTransactionSecure()" style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">ሽያጩን መዝግብ (Save) 💾</button>
     </div>
 
     <div id="pending-approval-list"></div>
@@ -467,7 +467,7 @@
 
         <div class="card" style="border: 2px solid var(--warning);">
             <h2 style="font-size:1.1rem; color:var(--warning); margin-bottom:10px;">2. የሰራተኞች ቁጥጥር ገጽ (Staff Monitor)</h2>
-            <p style="font-size:0.8rem; color:#64748b; margin-bottom:6px;">የቅርብ ጊዜ የሰራተኞች የስራ መግቢያ ሰዓት ክትትል ሰሌዳ።</p>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:6px;">የቅርብ ጊዜ የሰራተኞች የስራ መግቢያ ሰዓት ክትትል ሰሌዳ。</p>
             <table id="mini-attendance-table">
                 <thead><tr><th>ሰራተኛ</th><th>ሰዓት</th><th>ሁኔታ</th></tr></thead>
                 <tbody></tbody>
@@ -497,27 +497,27 @@
         </div>
         
         <div class="card">
-            <h3>የካሼር መተሳሰቢያ ካልኩሌተር (with GT ቁልፍ)</h3>
+            <h3>የካሼር መተሳሰቢያ ካልኩሌተር (with GT ቁልፍ) <span style="color:var(--danger); font-size:0.8rem;">[🔒 ባለቤት ብቻ]</span></h3>
             <div class="calc-screen" id="calc-display">0</div>
             <div class="calc-grid">
-                <button class="calc-btn op" onclick="pressCalc('C')">C</button>
-                <button class="calc-btn op" onclick="pressCalc('/')">/</button>
-                <button class="calc-btn op" onclick="pressCalc('*')">*</button>
-                <button class="calc-btn op" onclick="pressCalc('-')">-</button>
-                <button class="calc-btn" onclick="pressCalc('7')">7</button>
-                <button class="calc-btn" onclick="pressCalc('8')">8</button>
-                <button class="calc-btn" onclick="pressCalc('9')">9</button>
-                <button class="calc-btn op" onclick="pressCalc('+')">+</button>
-                <button class="calc-btn" onclick="pressCalc('4')">4</button>
-                <button class="calc-btn" onclick="pressCalc('5')">5</button>
-                <button class="calc-btn" onclick="pressCalc('6')">6</button>
-                <button class="calc-btn gt-key" onclick="pressCalc('GT')">GT</button>
-                <button class="calc-btn" onclick="pressCalc('1')">1</button>
-                <button class="calc-btn" onclick="pressCalc('2')">2</button>
-                <button class="calc-btn" onclick="pressCalc('3')">3</button>
-                <button class="calc-btn eq" onclick="pressCalc('=')">=</button>
-                <button class="calc-btn" style="grid-column: span 2;" onclick="pressCalc('0')">0</button>
-                <button class="calc-btn" onclick="pressCalc('.')">.</button>
+                <button class="calc-btn op" onclick="pressCalcSecure('C')">C</button>
+                <button class="calc-btn op" onclick="pressCalcSecure('/')">/</button>
+                <button class="calc-btn op" onclick="pressCalcSecure('*')">*</button>
+                <button class="calc-btn op" onclick="pressCalcSecure('-')">-</button>
+                <button class="calc-btn" onclick="pressCalcSecure('7')">7</button>
+                <button class="calc-btn" onclick="pressCalcSecure('8')">8</button>
+                <button class="calc-btn" onclick="pressCalcSecure('9')">9</button>
+                <button class="calc-btn op" onclick="pressCalcSecure('+')">+</button>
+                <button class="calc-btn" onclick="pressCalcSecure('4')">4</button>
+                <button class="calc-btn" onclick="pressCalcSecure('5')">5</button>
+                <button class="calc-btn" onclick="pressCalcSecure('6')">6</button>
+                <button class="calc-btn gt-key" onclick="pressCalcSecure('GT')">GT</button>
+                <button class="calc-btn" onclick="pressCalcSecure('1')">1</button>
+                <button class="calc-btn" onclick="pressCalcSecure('2')">2</button>
+                <button class="calc-btn" onclick="pressCalcSecure('3')">3</button>
+                <button class="calc-btn eq" onclick="pressCalcSecure('=')">=</button>
+                <button class="calc-btn" style="grid-column: span 2;" onclick="pressCalcSecure('0')">0</button>
+                <button class="calc-btn" onclick="pressCalcSecure('.')">.</button>
             </div>
         </div>
 
@@ -641,7 +641,7 @@
     
     <div class="card" style="margin-top:15px; background:#fff5f5; border:1px solid #fecaca;">
         <h3 style="color:var(--danger); font-size:1rem; margin-bottom:5px;" id="tax-title-gov">⚖️ የተገመተ የንግድ ትርፍ ግብር (Income Tax)</h3>
-        <p style="font-size:0.8rem; color:#64748b; margin-bottom:8px;">በኢትዮጵያ የታክስ ሕግ መሠረት ከንጹሕ ትርፍ ላይ የተሰላ ግምታዊ የግብር መጠን።</p>
+        <p style="font-size:0.8rem; color:#64748b; margin-bottom:8px;">በኢትዮጵያ የታክስ ሕግ መሠረት ከንጹሕ ትርፍ ላይ የተሰላ ግምታዊ የግብር መጠን。</p>
         <h2 id="tax-government-due" style="color:var(--danger);">0.00 ብር</h2>
     </div>
 </section>
@@ -672,7 +672,6 @@
         { name: "ዘይት (ሊትር)", in: 20, cost: 3200, out: 5, remaining: 15 }
     ];
 
-    // አዳዲስ የተጠየቁት የኖት ማስታወሻዎች ዳታ ማከማቻ (Local Storage)
     let globalNotes = JSON.parse(localStorage.getItem('f_global_notes_v4')) || [
         "ለሊት 4 ሰዓት ላይ ስቶክ ቼክ ይደረግ።",
         "የሽንኩርት አቅርቦት ዛሬ ማታ ይገባል።"
@@ -716,7 +715,6 @@
         renderTopSalesRank();
         renderAttendanceTable();
         
-        // አዳዲስ የአተገባበር ፈንክሽኖች
         renderGlobalNotes();
         loadCalcItemSelect();
         renderOwnerDashboardPanels();
@@ -745,7 +743,7 @@
         
         if(ownerComments.length > 0) {
             let latest = ownerComments[ownerComments.length - 1];
-            board.innerText = `📢 የማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
+            board.innerText = `📢  ማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
             board.style.display = 'block';
         } else {
             board.style.display = 'none';
@@ -844,7 +842,6 @@
             if(!confirm("የክፍያ ደረሰኝ ፎቶ አላያያዙም፣ ያለ ደረሰኝ ፎቶ ማለፍ ይፈልጋሉ?")) return;
         }
 
-        // ዛሬን በቅርጸት የማግኛ ዘዴ
         const dateString = new Date().toISOString().split('T')[0];
 
         if(routing === 'owner') {
@@ -1136,6 +1133,20 @@
         alert("🤖 Fikir AI Analysis Report:\n---------------------------\n• ጠቅላላ የሽያጭ መጠን፦ " + total.toFixed(2) + " ብር\n• የንግድ ፍጥነት ሁኔታ፦ እጅግ በጣም ጥሩ 🚀\n• ምክረ-ሀሳብ፦ የምግብ ማውጫዎ ላይ ብዙ የቁርስ አማራጮችን ቢጨምሩ ትርፋማነትዎ በ 15% ያድጋል።");
     }
 
+    // ==========================================
+    // 🔒 የደህንነት ቁልፍ ማሻሻያ (SECURITY LOGIC)
+    // ==========================================
+    function pressCalcSecure(key) {
+        if (currentRole === 'cashier') {
+            let pass = prompt("⛔ የሽያጭ ማስያውን ለመጠቀም የባለቤቱን/ማናጀሩን ማስተር ፒን (Master PIN) ያስገቡ፦");
+            if (pass !== PIN_CONFIG['all']) {
+                alert("⚠️ የተሳሳተ የፒን ቁጥር ነው! ካሼሩ በራሱ ማስላት አይችልም።");
+                return;
+            }
+        }
+        pressCalc(key);
+    }
+
     function pressCalc(key) {
         const display = document.getElementById('calc-display');
         if (key === 'C') { calcString = "0"; } 
@@ -1214,12 +1225,9 @@
         if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
-
-    // =========================================================================
-    // 🔥 እዚህ በታች ያሉትን አዳዲስ ፈንክሽኖች ሙሉ በሙሉ ጨምሬአቸዋለሁ (Inject ተደርገዋል)
-    // =========================================================================
-
-    // 1. የጋራ ልዩ ማስታወሻ መፃፊያ (Notes) አሰራር በሁሉም ገጾች ላይ
+    // ==========================================
+    // ፩. የጋራ ልዩ ማስታወሻ መፃፊያ (NOTES SYSTEM)
+    // ==========================================
     function renderGlobalNotes() {
         const targets = ['customer', 'waiter', 'menu', 'inv', 'appr', 'disp', 'owner'];
         targets.forEach(t => {
@@ -1254,7 +1262,9 @@
         renderGlobalNotes();
     }
 
-    // 2. የካሼር እለታዊ የምግብና መጠጥ ማስያ (Calculator)
+    // ==========================================
+    // ፪. የዕለታዊ የሽያጭ ማስያ የደህንነት ቁልፍ
+    // ==========================================
     function loadCalcItemSelect() {
         const select = document.getElementById('calc-item-select');
         if (!select) return;
@@ -1281,6 +1291,17 @@
         document.getElementById('calc-item-total').value = price * qty;
     }
 
+    function saveCalcTransactionSecure() {
+        if (currentRole === 'cashier') {
+            let pass = prompt("⛔ ይህንን አዲስ ሽያጭ ለመመዝገብ የባለቤቱን ማስተር ፒን (Master PIN) ያስገቡ፦");
+            if (pass !== PIN_CONFIG['all']) {
+                alert("⚠️ የተሳሳተ የፒን ቁጥር ነው! ካሼሩ በራሱ አዲስ ሽያጭ መመዝገብ አይችልም።");
+                return;
+            }
+        }
+        saveCalcTransaction();
+    }
+
     function saveCalcTransaction() {
         const idx = document.getElementById('calc-item-select').value;
         const qty = parseInt(document.getElementById('calc-item-qty').value) || 1;
@@ -1299,7 +1320,6 @@
             qty: qty
         });
 
-        // የደረጃ ሪፖርቱን ለማሳደግ
         item.salesDay += qty; item.salesWeek += qty; item.salesMonth += qty; item.salesYear += qty;
 
         cloudSyncSimulator();
@@ -1312,7 +1332,9 @@
         alert("✅ ማስያ ስሌቱ በተሳካ ሁኔታ ዕለታዊ መዝገብ ላይ ተቀምጧል!");
     }
 
-    // 3. በቀን መፈለጊያ የሰርች ባር (Search Bar) ለባለቤትና ለካሼር
+    // ==========================================
+    // ፫. በቀን መፈለጊያ የሰርች ባር ህግጋት
+    // ==========================================
     function searchSalesByDate(role) {
         const dateInput = document.getElementById(`${role}-search-date-input`).value;
         const resultDiv = document.getElementById(`${role}-search-results-box`);
@@ -1353,9 +1375,10 @@
         resultDiv.innerHTML = tableHtml;
     }
 
-    // 4. አራቱ የባለቤት ቁጥጥር ፓነሎች ማደሻዎች
+    // ==========================================
+    // ፬. የባለቤት ዳሽቦርድ ፓነሎች ማደሻ
+    // ==========================================
     function renderOwnerDashboardPanels() {
-        // ሀ. የትርፍና ኪሳራ ስሌት
         let totalRevenue = 0;
         salesLedger.forEach(log => totalRevenue += Number(log.amount));
 
@@ -1371,7 +1394,6 @@
         netEl.innerText = netProfit.toFixed(2) + " ብር";
         netEl.style.color = netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
 
-        // ለ. ሰራተኞች አቴንዳንስ ሚኒ-ቴብል
         const miniAttBody = document.querySelector('#mini-attendance-table tbody');
         if (miniAttBody) {
             miniAttBody.innerHTML = '';
@@ -1381,18 +1403,17 @@
             });
         }
 
-        // ሐ. የንብረት አቅርቦት ማስጠንቀቂያ (ሊያልቁ የቀረቡ ዕቃዎች)
         const alertsBox = document.getElementById('stock-alerts-box');
         if (alertsBox) {
             alertsBox.innerHTML = '';
             let lowItems = inventory.filter(i => i.remaining < 15);
             if (lowItems.length === 0) {
-                alertsBox.innerHTML = '<p style="color:var(--success); font-weight:bold; font-size:0.85rem;">✅ በአሁን ሰዓት የሚያሰጋ እጥረት የለም።</p>';
+                alertsBox.innerHTML = '<p style="color:var(--success); font-weight:bold; font-size:0.85rem;">✅ በአሁን ሰዓት የሚያሰጋ እጥረት የለም。</p>';
             } else {
                 lowItems.forEach(i => {
                     alertsBox.innerHTML += `
                     <div style="background:#fff5f5; border:1px solid var(--danger); padding:6px; border-radius:6px; margin-bottom:5px; font-size:0.85rem; font-weight:bold; color:var(--danger);">
-                        ⚠️ አስቸኳይ ማስጠንቀቂያ፦ "${i.name}" የቀረው ${i.remaining} ብቻ ስለሆነ አቅርቦት ይጨመር!
+                        ⚠️ አስቸኳይ ማሳሰቢያ፦ "${i.name}" የቀረው ${i.remaining} ብቻ ስለሆነ አቅርቦት ይጨመር!
                     </div>`;
                 });
             }
