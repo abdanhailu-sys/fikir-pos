@@ -173,6 +173,7 @@
     <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="closeThankYouPopup()">እሺ</button>
 </div>
 
+<!-- የደንበኛ ገጽ -->
 <section id="sec-customer-view" class="page-section active">
     <div class="page-title" style="color:var(--accent);">የፍቅር ባርና ሬስቶራንት ፈጣን ማዘዣ</div>
     
@@ -254,6 +255,7 @@
     </div>
 </section>
 
+<!-- የአስተናጋጅ ገጽ -->
 <section id="sec-order" class="page-section">
     <div class="page-title">የአስተናጋጅ ማዘዣ ሰሌዳ</div>
     
@@ -279,6 +281,7 @@
     <div class="grid" id="menu-grid"></div>
 </section>
 
+<!-- የምግብ ማውጫ ገጽ -->
 <section id="sec-menu" class="page-section">
     <div class="page-title">የምግብ ማውጫ ማስተዳደሪያ</div>
     
@@ -321,6 +324,7 @@
     </div>
 </section>
 
+<!-- መጋዘን ገጽ -->
 <section id="sec-inventory" class="page-section">
     <div class="page-title">የመጋዘን ጥሬ ዕቃዎች ቁጥጥር</div>
     
@@ -342,6 +346,7 @@
     </div>
 </section>
 
+<!-- የካሼር ማጽደቂያ ገጽ -->
 <section id="sec-cashier-approval" class="page-section">
     <div class="page-title">የመጡ ትዕዛዞች ማጽደቂያ (ካሼር)</div>
     
@@ -374,6 +379,7 @@
     <div id="pending-approval-list"></div>
 </section>
 
+<!-- ኩሽና/ባር ገጽ -->
 <section id="sec-display" class="page-section">
     <div class="card" style="background: #fffdeb;">
         <h3>📝 ፈጣን ልዩ ማስታወሻ መፃፊያ (Notes)</h3>
@@ -388,6 +394,7 @@
     <div class="card" id="bar-box"><div class="page-title">የባር ማዘዣዎች (Bar)</div><div id="bar-list"></div></div>
 </section>
 
+<!-- 👑 የማናجر / የባለቤት ዋና ሰሌዳ -->
 <section id="sec-cashbook" class="page-section">
     <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
     
@@ -414,9 +421,53 @@
         <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 የጥሬ ዕቃ ክምችት</button>
         <button class="tab-sub-btn" id="sub-btn-rank" onclick="switchOwnerSubSection('rank')">📈 የሽያጭ ደረጃ ሪፖርት</button>
         <button class="tab-sub-btn" id="sub-btn-att" onclick="switchOwnerSubSection('att')">👥 የሰራተኞች አቴንዳንስ</button>
+        <button class="tab-sub-btn" id="sub-btn-adv-report" onclick="switchOwnerSubSection('adv-report')">📊 ጠቅላላ ሪፖርት ማጠቃለያ</button>
+    </div>
+
+    <!-- አዲሱ የጠቅላላ ማጠቃለያ ሪፖርት መፈለጊያ ገጽ -->
+    <div id="owner-sub-adv-report" class="owner-sub-content" style="display:none;">
+        <div class="card" style="border: 2px solid var(--accent); background: #f8fafc;">
+            <h3>🔍 የላቀ ጠቅላላ ማጠቃለያ ሪፖርት (ቀንና በአይነት መፍለጊያ)</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                <div class="form-group">
+                    <label>የመጀመሪያ ቀን</label>
+                    <input type="date" id="adv-start-date">
+                </div>
+                <div class="form-group">
+                    <label>የመጨረሻ ቀን</label>
+                    <input type="date" id="adv-end-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>የመረጃ አይነት (Category)</label>
+                <select id="adv-type-select">
+                    <option value="all">ሁሉንም መረጃዎች (ገቢና ወጪ)</option>
+                    <option value="food">የኩሽና ምግብ ሽያጭ ብቻ</option>
+                    <option value="drink">የባር መጠጥ ሽያጭ ብቻ</option>
+                    <option value="expense">ወጪዎች ብቻ (Expenses)</option>
+                </select>
+            </div>
+            <button onclick="generateAdvancedSummaryReport()" style="background: var(--accent); color: white; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 0.95rem;">ሪፖርት አውጣ 📊</button>
+        </div>
+
+        <div class="card" id="adv-summary-cards-box" style="display: none; background: white;">
+            <h4>📈 የፍለጋው ማጠቃለያ ውጤት</h4>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; margin-bottom: 15px;">
+                <div style="background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bbf7d0; text-align:center;">
+                    <small style="color:#166534;">ጠቅላላ ገቢ</small>
+                    <p id="adv-total-rev-txt" style="font-weight:bold; font-size:1.1rem; color:var(--success);">0.00 ብር</p>
+                </div>
+                <div style="background:#fef2f2; padding:10px; border-radius:8px; border:1px solid #fecaca; text-align:center;">
+                    <small style="color:#991b1b;">ጠቅላላ ወጪ</small>
+                    <p id="adv-total-exp-txt" style="font-weight:bold; font-size:1.1rem; color:var(--danger);">0.00 ብር</p>
+                </div>
+            </div>
+            <div id="adv-report-table-box" style="overflow-x:auto;"></div>
+        </div>
     </div>
 
     <div id="owner-sub-cash" class="owner-sub-content">
+        <!-- 💸 Entry -->
         <div class="card" style="border: 2px solid var(--danger);">
             <h2>💸 የእለት ማዋል ቀጥታ ወጪ መመዝገቢያ (Direct Expense Entry)</h2>
             <div class="form-group" style="margin-top: 10px;">
@@ -430,6 +481,7 @@
             <button style="background:var(--danger); color:white; border:none; padding:10px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer; font-size:0.9rem;" onclick="saveDirectExpenseSecure()">ወጪውን መዝግብ (Save Expense) 📉</button>
         </div>
 
+        <!-- 🧮 Calculator -->
         <div class="card" style="border: 2px solid var(--success);">
             <h3>🧮 የምግብና መጠጥ እለታዊ የሽያጭ ማስያ (Calculator)</h3>
             <div class="form-group" style="margin-top:10px;">
@@ -488,7 +540,7 @@
         <div class="card" style="border: 2px solid #8b5cf6;">
             <h2>3. የደንበኞች አስተያየት ማጠቃለያ (Feedback)</h2>
             <div style="background:#f3e8ff; padding:8px; border-radius:6px; margin-bottom:6px; font-size:0.85rem;">
-                <strong>⭐⭐⭐⭐白 (5/5)</strong> - "ጥብስ ስጋው በጣም ቆንጆ ነው!"
+                <strong>⭐⭐⭐⭐⭐ (5/5)</strong> - "ጥብስ ስጋው በጣም ቆንጆ ነው!"
             </div>
         </div>
 
@@ -604,6 +656,7 @@
     </div>
 </section>
 
+<!-- ግብርና ቫት ገጽ -->
 <section id="sec-tax" class="page-section">
     <div class="page-title">የፋይናንስ፣ የቫት (VAT 15%) እና የአመታዊ ግብር ስሌት</div>
     
@@ -681,6 +734,10 @@
         updateAllDisplays(); 
         triggerSignal('ሲስተሙ ዝግጁ ነው (Offline Ready)', 'active-green');
         generateAllQRCodes();
+        // የዛሬውን ቀን በዲፎልት ለአዲሱ ሰርች ገጽ መሙላት
+        const todayStr = new Date().toISOString().split('T')[0];
+        if(document.getElementById('adv-start-date')) document.getElementById('adv-start-date').value = todayStr;
+        if(document.getElementById('adv-end-date')) document.getElementById('adv-end-date').value = todayStr;
     };
 
     function cloudSyncSimulator() {
@@ -945,7 +1002,8 @@
             amount: -cost,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
-            qty: qty
+            qty: qty,
+            itemCat: "expense"
         });
 
         cloudSyncSimulator(); updateAllDisplays();
@@ -995,7 +1053,8 @@
             amount: order.price, 
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayDate,
-            qty: 1
+            qty: 1,
+            itemCat: order.cat // kitchen ወይም bar መሆኑን ለመለየት
         });
         pendingOrders.splice(index, 1);
         cloudSyncSimulator(); updateAllDisplays();
@@ -1297,7 +1356,8 @@
             amount: total,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
-            qty: qty
+            qty: qty,
+            itemCat: item.cat
         });
 
         item.salesDay += qty; item.salesWeek += qty; item.salesMonth += qty; item.salesYear += qty;
@@ -1334,7 +1394,8 @@
             amount: -amount,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
-            qty: 1
+            qty: 1,
+            itemCat: "expense"
         });
 
         cloudSyncSimulator();
@@ -1373,6 +1434,89 @@
 
         tableHtml += `<tr><td colspan="2" style="text-align:right; font-weight:bold;">የቀኑ ንጹሕ ቀሪ (Net Total)፦</td><td style="color:${grandTotal >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">${grandTotal.toFixed(2)} ብር</td></tr></tbody></table>`;
         resultDiv.innerHTML = tableHtml;
+    }
+
+    function generateAdvancedSummaryReport() {
+        const start = document.getElementById('adv-start-date').value;
+        const end = document.getElementById('adv-end-date').value;
+        const selectedType = document.getElementById('adv-type-select').value;
+        const summaryBox = document.getElementById('adv-summary-cards-box');
+        const tableBox = document.getElementById('adv-report-table-box');
+
+        if (!start || !end) {
+            alert("⚠️ እባክዎ መጀመሪያ የፍለጋውን መጀመሪያ እና መጨረሻ ቀን ይምረጡ!");
+            return;
+        }
+
+        // ማጣሪያ (Filtering)
+        let filtered = salesLedger.filter(log => {
+            let logDate = log.date;
+            if (!logDate) return false;
+            let isWithinDate = (logDate >= start && logDate <= end);
+            
+            if (!isWithinDate) return false;
+
+            if (selectedType === 'all') return true;
+            if (selectedType === 'food') return log.itemCat === 'kitchen';
+            if (selectedType === 'drink') return log.itemCat === 'bar';
+            if (selectedType === 'expense') return log.itemCat === 'expense' || Number(log.amount) < 0;
+            return true;
+        });
+
+        // ስሌቶች
+        let totalRev = 0;
+        let totalExp = 0;
+
+        filtered.forEach(log => {
+            let val = Number(log.amount);
+            if (val > 0) totalRev += val;
+            else totalExp += Math.abs(val);
+        });
+
+        document.getElementById('adv-total-rev-txt').innerText = totalRev.toFixed(2) + " ብር";
+        document.getElementById('adv-total-exp-txt').innerText = totalExp.toFixed(2) + " ብር";
+
+        if (filtered.length === 0) {
+            tableBox.innerHTML = `<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መረጃ አልተገኘም።</p>`;
+            summaryBox.style.display = 'block';
+            return;
+        }
+
+        let tableHtml = `<table>
+            <thead>
+                <tr>
+                    <th>ቀን</th>
+                    <th>ሰዓት</th>
+                    <th>መግለጫ / ዝርዝር</th>
+                    <th>ገቢ / ወጪ</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        filtered.forEach(log => {
+            let amt = Number(log.amount);
+            let isExpense = amt < 0;
+            tableHtml += `<tr>
+                <td>${log.date}</td>
+                <td>${log.time || '--:--'}</td>
+                <td><b>${log.desc}</b></td>
+                <td style="color:${isExpense ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">
+                    ${isExpense ? '' : '+'}${amt.toFixed(2)} ብር
+                </td>
+            </tr>`;
+        });
+
+        let netResult = totalRev - totalExp;
+        tableHtml += `<tr>
+            <td colspan="3" style="text-align:right; font-weight:bold;">የተጣራ ቀሪ (Net Total)፦</td>
+            <td style="color:${netResult >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">
+                ${netResult.toFixed(2)} ብር
+            </td>
+        </tr></tbody></table>`;
+
+        tableBox.innerHTML = tableHtml;
+        summaryBox.style.display = 'block';
+        playBeep(700, 0.15);
     }
 
     function renderOwnerDashboardPanels() {
