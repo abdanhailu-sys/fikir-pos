@@ -554,7 +554,7 @@
         </div>
 
         <div class="card">
-            <h3>የቀጥታ ገቢና ወጪ መዝገብ (Cashbook Ledger)</h3>
+            <h3>የአሁኑ ቀጥታ የገቢና ወጪ መዝገብ (Cashbook Ledger)</h3>
             <div id="ledger-history"></div>
         </div>
     </div>
@@ -586,7 +586,7 @@
             <h3>📈 በብዛት የተሸጡ ምግቦችና መጠጦች ደረጃ</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button class="tab-sub-btn active" id="rank-btn-day" onclick="changeRankPeriod('day')">ዕለታዊ</button>
-                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">ሳምንታዊ</button>
+                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">саምንታዊ</button>
                 <button class="tab-sub-btn" id="rank-btn-month" onclick="changeRankPeriod('month')">ወርሃዊ</button>
             </div>
             <div style="overflow-x:auto;">
@@ -1081,7 +1081,7 @@
         
         // 🔄 ሎጂክ መተሳሰሪያ፦ የጠቅላላ ገቢ፣ የባለቤት ወጪ እና የንጹሕ ቀሪ ሂሳብ ስሌት
         document.getElementById('total-cash-box').innerText = todaySales.toFixed(2) + " ETB";
-        document.getElementById('total-expense-box').innerText = todayExpenses.toFixed(2) + " ETB";
+        document.getElementById('owner-expense-box').innerText = todayExpenses.toFixed(2) + " ETB";
         document.getElementById('cashier-owner-expense-view').value = todayExpenses.toFixed(2) + " ብር";
         
         let netCashBalance = todaySales - todayExpenses;
@@ -1273,6 +1273,7 @@
         if (el) el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
+    // 📌 የግሎባል ማስታወሻዎች አሰጣጥ
     function renderGlobalNotes() {
         const targets = ['customer', 'waiter', 'menu', 'inv', 'appr', 'disp', 'owner'];
         targets.forEach(t => {
@@ -1384,7 +1385,7 @@
         saveDirectExpense();
     }
 
-    // 🔄 የባለቤቱን ወጪ ሎጂክ መተሳሰሪያ (ከDart ኮድ የተወሰደ)
+    // 💸 የባለቤቱን ወጪ ሎጂክ መተሳሰሪያ
     function saveDirectExpense() {
         const reason = document.getElementById('exp-reason').value.trim();
         const amount = parseFloat(document.getElementById('exp-amount').value);
@@ -1413,6 +1414,7 @@
         alert("📉 ወጪው በተሳካ ሁኔታ ተመዝግቧል!");
     }
 
+    // 📅 የሽያጭ ታሪክ በቀን መፈለጊያ የሰርች ባር
     function searchSalesByDate(role) {
         const dateInput = document.getElementById(`${role}-search-date-input`).value;
         const resultDiv = document.getElementById(`${role}-search-results-box`);
