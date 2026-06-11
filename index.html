@@ -140,6 +140,10 @@
         .reply-box { margin-top: 8px; display: flex; gap: 4px; }
         .reply-input { flex: 1; padding: 5px; font-size: 0.8rem; border: 1px solid #cbd5e0; border-radius: 4px; }
         .reply-btn { background: var(--accent); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+
+        /* አዲስ የ200 እቃዎች ዝርዝር ስታይል */
+        .master-scroll-box { max-height: 450px; overflow-y: auto; border: 1px solid #cbd5e0; border-radius: 8px; background: #fff; margin-top: 10px; }
+        .master-table th { position: sticky; top: 0; background: #e2e8f0; z-index: 20; }
     </style>
 </head>
 <body>
@@ -380,6 +384,25 @@
         </div>
     </div>
 
+    <div class="card" style="border: 2px solid #8b5cf6;">
+        <h3>📋 የምግብና መጠጥ ማህደር ዝርዝር መፈለጊያ (ካሼር - Read Only)</h3>
+        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">በባለቤቱ የተመዘገቡ እስከ 200 የሚደርሱ እቃዎችን በተራ ቁጥር ወይም በስም እዚህ መፈለግ ይችላሉ።</p>
+        <input type="text" id="cashier-master-search" class="form-group" placeholder="በተራ ቁጥር ወይም በስም ይፈልጉ..." oninput="searchMasterList('cashier')" style="border: 2px solid #8b5cf6; margin-bottom: 8px;">
+        <div class="master-scroll-box">
+            <table class="master-table">
+                <thead>
+                    <tr>
+                        <th>ተራ ቁጥር (ID)</th>
+                        <th>የዕቃው / የምግቡ ስም</th>
+                        <th>አይነት (Category)</th>
+                    </tr>
+                </thead>
+                <tbody id="cashier-master-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
     <div id="pending-approval-list"></div>
 </section>
 
@@ -420,12 +443,57 @@
 
     <div class="owner-tabs">
         <button class="tab-sub-btn active" id="sub-btn-cash" onclick="switchOwnerSubSection('cash')">💰 ካሽ ቡክ</button>
+        <button class="tab-sub-btn" id="sub-btn-master-list" onclick="switchOwnerSubSection('master-list')">📋 የ200 እቃዎች ማህደር</button>
         <button class="tab-sub-btn" id="sub-btn-inv-list" onclick="switchOwnerSubSection('inv-list')">📦 የጥሬ ዕቃ ክምችት</button>
         <button class="tab-sub-btn" id="sub-btn-rank" onclick="switchOwnerSubSection('rank')">📈 የሽያጭ ደረጃ ሪፖርት</button>
         <button class="tab-sub-btn" id="sub-btn-att" onclick="switchOwnerSubSection('att')">👥 የሰራተኞች አቴንዳንስ</button>
         <button class="tab-sub-btn" id="sub-btn-adv-report" onclick="switchOwnerSubSection('adv-report')">📊 ጠቅላላ ሪፖርት ማጠቃለያ</button>
         <button class="tab-sub-btn" id="sub-btn-feedback" onclick="switchOwnerSubSection('feedback')">💬 የደንበኞች አስተያየት</button>
         <button class="tab-sub-btn" id="sub-btn-suppliers" onclick="switchOwnerSubSection('suppliers')">🤝 አቅራቢዎችና ክምችት</button>
+    </div>
+
+    <div id="owner-sub-master-list" class="owner-sub-content" style="display:none;">
+        <div class="card" style="border: 2px solid var(--accent);">
+            <h3>✍️ አዲስ ዕቃ በተራ ቁጥር መመዝገቢያ (እስከ 200 እቃዎች)</h3>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">እዚህ የሚመዘግቡት መረጃ በካሼሪው ገጽ ላይ በቀጥታ (Read-Only) ሆኖ ይታያል።</p>
+            <div style="display:grid; grid-template-columns: 1fr 2fr; gap:8px;">
+                <div class="form-group">
+                    <label>ተራ ቁጥር (ID)</label>
+                    <input type="number" id="master-id-input" placeholder="ምሳሌ፦ 1" min="1" max="200">
+                </div>
+                <div class="form-group">
+                    <label>የምግብ/የመጠጥ ስም</label>
+                    <input type="text" id="master-name-input" placeholder="ክትፎ፣ ቢራ...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>የእቃው አይነት (Category)</label>
+                <select id="master-cat-input">
+                    <option value="ምግብ (Kitchen)">ምግብ (Kitchen)</option>
+                    <option value="መጠጥ (Bar)">መጠጥ (Bar)</option>
+                </select>
+            </div>
+            <button onclick="saveToMasterList()" style="background:var(--success); color:white; border:none; padding:10px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">መረጃውን አስቀምጥ (Save Item) 💾</button>
+        </div>
+
+        <div class="card">
+            <h3>🔍 የተመዘገቡ እቃዎች ዝርዝር እና መፈለጊያ ሰርች ባር</h3>
+            <input type="text" id="owner-master-search" class="form-control search-bar" placeholder="በተራ ቁጥር ወይም በስም ጽፈው ይፈልጉ..." oninput="searchMasterList('owner')">
+            <div class="master-scroll-box">
+                <table class="master-table">
+                    <thead>
+                        <tr>
+                            <th>ተራ ቁጥር (ID)</th>
+                            <th>የዕቃው ስም</th>
+                            <th>አይነት</th>
+                            <th>ተግባር (Action)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-master-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="owner-sub-feedback" class="owner-sub-content" style="display:none;">
@@ -639,7 +707,7 @@
             <h3>📈 በብዛት የተሸጡ ምግቦችና መጠጦች ደረጃ</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button class="tab-sub-btn active" id="rank-btn-day" onclick="changeRankPeriod('day')">ዕለታዊ</button>
-                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">ሳምንታዊ</button>
+                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">саምንታዊ</button>
                 <button class="tab-sub-btn" id="rank-btn-month" onclick="changeRankPeriod('month')">ወርሃዊ</button>
             </div>
             <div style="overflow-x:auto;">
@@ -754,6 +822,14 @@
         "የሽንኩርት አቅርቦት ዛሬ ማታ ይገባል።"
     ];
 
+    // አዲስ የተጨመረው የ200 እቃዎች ማስተዳደሪያ ዋና ዳታ (Master Index List)
+    let masterIndexList = JSON.parse(localStorage.getItem('f_master_index_v4')) || [
+        { id: 1, name: "ጥብስ ስጋ ልዩ", cat: "ምግብ (Kitchen)" },
+        { id: 2, name: "ክትፎ በቅቤ", cat: "ምግብ (Kitchen)" },
+        { id: 3, name: "ጊዮርጊስ ቢራ", cat: "መጠጥ (Bar)" },
+        { id: 4, name: "ለስላሳ ኮካ", cat: "መጠጥ (Bar)" }
+    ];
+
     let pendingOrders = JSON.parse(localStorage.getItem('f_pending_v4')) || [];
     let activeOrders = JSON.parse(localStorage.getItem('f_active_v4')) || [];
     let salesLedger = JSON.parse(localStorage.getItem('f_ledger_v4')) || [];
@@ -763,7 +839,6 @@
         { name: 'አልማዝ (ካሼር)', date: '2026-06-10', time: '02:30 AM', status: 'ስራ ገባ' }
     ];
 
-    // የአቅራቢዎችና የደንበኞች አስተያየት አዲስ ሞክ ዳታ (Mock Data)
     let suppliersData = JSON.parse(localStorage.getItem('f_suppliers_v4')) || [
         { name: "አቶ ታሪኩ (ስጋ አቅራቢ)", item: "ስጋ (ኪሎ)", phone: "0911223344", balance: "12,500 ብር" },
         { name: "ወ/ሮ ማርታ (አትክልት)", item: "ሽንኩርትና ቃሪያ", phone: "0912556677", balance: "3,200 ብር" },
@@ -796,6 +871,7 @@
         localStorage.setItem('f_global_notes_v4', JSON.stringify(globalNotes));
         localStorage.setItem('f_suppliers_v4', JSON.stringify(suppliersData));
         localStorage.setItem('f_feedback_v4', JSON.stringify(customerFeedback));
+        localStorage.setItem('f_master_index_v4', JSON.stringify(masterIndexList));
     }
 
     function updateAllDisplays() {
@@ -812,13 +888,121 @@
         renderGlobalNotes();
         loadCalcItemSelect();
         renderOwnerDashboardPanels();
-        
-        // አዲሶቹን ገጾች መሙያ ፋንክሽኖች
         renderOwnerFeedbackPage();
         renderOwnerSuppliersPage();
+        
+        // አዲሶቹን የ200 እቃዎች ሰሌዳዎች መሙያ
+        renderMasterTable('owner', masterIndexList);
+        renderMasterTable('cashier', masterIndexList);
     }
 
-    // አዲስ ገፅ 1 የማሳያ ፋንክሽን (የደንበኞች አስተያየት)
+    // የ200 እቃዎች ማህደር ማሳያ ሪንደር ፋንክሽን (ለባለቤት እና ለካሼር)
+    function renderMasterTable(role, dataList) {
+        const tbody = document.getElementById(`${role}-master-table-body`);
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (dataList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">ምንም የተመዘገበ እቃ የለም።</td></tr>';
+            return;
+        }
+
+        // በተራ ቁጥር (ID) ቅደም ተከተል መደርደር
+        let sortedList = [...dataList].sort((a, b) => a.id - b.id);
+
+        sortedList.forEach(item => {
+            let actionTd = '';
+            if (role === 'owner') {
+                actionTd = `<td>
+                    <button onclick="editMasterItem(${item.id}, '${item.name}', '${item.cat}')" style="background:var(--warning); color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer; margin-right:4px;">ቀይር ✏️</button>
+                    <button onclick="deleteMasterItem(${item.id})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">አጥፋ ✕</button>
+                </td>`;
+            }
+
+            tbody.innerHTML += `<tr>
+                <td><b># ${item.id}</b></td>
+                <td>${item.name}</td>
+                <td><span class="badge ${item.cat.includes('ምግብ') ? 'badge-success' : 'badge-warning'}">${item.cat}</span></td>
+                ${actionTd}
+            </tr>`;
+        });
+    }
+
+    // አዲስ እቃ መመዝገቢያ እና ማሻሻያ (ባለቤት)
+    function saveToMasterList() {
+        const idInput = document.getElementById('master-id-input');
+        const nameInput = document.getElementById('master-name-input');
+        const catInput = document.getElementById('master-cat-input');
+
+        const id = parseInt(idInput.value);
+        const name = nameInput.value.trim();
+        const cat = catInput.value;
+
+        if (isNaN(id) || id < 1 || id > 200) {
+            return alert("⚠️ ተራ ቁጥር (ID) ከ 1 እስከ 200 መሆን አለበት!");
+        }
+        if (!name) {
+            return alert("⚠️ እባክዎ የምግቡን ወይም የመጠጡን ስም ያስገቡ!");
+        }
+
+        // ቀደም ሲል በዚያ ተራ ቁጥር የተመዘገበ እቃ ካለ ማረጋገጥ/ማሻሻል
+        let existingIndex = masterIndexList.findIndex(item => item.id === id);
+
+        if (existingIndex !== -1) {
+            if (confirm(`⚠️ ከተራ ቁጥር #${id} ላይ ቀደም ሲል "${masterIndexList[existingIndex].name}" ተመዝግቧል። በአዲሱ ስም ለመቀየር እርግጠኛ ነዎት?`)) {
+                masterIndexList[existingIndex].name = name;
+                masterIndexList[existingIndex].cat = cat;
+            } else {
+                return;
+            }
+        } else {
+            masterIndexList.push({ id, name, cat });
+        }
+
+        cloudSyncSimulator();
+        updateAllDisplays();
+
+        // ፎርሙን ማጽዳት
+        idInput.value = '';
+        nameInput.value = '';
+        playBeep(700, 0.15);
+        alert(`✅ እቃ ቁጥር #${id} በተሳካ ሁኔታ ማህደር ላይ ተቀምጧል!`);
+    }
+
+    // መረጃ ለመቀየር ወደ ፎርም መውሰጃ
+    function editMasterItem(id, name, cat) {
+        document.getElementById('master-id-input').value = id;
+        document.getElementById('master-name-input').value = name;
+        document.getElementById('master-cat-input').value = cat;
+        document.getElementById('master-id-input').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // መረጃ ማጥፊያ (ባለቤት)
+    function deleteMasterItem(id) {
+        if (confirm(`⚠️ ተራ ቁጥር #${id} ማህደርን ሙሉ በሙሉ ለማጥፋት እርግጠኛ ነዎት?`)) {
+            masterIndexList = masterIndexList.filter(item => item.id !== id);
+            cloudSyncSimulator();
+            updateAllDisplays();
+            playBeep(400, 0.2);
+        }
+    }
+
+    // የቀጥታ ሰርች ባር ፋንክሽን (በቁጥር ወይም በስም መፈለጊያ)
+    function searchMasterList(role) {
+        const query = document.getElementById(`${role}-master-search`).value.toLowerCase().trim();
+        
+        if (!query) {
+            renderMasterTable(role, masterIndexList);
+            return;
+        }
+
+        let filtered = masterIndexList.filter(item => {
+            return item.id.toString() === query || item.name.toLowerCase().includes(query);
+        });
+
+        renderMasterTable(role, filtered);
+    }
+
     function renderOwnerFeedbackPage() {
         const container = document.getElementById('owner-live-feedback-container');
         if (!container) return;
@@ -860,21 +1044,19 @@
         });
     }
 
-    // ለአስተያየት ምላሽ መስጫ ፋንክሽን
     function submitFeedbackReply(idx) {
         const input = document.getElementById(`fb-reply-input-${idx}`);
         const text = input.value.trim();
         if (!text) return alert("እባክዎ መጀመሪያ ምላሽዎን ይጻፉ!");
         
         customerFeedback[idx].reply = text;
-        customerFeedback[idx].isUrgent = false; // ምላሽ ሲያገኝ አስቸኳይነቱ ይነሳል
+        customerFeedback[idx].isUrgent = false; 
         cloudSyncSimulator();
         updateAllDisplays();
         playBeep(700, 0.15);
         alert("✅ የደንበኛ አስተያየት ምላሽ በተሳካ ሁኔታ ተልኳል!");
     }
 
-    // አዲስ ገፅ 2 የማሳያ ፋንክሽን (አቅራቢዎችና የክምችት ማሳሰቢያ)
     function renderOwnerSuppliersPage() {
         const tableBody = document.getElementById('owner-suppliers-table');
         if (tableBody) {
@@ -1157,7 +1339,7 @@
     function placeOrder(index) {
         const item = currentMenu[index];
         if(item.status === 'sold_out') {
-            alert("⚠️ ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!");
+            alert("⚠️ 👑 ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!");
             return;
         }
         const table = document.getElementById('table-id').value;
@@ -1197,7 +1379,7 @@
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayDate,
             qty: 1,
-            itemCat: order.cat // kitchen ወይም bar መሆኑን ለመለየት
+            itemCat: order.cat 
         });
         pendingOrders.splice(index, 1);
         cloudSyncSimulator(); updateAllDisplays();
@@ -1391,7 +1573,7 @@
 
     function downloadSystemBackup() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-            menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData, globalNotes: globalNotes, suppliers: suppliersData, feedback: customerFeedback
+            menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData, globalNotes: globalNotes, suppliers: suppliersData, feedback: customerFeedback, masterIndex: masterIndexList
         }, null, 4));
         let dl = document.createElement('a');
         dl.setAttribute("href", dataStr);
