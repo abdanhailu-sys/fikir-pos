@@ -119,6 +119,7 @@
         .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; color: white; }
         .badge-danger { background: var(--danger); }
         .badge-success { background: var(--success); }
+        .badge-warning { background: var(--warning); color: #020617; }
         
         .owner-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .tab-sub-btn { background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -131,6 +132,14 @@
 
         .note-item-box { background: #fffdeb; padding: 10px; border-left: 4px solid var(--warning); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .note-del-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        
+        /* ለአዲሶቹ ገጾች የተጨመሩ ስታይሎች */
+        .feedback-item { background: #f8fafc; border-left: 4px solid #8b5cf6; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
+        .feedback-item.alert-complaint { border-left-color: var(--danger); background: #fff5f5; animation: pulseBorder 2s infinite; }
+        @keyframes pulseBorder { 0% { border-left-color: var(--danger); } 50% { border-left-color: #fca5a5; } 100% { border-left-color: var(--danger); } }
+        .reply-box { margin-top: 8px; display: flex; gap: 4px; }
+        .reply-input { flex: 1; padding: 5px; font-size: 0.8rem; border: 1px solid #cbd5e0; border-radius: 4px; }
+        .reply-btn { background: var(--accent); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -173,7 +182,6 @@
     <button style="background:var(--primary); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="closeThankYouPopup()">እሺ</button>
 </div>
 
-<!-- የደንበኛ ገጽ -->
 <section id="sec-customer-view" class="page-section active">
     <div class="page-title" style="color:var(--accent);">የፍቅር ባርና ሬስቶራንት ፈጣን ማዘዣ</div>
     
@@ -255,7 +263,6 @@
     </div>
 </section>
 
-<!-- የአስተናጋጅ ገጽ -->
 <section id="sec-order" class="page-section">
     <div class="page-title">የአስተናጋጅ ማዘዣ ሰሌዳ</div>
     
@@ -281,7 +288,6 @@
     <div class="grid" id="menu-grid"></div>
 </section>
 
-<!-- የምግብ ማውጫ ገጽ -->
 <section id="sec-menu" class="page-section">
     <div class="page-title">የምግብ ማውጫ ማስተዳደሪያ</div>
     
@@ -324,7 +330,6 @@
     </div>
 </section>
 
-<!-- መጋዘን ገጽ -->
 <section id="sec-inventory" class="page-section">
     <div class="page-title">የመጋዘን ጥሬ ዕቃዎች ቁጥጥር</div>
     
@@ -346,7 +351,6 @@
     </div>
 </section>
 
-<!-- የካሼር ማጽደቂያ ገጽ -->
 <section id="sec-cashier-approval" class="page-section">
     <div class="page-title">የመጡ ትዕዛዞች ማጽደቂያ (ካሼር)</div>
     
@@ -379,7 +383,6 @@
     <div id="pending-approval-list"></div>
 </section>
 
-<!-- ኩሽና/ባር ገጽ -->
 <section id="sec-display" class="page-section">
     <div class="card" style="background: #fffdeb;">
         <h3>📝 ፈጣን ልዩ ማስታወሻ መፃፊያ (Notes)</h3>
@@ -394,7 +397,6 @@
     <div class="card" id="bar-box"><div class="page-title">የባር ማዘዣዎች (Bar)</div><div id="bar-list"></div></div>
 </section>
 
-<!-- 👑 የማናجر / የባለቤት ዋና ሰሌዳ -->
 <section id="sec-cashbook" class="page-section">
     <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
     
@@ -422,9 +424,43 @@
         <button class="tab-sub-btn" id="sub-btn-rank" onclick="switchOwnerSubSection('rank')">📈 የሽያጭ ደረጃ ሪፖርት</button>
         <button class="tab-sub-btn" id="sub-btn-att" onclick="switchOwnerSubSection('att')">👥 የሰራተኞች አቴንዳንስ</button>
         <button class="tab-sub-btn" id="sub-btn-adv-report" onclick="switchOwnerSubSection('adv-report')">📊 ጠቅላላ ሪፖርት ማጠቃለያ</button>
+        <button class="tab-sub-btn" id="sub-btn-feedback" onclick="switchOwnerSubSection('feedback')">💬 የደንበኞች አስተያየት</button>
+        <button class="tab-sub-btn" id="sub-btn-suppliers" onclick="switchOwnerSubSection('suppliers')">🤝 አቅራቢዎችና ክምችት</button>
     </div>
 
-    <!-- አዲሱ የጠቅላላ ማጠቃለያ ሪፖርት መፈለጊያ ገጽ -->
+    <div id="owner-sub-feedback" class="owner-sub-content" style="display:none;">
+        <div class="card" style="border: 2px solid #8b5cf6;">
+            <h3>💬 የደንበኞች ቀጥታ አስተያየት እና ቅሬታዎች ማጠቃለያ</h3>
+            <p style="font-size:0.8rem; color:#64748b; margin-bottom:12px;">ዝቅተኛ ኮከብ ወይም ቅሬታ ሲኖር ሲስተሙ በራስ-ሰር የቀይ ቀለም ማሳሰቢያ ያሳያል።</p>
+            <div id="owner-live-feedback-container" style="max-height: 350px; overflow-y: auto;">
+                </div>
+        </div>
+    </div>
+
+    <div id="owner-sub-suppliers" class="owner-sub-content" style="display:none;">
+        <div class="card" style="border: 2px solid #10b981;">
+            <h3>🤝 የአቅራቢዎች ዝርዝር እና የሂሳብ ቀሪ (Supplier Balances)</h3>
+            <div style="overflow-x:auto; margin-bottom: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>የአቅራቢ ስም</th>
+                            <th>የሚያቀርበው ዕቃ</th>
+                            <th>ስልክ ቁጥር</th>
+                            <th>ቀሪ ዕዳ (ቀሪ ሂሳብ)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="owner-suppliers-table">
+                        </tbody>
+                </table>
+            </div>
+            
+            <h3>📦 የክምችት ማሳሰቢያዎች (Low Stock Alerts)</h3>
+            <div id="owner-inventory-alerts-box" style="margin-top:10px;">
+                </div>
+        </div>
+    </div>
+
     <div id="owner-sub-adv-report" class="owner-sub-content" style="display:none;">
         <div class="card" style="border: 2px solid var(--accent); background: #f8fafc;">
             <h3>🔍 የላቀ ጠቅላላ ማጠቃለያ ሪፖርት (ቀንና በአይነት መፍለጊያ)</h3>
@@ -467,7 +503,6 @@
     </div>
 
     <div id="owner-sub-cash" class="owner-sub-content">
-        <!-- 💸 Entry -->
         <div class="card" style="border: 2px solid var(--danger);">
             <h2>💸 የእለት ማዋል ቀጥታ ወጪ መመዝገቢያ (Direct Expense Entry)</h2>
             <div class="form-group" style="margin-top: 10px;">
@@ -481,7 +516,6 @@
             <button style="background:var(--danger); color:white; border:none; padding:10px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer; font-size:0.9rem;" onclick="saveDirectExpenseSecure()">ወጪውን መዝግብ (Save Expense) 📉</button>
         </div>
 
-        <!-- 🧮 Calculator -->
         <div class="card" style="border: 2px solid var(--success);">
             <h3>🧮 የምግብና መጠጥ እለታዊ የሽያጭ ማስያ (Calculator)</h3>
             <div class="form-group" style="margin-top:10px;">
@@ -656,7 +690,6 @@
     </div>
 </section>
 
-<!-- ግብርና ቫት ገጽ -->
 <section id="sec-tax" class="page-section">
     <div class="page-title">የፋይናንስ፣ የቫት (VAT 15%) እና የአመታዊ ግብር ስሌት</div>
     
@@ -730,11 +763,23 @@
         { name: 'አልማዝ (ካሼር)', date: '2026-06-10', time: '02:30 AM', status: 'ስራ ገባ' }
     ];
 
+    // የአቅራቢዎችና የደንበኞች አስተያየት አዲስ ሞክ ዳታ (Mock Data)
+    let suppliersData = JSON.parse(localStorage.getItem('f_suppliers_v4')) || [
+        { name: "አቶ ታሪኩ (ስጋ አቅራቢ)", item: "ስጋ (ኪሎ)", phone: "0911223344", balance: "12,500 ብር" },
+        { name: "ወ/ሮ ማርታ (አትክልት)", item: "ሽንኩርትና ቃሪያ", phone: "0912556677", balance: "3,200 ብር" },
+        { name: "የሐበሻ ወኪል (መጠጥ)", item: "ቢራና ለስላሳ", phone: "0920889900", balance: "0.00 ብር" }
+    ];
+
+    let customerFeedback = JSON.parse(localStorage.getItem('f_feedback_v4')) || [
+        { name: "ኬነዲ ሰለሞን", order: "#TK-4920", rating: 5, text: "ጥብስ ስጋው በጣም ቆንጆ ነው፣ አገልግሎቱም ፈጣን ነው!", time: "02:15 PM", isUrgent: false, reply: "" },
+        { name: "ሄኖክ አበበ", order: "#TK-4925", rating: 2, text: "ይቅርታ በርገሩ ውስጥ ቃሪያ አይሁን ብዬ መዝግቤ ነበር ግን ተቀላቅሏል፣ አስተካክሉልኝ።", time: "03:40 PM", isUrgent: true, reply: "" },
+        { name: "ሊሊያ ግርማ", order: "#TK-4931", rating: 4, text: "ክትፎው ምርጥ ነው፣ መጠጡ ግን በደንብ አልቀዘቀዘም።", time: "05:10 PM", isUrgent: false, reply: "ስለ አስተያየትዎ እናመሰግናለን! ቀጣይ እናስተካክላለን።" }
+    ];
+
     window.onload = function() { 
         updateAllDisplays(); 
         triggerSignal('ሲስተሙ ዝግጁ ነው (Offline Ready)', 'active-green');
         generateAllQRCodes();
-        // የዛሬውን ቀን በዲፎልት ለአዲሱ ሰርች ገጽ መሙላት
         const todayStr = new Date().toISOString().split('T')[0];
         if(document.getElementById('adv-start-date')) document.getElementById('adv-start-date').value = todayStr;
         if(document.getElementById('adv-end-date')) document.getElementById('adv-end-date').value = todayStr;
@@ -749,6 +794,8 @@
         localStorage.setItem('f_comments_v4', JSON.stringify(ownerComments));
         localStorage.setItem('f_attendance_v4', JSON.stringify(attendanceData));
         localStorage.setItem('f_global_notes_v4', JSON.stringify(globalNotes));
+        localStorage.setItem('f_suppliers_v4', JSON.stringify(suppliersData));
+        localStorage.setItem('f_feedback_v4', JSON.stringify(customerFeedback));
     }
 
     function updateAllDisplays() {
@@ -765,6 +812,102 @@
         renderGlobalNotes();
         loadCalcItemSelect();
         renderOwnerDashboardPanels();
+        
+        // አዲሶቹን ገጾች መሙያ ፋንክሽኖች
+        renderOwnerFeedbackPage();
+        renderOwnerSuppliersPage();
+    }
+
+    // አዲስ ገፅ 1 የማሳያ ፋንክሽን (የደንበኞች አስተያየት)
+    function renderOwnerFeedbackPage() {
+        const container = document.getElementById('owner-live-feedback-container');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        if (customerFeedback.length === 0) {
+            container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:10px;">እስካሁን ምንም አስተያየት አልተሰጠም።</p>';
+            return;
+        }
+        
+        customerFeedback.forEach((fb, idx) => {
+            let stars = '⭐'.repeat(fb.rating);
+            let alertClass = fb.isUrgent ? 'alert-complaint' : '';
+            let badgeText = fb.isUrgent ? '<span class="badge badge-danger">⚠️ አስቸኳይ ቅሬታ (Alert)</span>' : '<span class="badge badge-success">✅ መደበኛ</span>';
+            
+            container.innerHTML += `
+                <div class="feedback-item ${alertClass}">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <strong>${fb.name} (${fb.order})</strong>
+                        <span>${badgeText}</span>
+                    </div>
+                    <div style="color:var(--warning); margin-bottom:4px;">${stars} (${fb.rating}/5)</div>
+                    <p style="font-weight:600; color:var(--primary); font-size:0.9rem;">"${fb.text}"</p>
+                    <small style="color:#64748b; display:block; margin-top:4px;">የመጣበት ሰዓት፦ ${fb.time}</small>
+                    
+                    ${fb.reply ? `
+                        <div style="background:#e0f2fe; padding:6px; border-radius:4px; margin-top:6px; border-left:3px solid var(--accent);">
+                            <small style="color:var(--accent); font-weight:bold; display:block;">የባለቤቱ ምላሽ፦</small>
+                            <span style="font-size:0.8rem; font-weight:600;">${fb.reply}</span>
+                        </div>
+                    ` : `
+                        <div class="reply-box">
+                            <input type="text" id="fb-reply-input-${idx}" class="reply-input" placeholder="ለደንበኛው ፈጣን ምላሽ ይጻፉ...">
+                            <button class="reply-btn" onclick="submitFeedbackReply(${idx})">ላክ ↩️</button>
+                        </div>
+                    `}
+                </div>
+            `;
+        });
+    }
+
+    // ለአስተያየት ምላሽ መስጫ ፋንክሽን
+    function submitFeedbackReply(idx) {
+        const input = document.getElementById(`fb-reply-input-${idx}`);
+        const text = input.value.trim();
+        if (!text) return alert("እባክዎ መጀመሪያ ምላሽዎን ይጻፉ!");
+        
+        customerFeedback[idx].reply = text;
+        customerFeedback[idx].isUrgent = false; // ምላሽ ሲያገኝ አስቸኳይነቱ ይነሳል
+        cloudSyncSimulator();
+        updateAllDisplays();
+        playBeep(700, 0.15);
+        alert("✅ የደንበኛ አስተያየት ምላሽ በተሳካ ሁኔታ ተልኳል!");
+    }
+
+    // አዲስ ገፅ 2 የማሳያ ፋንክሽን (አቅራቢዎችና የክምችት ማሳሰቢያ)
+    function renderOwnerSuppliersPage() {
+        const tableBody = document.getElementById('owner-suppliers-table');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            suppliersData.forEach(sup => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><b>${sup.name}</b></td>
+                        <td>${sup.item}</td>
+                        <td>${sup.phone}</td>
+                        <td style="color:var(--danger); font-weight:bold;">${sup.balance}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        const alertsBox = document.getElementById('owner-inventory-alerts-box');
+        if (alertsBox) {
+            alertsBox.innerHTML = '';
+            let lowItems = inventory.filter(i => i.remaining < 15);
+            if (lowItems.length === 0) {
+                alertsBox.innerHTML = '<div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; padding:10px; border-radius:6px; font-weight:bold; font-size:0.85rem;">✅ በአሁኑ ሰዓት ሁሉም ጥሬ ዕቃዎች በበቂ ሁኔታ መጋዘን ውስጥ ይገኛሉ። የሚያሰጋ እጥረት የለም።</div>';
+            } else {
+                lowItems.forEach(i => {
+                    alertsBox.innerHTML += `
+                        <div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
+                            <span>⚠️ ሊያልቅ ነው፦ "${i.name}" የቀረው ${i.remaining} ብቻ ነው!</span>
+                            <span class="badge badge-danger" style="padding:4px 8px;">እባክዎ ይዘዙ</span>
+                        </div>
+                    `;
+                });
+            }
+        }
     }
 
     function playBeep(freq = 600, dur = 0.15) {
@@ -1248,7 +1391,7 @@
 
     function downloadSystemBackup() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-            menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData, globalNotes: globalNotes
+            menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData, globalNotes: globalNotes, suppliers: suppliersData, feedback: customerFeedback
         }, null, 4));
         let dl = document.createElement('a');
         dl.setAttribute("href", dataStr);
@@ -1448,7 +1591,6 @@
             return;
         }
 
-        // ማጣሪያ (Filtering)
         let filtered = salesLedger.filter(log => {
             let logDate = log.date;
             if (!logDate) return false;
@@ -1463,7 +1605,6 @@
             return true;
         });
 
-        // ስሌቶች
         let totalRev = 0;
         let totalExp = 0;
 
@@ -1477,7 +1618,7 @@
         document.getElementById('adv-total-exp-txt').innerText = totalExp.toFixed(2) + " ብር";
 
         if (filtered.length === 0) {
-            tableBox.innerHTML = `<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መረጃ አልተገኘም።</p>`;
+            tableBox.innerHTML = `<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መፈላጊ አልተገኘም።</p>`;
             summaryBox.style.display = 'block';
             return;
         }
