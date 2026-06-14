@@ -1914,5 +1914,73 @@
         }
     }
 </script>
-</body>
+</body><script type="module">
+  import { getDatabase, ref, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // የባለቤት ሚስጥር ቁልፍ (Password)
+  const OWNER_PASSWORD = "1234"; 
+  let isOwnerLoggedIn = false;
+
+  // 1. የባለቤት ገጽ መግቢያ (ከላይ በላኩልኝ ሊንክ መሰረት)
+  window.toggleOwnerMode = function() {
+    if (!isOwnerLoggedIn) {
+      let inputPass = prompt("እባክዎ የባለቤት መግቢያ የይለፍ ቃል (Password) ያስገቡ፦");
+      if (inputPass === OWNER_PASSWORD) {
+        isOwnerLoggedIn = true;
+        alert("እንኳን በደህና መጡ ባለቤት! 🎉 አሁን ዋጋ እና ስም ማስተካከያ ቁልፎች ይበራሉ።");
+        enableAdminUI(true);
+      } else if (inputPass !== null) {
+        alert("ስህተት፡ የተሳሳተ የይለፍ ቃል አስገብተዋል!");
+      }
+    } else {
+      isOwnerLoggedIn = false;
+      alert("ከባለቤት ገጽ ወጥተዋል።");
+      enableAdminUI(false);
+    }
+  };
+
+  // 2. የስም እና የዋጋ ማስተካከያ ፈንክሽን (Edit)
+  window.editItemPriceName = function(itemId, currentName, currentPrice) {
+    if (!isOwnerLoggedIn) return alert("ይህንን ለማድረግ መጀመሪያ እንደ ባለቤት መግባት አለብዎት!");
+    
+    const newName = prompt("አዲሱን የምግብ/መጠጥ ስም ያስገቡ፦", currentName);
+    if (newName === null || newName.trim() === "") return;
+
+    const newPrice = prompt("አዲሱን ዋጋ ያስገቡ፦", currentPrice);
+    if (newPrice === null || isNaN(newPrice) || newPrice.trim() === "") return;
+
+    // ወደ Firebase ደመና ቀጥታ መላኪያ
+    const db = getDatabase();
+    const itemRef = ref(db, 'menu/' + itemId);
+    
+    update(itemRef, {
+      name: newName,
+      price: Number(newPrice)
+    }).then(() => {
+      alert("ስም እና ዋጋ በትክክል ተስተካክሏል! 🔄");
+    }).catch(err => alert("ስህተት ተከስቷል፦ " + err));
+  };
+
+  // 3. እቃ ከዝርዝር ማጥፊያ ፈንክሽን (Delete)
+  window.deleteItemFromMenu = function(itemId) {
+    if (!isOwnerLoggedIn) return alert("ይህንን ለማድረግ መጀመሪያ እንደ ባለቤት መግባት አለብዎት!");
+    
+    if (confirm("እርግጠኛ ነዎት ይህንን እቃ ከምናሌው ውስጥ ሙሉ በሙሉ ማጥፋት ይፈልጋሉ?")) {
+      const db = getDatabase();
+      const itemRef = ref(db, 'menu/' + itemId);
+      
+      remove(itemRef).then(() => {
+        alert("እቃው ከሲስተሙ ጠፍቷል! 🗑️");
+      }).catch(err => alert("ማጥፋት አልተሳካም፦ " + err));
+    }
+  };
+
+  // ማስተካከያ ቁልፎቹን ለባለቤት ብቻ ማሳያ/መደበቂያ ህግ
+  function enableAdminUI(show) {
+    const controls = document.querySelectorAll('.admin-controls');
+    controls.forEach(box => {
+      box.style.display = show ? 'flex' : 'none';
+    });
+  }
+</script>
 </html>
