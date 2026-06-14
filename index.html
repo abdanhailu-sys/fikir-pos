@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="am">
 <head>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // የእርስዎ የደመና ቁልፎች (ከምስልዎ የተወሰደ)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAHvNlXykZuvzVW6XnEJg2Dp0xKIjFypk",
+    authDomain: "fikir-pos.firebaseapp.com",
+    projectId: "fikir-pos",
+    storageBucket: "fikir-pos.firebasestorage.app",
+    messagingSenderId: "103280989919",
+    appId: "1:103280989919:web:55bdcefc8bc01d0aab7b6a",
+    databaseURL: "https://fikir-pos-default-rtdb.firebaseio.com/"
+  };
+
+  // Firebase-ን ማስጀመር
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // መረጃን ወደ ደመና ለመላክ የሚያገለግል ፈንክሽን
+  window.saveToCloud = function(path, data) {
+    const dataRef = ref(database, path);
+    set(dataRef, data)
+      .then(() => console.log("መረጃው በሰላም ደመና ላይ ተቀምጧል!"))
+      .catch((error) => console.error("ስህተት ተከስቷል፦", error));
+  };
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fikir Bar & Restaurant - Enterprise POS v4.6</title>
