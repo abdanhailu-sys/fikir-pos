@@ -1,33 +1,6 @@
 <!DOCTYPE html>
 <html lang="am">
 <head>
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  // የእርስዎ የደመና ቁልፎች (ከምስልዎ የተወሰደ)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDAHvNlXykZuvzVW6XnEJg2Dp0xKIjFypk",
-    authDomain: "fikir-pos.firebaseapp.com",
-    projectId: "fikir-pos",
-    storageBucket: "fikir-pos.firebasestorage.app",
-    messagingSenderId: "103280989919",
-    appId: "1:103280989919:web:55bdcefc8bc01d0aab7b6a",
-    databaseURL: "https://fikir-pos-default-rtdb.firebaseio.com/"
-  };
-
-  // Firebase-ን ማስጀመር
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
-  // መረጃን ወደ ደመና ለመላክ የሚያገለግል ፈንክሽን
-  window.saveToCloud = function(path, data) {
-    const dataRef = ref(database, path);
-    set(dataRef, data)
-      .then(() => console.log("መረጃው በሰላም ደመና ላይ ተቀምጧል!"))
-      .catch((error) => console.error("ስህተት ተከስቷል፦", error));
-  };
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fikir Bar & Restaurant - Enterprise POS v4.6</title>
@@ -71,7 +44,7 @@
         nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
         nav a.active { color: white; background: var(--accent); }
         
-        /* የሰራተኞች የቀጥታ መልዕክት ሰሌዳ (Noticeboard) */
+        /* የሰራተኞች የቀጥታ መልዕክት ሰሌዳ */
         .broadcast-banner { background: #fef3c7; border-left: 5px solid var(--warning); padding: 10px 15px; margin: 10px 12px 0 12px; border-radius: 6px; font-size: 0.9rem; color: #92400e; font-weight: 600; display: none; }
 
         /* የገጾች አቀማመጥ */
@@ -160,7 +133,6 @@
         .note-item-box { background: #fffdeb; padding: 10px; border-left: 4px solid var(--warning); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .note-del-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         
-        /* ለአዲሶቹ ገጾች የተጨመሩ ስታይሎች */
         .feedback-item { background: #f8fafc; border-left: 4px solid #8b5cf6; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
         .feedback-item.alert-complaint { border-left-color: var(--danger); background: #fff5f5; animation: pulseBorder 2s infinite; }
         @keyframes pulseBorder { 0% { border-left-color: var(--danger); } 50% { border-left-color: #fca5a5; } 100% { border-left-color: var(--danger); } }
@@ -168,9 +140,9 @@
         .reply-input { flex: 1; padding: 5px; font-size: 0.8rem; border: 1px solid #cbd5e0; border-radius: 4px; }
         .reply-btn { background: var(--accent); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
 
-        /* አዲስ የ200 እቃዎች ዝርዝር ስታይል */
         .master-scroll-box { max-height: 450px; overflow-y: auto; border: 1px solid #cbd5e0; border-radius: 8px; background: #fff; margin-top: 10px; }
-        .master-table th { position: sticky; top: 0; background: #e2e8f0; z-index: 20; }
+        .master-table { width: 100%; border-collapse: collapse; }
+        .master-table th { position: sticky; top: 0; background: #e2e8f0; z-index: 20; padding: 8px; }
     </style>
 </head>
 <body>
@@ -424,8 +396,7 @@
                         <th>አይነት (Category)</th>
                     </tr>
                 </thead>
-                <tbody id="cashier-master-table-body">
-                    </tbody>
+                <tbody id="cashier-master-table-body"></tbody>
             </table>
         </div>
     </div>
@@ -516,8 +487,7 @@
                             <th>ተግባር (Action)</th>
                         </tr>
                     </thead>
-                    <tbody id="owner-master-table-body">
-                        </tbody>
+                    <tbody id="owner-master-table-body"></tbody>
                 </table>
             </div>
         </div>
@@ -527,8 +497,7 @@
         <div class="card" style="border: 2px solid #8b5cf6;">
             <h3>💬 የደንበኞች ቀጥታ አስተያየት እና ቅሬታዎች ማጠቃለያ</h3>
             <p style="font-size:0.8rem; color:#64748b; margin-bottom:12px;">ዝቅተኛ ኮከብ ወይም ቅሬታ ሲኖር ሲስተሙ በራስ-ሰር የቀይ ቀለም ማሳሰቢያ ያሳያል።</p>
-            <div id="owner-live-feedback-container" style="max-height: 350px; overflow-y: auto;">
-                </div>
+            <div id="owner-live-feedback-container" style="max-height: 350px; overflow-y: auto;"></div>
         </div>
     </div>
 
@@ -545,14 +514,12 @@
                             <th>ቀሪ ዕዳ (ቀሪ ሂሳብ)</th>
                         </tr>
                     </thead>
-                    <tbody id="owner-suppliers-table">
-                        </tbody>
+                    <tbody id="owner-suppliers-table"></tbody>
                 </table>
             </div>
             
-            <h3>📦 የክምችት ማሳሰቢያዎች (Low Stock Alerts)</h3>
-            <div id="owner-inventory-alerts-box" style="margin-top:10px;">
-                </div>
+            <h3>📦 የክክምችት ማሳሰቢያዎች (Low Stock Alerts)</h3>
+            <div id="owner-inventory-alerts-box" style="margin-top:10px;"></div>
         </div>
     </div>
 
@@ -635,7 +602,7 @@
         <div class="card" style="background:#f8fafc; border:2px solid var(--warning); text-align:center;">
             <h4>📲 አፑን ለሰራተኞች በባርኮድ መጫኛ</h4>
             <button style="background:var(--primary); color:white; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:0.85rem;" onclick="toggleQrCode('qr-owner-box')">የመጫኛ ባርኮድ አሳይ / ደብቅ</button>
-            <div class="qr-holder" id="qr-owner-box" style="margin:10px auto 0 auto;"></div>
+            <div class="qr-holder" id="qr-owner-box" style="margin:10px auto 0 auto; width:140px; height:140px;"></div>
         </div>
 
         <div class="card" style="border-left: 5px solid var(--accent);">
@@ -734,7 +701,7 @@
             <h3>📈 በብዛት የተሸጡ ምግቦችና መጠጦች ደረጃ</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button class="tab-sub-btn active" id="rank-btn-day" onclick="changeRankPeriod('day')">ዕለታዊ</button>
-                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">саምንታዊ</button>
+                <button class="tab-sub-btn" id="rank-btn-week" onclick="changeRankPeriod('week')">ሳምንታዊ</button>
                 <button class="tab-sub-btn" id="rank-btn-month" onclick="changeRankPeriod('month')">ወርሃዊ</button>
             </div>
             <div style="overflow-x:auto;">
@@ -829,33 +796,13 @@
     const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
 
     let currentMenu = JSON.parse(localStorage.getItem('f_menu_v4')) || [
-        
-    ];// 1. የድሮዎቹን 6 ምግቦች አጥፍቶ በቀጥታ ከFirebase (ደመና) የሚስብ አዲሱ ሲስተም
-let menuItems = []; // መጀመሪያ ዝርዝሩ ባዶ ይሆናል
-
-// ከFirebase ዳታውን በቅጽበት (Realtime) መሳቢያ
-const db = getDatabase();
-const menuCloudRef = ref(db, 'menu');
-
-onValue(menuCloudRef, (snapshot) => {
-    const data = snapshot.val() || {};
-    menuItems = []; // ዝርዝሩን ማጽጃ
-    
-    // ከደመናው የመጡትን ምግቦች ወደ አሮጌው ሲስተምዎ መቅረጫ
-    Object.keys(data).forEach(key => {
-        menuItems.push({
-            id: key,
-            name: data[key].name,
-            price: Number(data[key].price),
-            category: data[key].category || "ምግብ"
-        });
-    });
-    
-    // የእርስዎ አሮጌ ኮድ ምግቦቹን ለተጠቃሚ እንዲደረድር የሚጠራው ፈንክሽን 
-    // (በኮድዎ ስም መሰረት renderMenu() ወይም displayProducts() ብለው ይለውጡት)
-    if (typeof renderMenu === "function") renderMenu();
-    if (typeof displayProducts === "function") displayProducts();
-});
+        { name: "ጥብስ ስጋ", price: 350, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1544025162-d76694265947?w=300", salesDay: 14, salesWeek: 92, salesMonth: 380, salesYear: 4560 },
+        { name: "ክትፎ ልዩ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=300", salesDay: 22, salesWeek: 145, salesMonth: 510, salesYear: 6120 },
+        { name: "ቺኪን በርገር", price: 280, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300", salesDay: 9, salesWeek: 54, salesMonth: 190, salesYear: 2280 },
+        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300", salesDay: 45, salesWeek: 310, salesMonth: 1200, salesYear: 14400 },
+        { name: "ለስላሳ መጠጥ", price: 50, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300", salesDay: 30, salesWeek: 185, salesMonth: 740, salesYear: 8880 },
+        { name: "ወይን ማክሲም", price: 800, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=300", salesDay: 4, salesWeek: 28, salesMonth: 105, salesYear: 1260 }
+    ];
 
     let inventory = JSON.parse(localStorage.getItem('f_inventory_v4')) || [
         { name: "ስጋ (ኪሎ)", in: 100, cost: 35000, out: 45, remaining: 55 },
@@ -869,7 +816,6 @@ onValue(menuCloudRef, (snapshot) => {
         "የሽንኩርት አቅርቦት ዛሬ ማታ ይገባል።"
     ];
 
-    // አዲስ የተጨመረው የ200 እቃዎች ማስተዳደሪያ ዋና ዳታ (Master Index List)
     let masterIndexList = JSON.parse(localStorage.getItem('f_master_index_v4')) || [
         { id: 1, name: "ጥብስ ስጋ ልዩ", cat: "ምግብ (Kitchen)" },
         { id: 2, name: "ክትፎ በቅቤ", cat: "ምግብ (Kitchen)" },
@@ -938,12 +884,10 @@ onValue(menuCloudRef, (snapshot) => {
         renderOwnerFeedbackPage();
         renderOwnerSuppliersPage();
         
-        // አዲሶቹን የ200 እቃዎች ሰሌዳዎች መሙያ
         renderMasterTable('owner', masterIndexList);
         renderMasterTable('cashier', masterIndexList);
     }
 
-    // የ200 እቃዎች ማህደር ማሳያ ሪንደር ፋንክሽን (ለባለቤት እና ለካሼር)
     function renderMasterTable(role, dataList) {
         const tbody = document.getElementById(`${role}-master-table-body`);
         if (!tbody) return;
@@ -954,7 +898,6 @@ onValue(menuCloudRef, (snapshot) => {
             return;
         }
 
-        // በተራ ቁጥር (ID) ቅደም ተከተል መደርደር
         let sortedList = [...dataList].sort((a, b) => a.id - b.id);
 
         sortedList.forEach(item => {
@@ -975,7 +918,6 @@ onValue(menuCloudRef, (snapshot) => {
         });
     }
 
-    // አዲስ እቃ መመዝገቢያ እና ማሻሻያ (ባለቤት)
     function saveToMasterList() {
         const idInput = document.getElementById('master-id-input');
         const nameInput = document.getElementById('master-name-input');
@@ -992,7 +934,6 @@ onValue(menuCloudRef, (snapshot) => {
             return alert("⚠️ እባክዎ የምግቡን ወይም የመጠጡን ስም ያስገቡ!");
         }
 
-        // ቀደም ሲል በዚያ ተራ ቁጥር የተመዘገበ እቃ ካለ ማረጋገጥ/ማሻሻል
         let existingIndex = masterIndexList.findIndex(item => item.id === id);
 
         if (existingIndex !== -1) {
@@ -1009,14 +950,12 @@ onValue(menuCloudRef, (snapshot) => {
         cloudSyncSimulator();
         updateAllDisplays();
 
-        // ፎርሙን ማጽዳት
         idInput.value = '';
         nameInput.value = '';
         playBeep(700, 0.15);
         alert(`✅ እቃ ቁጥር #${id} በተሳካ ሁኔታ ማህደር ላይ ተቀምጧል!`);
     }
 
-    // መረጃ ለመቀየር ወደ ፎርም መውሰጃ
     function editMasterItem(id, name, cat) {
         document.getElementById('master-id-input').value = id;
         document.getElementById('master-name-input').value = name;
@@ -1024,7 +963,6 @@ onValue(menuCloudRef, (snapshot) => {
         document.getElementById('master-id-input').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // መረጃ ማጥፊያ (ባለቤት)
     function deleteMasterItem(id) {
         if (confirm(`⚠️ ተራ ቁጥር #${id} ማህደርን ሙሉ በሙሉ ለማጥፋት እርግጠኛ ነዎት?`)) {
             masterIndexList = masterIndexList.filter(item => item.id !== id);
@@ -1034,7 +972,6 @@ onValue(menuCloudRef, (snapshot) => {
         }
     }
 
-    // የቀጥታ ሰርች ባር ፋንክሽን (በቁጥር ወይም በስም መፈለጊያ)
     function searchMasterList(role) {
         const query = document.getElementById(`${role}-master-search`).value.toLowerCase().trim();
         
@@ -1065,6 +1002,16 @@ onValue(menuCloudRef, (snapshot) => {
             let alertClass = fb.isUrgent ? 'alert-complaint' : '';
             let badgeText = fb.isUrgent ? '<span class="badge badge-danger">⚠️ አስቸኳይ ቅሬታ (Alert)</span>' : '<span class="badge badge-success">✅ መደበኛ</span>';
             
+            let replyContent = fb.reply ? 
+                `<div style="background:#e0f2fe; padding:6px; border-radius:4px; margin-top:6px; border-left:3px solid var(--accent);">
+                    <small style="color:var(--accent); font-weight:bold; display:block;">የባለቤቱ ምላሽ፦</small>
+                    <span style="font-size:0.8rem; font-weight:600;">${fb.reply}</span>
+                </div>` : 
+                `<div class="reply-box">
+                    <input type="text" id="fb-reply-input-${idx}" class="reply-input" placeholder="ለደንበኛው ፈጣን ምላሽ ይጻፉ...">
+                    <button class="reply-btn" onclick="submitFeedbackReply(${idx})">ላክ ↩️</button>
+                </div>`;
+
             container.innerHTML += `
                 <div class="feedback-item ${alertClass}">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
@@ -1074,20 +1021,8 @@ onValue(menuCloudRef, (snapshot) => {
                     <div style="color:var(--warning); margin-bottom:4px;">${stars} (${fb.rating}/5)</div>
                     <p style="font-weight:600; color:var(--primary); font-size:0.9rem;">"${fb.text}"</p>
                     <small style="color:#64748b; display:block; margin-top:4px;">የመጣበት ሰዓት፦ ${fb.time}</small>
-                    
-                    ${fb.reply ? `
-                        <div style="background:#e0f2fe; padding:6px; border-radius:4px; margin-top:6px; border-left:3px solid var(--accent);">
-                            <small style="color:var(--accent); font-weight:bold; display:block;">የባለቤቱ ምላሽ፦</small>
-                            <span style="font-size:0.8rem; font-weight:600;">${fb.reply}</span>
-                        </div>
-                    ` : `
-                        <div class="reply-box">
-                            <input type="text" id="fb-reply-input-${idx}" class="reply-input" placeholder="ለደንበኛው ፈጣን ምላሽ ይጻፉ...">
-                            <button class="reply-btn" onclick="submitFeedbackReply(${idx})">ላክ ↩️</button>
-                        </div>
-                    `}
-                </div>
-            `;
+                    ${replyContent}
+                </div>`;
         });
     }
 
@@ -1115,8 +1050,7 @@ onValue(menuCloudRef, (snapshot) => {
                         <td>${sup.item}</td>
                         <td>${sup.phone}</td>
                         <td style="color:var(--danger); font-weight:bold;">${sup.balance}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
         
@@ -1132,8 +1066,7 @@ onValue(menuCloudRef, (snapshot) => {
                         <div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
                             <span>⚠️ ሊያልቅ ነው፦ "${i.name}" የቀረው ${i.remaining} ብቻ ነው!</span>
                             <span class="badge badge-danger" style="padding:4px 8px;">እባክዎ ይዘዙ</span>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
         }
@@ -1162,7 +1095,7 @@ onValue(menuCloudRef, (snapshot) => {
         
         if(ownerComments.length > 0) {
             let latest = ownerComments[ownerComments.length - 1];
-            board.innerText = `📢  ማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
+            board.innerText = `📢 ማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
             board.style.display = 'block';
         } else {
             board.style.display = 'none';
@@ -1192,12 +1125,7 @@ onValue(menuCloudRef, (snapshot) => {
         const div = document.getElementById('menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.i
-                nnerHTML += `
-                <div class="admin-controls" style="display: none; margin-top: 10px; justify-content: space-around; width: 100%;">
-    <button onclick="editItemPriceName('${item.id}', '${item.name}', ${item.price})" style="background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ አሻሽል</button>
-    <button onclick="deleteItemFromMenu('${item.id}')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ አጥፋ</button>
-</div>
+            div.innerHTML += `
             <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
@@ -1706,30 +1634,22 @@ onValue(menuCloudRef, (snapshot) => {
 
     function autoCalculateSumTotal() {
         const price = parseFloat(document.getElementById('calc-item-price').value) || 0;
-        const qty = parseInt(document.getElementById('calc-item-qty').value) || 1;
+        const qty = parseFloat(document.getElementById('calc-item-qty').value) || 1;
         document.getElementById('calc-item-total').value = price * qty;
     }
 
     function saveCalcTransactionSecure() {
-        if (currentRole === 'cashier') {
-            alert("⚠️ የተሳሳተ ፍቃድ! ይህንን የሽያጭ ማስያ ለመጠቀም የባለቤት (ማናጀር) መለያ ያስፈልግዎታል።");
-            return;
-        }
-        saveCalcTransaction();
-    }
-
-    function saveCalcTransaction() {
         const idx = document.getElementById('calc-item-select').value;
-        const qty = parseInt(document.getElementById('calc-item-qty').value) || 1;
+        const qty = parseFloat(document.getElementById('calc-item-qty').value) || 1;
         const total = parseFloat(document.getElementById('calc-item-total').value) || 0;
-
-        if (idx === "") return alert("እባክዎ መጀመሪያ ምግብ/መጠጥ ይምረጡ!");
+        
+        if(idx === "") return alert("እባክዎ መጀመሪያ ዕቃ ይምረጡ!");
 
         const item = currentMenu[idx];
         const todayStr = new Date().toISOString().split('T')[0];
 
         salesLedger.push({
-            desc: `${item.name} (ቀጥታ ማስያ)`,
+            desc: `${item.name} (${qty}x - ካልኩሌተር ሽያጭ)`,
             amount: total,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
@@ -1737,37 +1657,21 @@ onValue(menuCloudRef, (snapshot) => {
             itemCat: item.cat
         });
 
-        item.salesDay += qty; item.salesWeek += qty; item.salesMonth += qty; item.salesYear += qty;
         cloudSyncSimulator();
         updateAllDisplays();
-        
-        document.getElementById('calc-item-select').value = '';
-        document.getElementById('calc-item-price').value = '';
-        document.getElementById('calc-item-qty').value = '1';
-        document.getElementById('calc-item-total').value = '';
-        alert("✅ ማስያ ስሌቱ በተሳካ ሁኔታ ዕለታዊ መዝገብ ላይ ተቀምጧል!");
+        playBeep(800, 0.2);
+        alert("✅ ሽያጩ በካሽ ቡክ ላይ በተሳካ ሁኔታ ተመዝግቧል!");
     }
 
     function saveDirectExpenseSecure() {
-        if (currentRole === 'cashier') {
-            alert("⚠️ የተሳሳተ ፍቃድ! ካሼሩ የባለቤቱን ቀጥታ ወጪ መመዝገብ አይችልም።");
-            return;
-        }
-        saveDirectExpense();
-    }
-
-    function saveDirectExpense() {
         const reason = document.getElementById('exp-reason').value.trim();
         const amount = parseFloat(document.getElementById('exp-amount').value);
 
-        if (!reason || isNaN(amount) || amount <= 0) {
-            return alert("እባክዎ የወጪውን ምክንያት እና መጠን በትክክል ያስገቡ!");
-        }
+        if(!reason || isNaN(amount)) return alert("እባክዎ የወጪውን ምክንያትና መጠን በትክክል ያስገቡ!");
 
         const todayStr = new Date().toISOString().split('T')[0];
-
         salesLedger.push({
-            desc: `${reason} (የባለቤት ቀጥታ ወጪ)`,
+            desc: `${reason} (ቀጥታ ወጪ)`,
             amount: -amount,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
@@ -1775,13 +1679,12 @@ onValue(menuCloudRef, (snapshot) => {
             itemCat: "expense"
         });
 
-        cloudSyncSimulator();
-        updateAllDisplays();
-
         document.getElementById('exp-reason').value = '';
         document.getElementById('exp-amount').value = '';
-        
-        playBeep(400, 0.2);
+
+        cloudSyncSimulator();
+        updateAllDisplays();
+        playBeep(400, 0.3);
         alert("📉 ወጪው በተሳካ ሁኔታ ተመዝግቧል!");
     }
 
@@ -1789,24 +1692,27 @@ onValue(menuCloudRef, (snapshot) => {
         const dateInput = document.getElementById(`${role}-search-date-input`).value;
         const resultDiv = document.getElementById(`${role}-search-results-box`);
         
-        if (!dateInput) {
-            resultDiv.innerHTML = '<p style="color:var(--danger); font-weight:bold;">⚠️ እባክዎ መጀመሪያ ቀን ይምረጡ!</p>';
+        if (!dateInput) return alert("እባክዎ መጀመሪያ ቀኑን ይምረጡ!");
+
+        let filtered = salesLedger.filter(log => log.date === dateInput);
+        resultDiv.innerHTML = '';
+
+        if (filtered.length === 0) {
+            resultDiv.innerHTML = '<p style="color:var(--danger); font-weight:bold;">ℹ️ በዚህ ቀን የተመዘገበ ምንም አይነት ሽያጭ ወይም ወጪ የለም።</p>';
             return;
         }
 
-        let filteredLogs = salesLedger.filter(log => log.date === dateInput);
-        
-        if (filteredLogs.length === 0) {
-            resultDiv.innerHTML = `<p style="color:var(--warning); font-weight:bold;">ℹ️ በቀን ${dateInput} ምንም የፋይናንስ እንቅስቃሴ አልተመዘገበም።</p>`;
-            return;
-        }
-
-        let tableHtml = `<table style="width:100%; margin-top:5px;"><thead><tr><th>የእቃ ስም/መግለጫ</th><th>ሰዓት</th><th>ሒሳብ</th></tr></thead><tbody>`;
+        let tableHtml = `<table><thead><tr><th>ሰዓት</th><th>ዝርዝር መግለጫ</th><th>ሂሳብ</th></tr></thead><tbody>`;
         let grandTotal = 0;
-        filteredLogs.forEach(log => {
-            grandTotal += Number(log.amount);
-            let isExp = Number(log.amount) < 0;
-            tableHtml += `<tr><td><b>${log.desc}</b></td><td>${log.time}</td><td style="color:${isExp ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">${Number(log.amount).toFixed(2)} ብር</td></tr>`;
+
+        filtered.forEach(log => {
+            let amt = Number(log.amount);
+            grandTotal += amt;
+            tableHtml += `<tr>
+                <td>${log.time}</td>
+                <td>${log.desc}</td>
+                <td style="color:${amt >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">${amt.toFixed(2)} ብር</td>
+            </tr>`;
         });
 
         tableHtml += `<tr><td colspan="2" style="text-align:right; font-weight:bold;">የቀኑ ንጹሕ ቀሪ (Net Total)፦</td><td style="color:${grandTotal >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">${grandTotal.toFixed(2)} ብር</td></tr></tbody></table>`;
@@ -1852,7 +1758,7 @@ onValue(menuCloudRef, (snapshot) => {
         document.getElementById('adv-total-exp-txt').innerText = totalExp.toFixed(2) + " ብር";
 
         if (filtered.length === 0) {
-            tableBox.innerHTML = `<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መፈላጊ አልተገኘም።</p>`;
+            tableBox.innerHTML = '<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መፈላጊ አልተገኘም።</p>';
             summaryBox.style.display = 'block';
             return;
         }
@@ -1939,145 +1845,5 @@ onValue(menuCloudRef, (snapshot) => {
         }
     }
 </script>
-</body><script type="module">
-  import { getDatabase, ref, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  // የባለቤት ሚስጥር ቁልፍ (Password)
-  const OWNER_PASSWORD = "1234"; 
-  let isOwnerLoggedIn = false;
-
-  // 1. የባለቤት ገጽ መግቢያ (ከላይ በላኩልኝ ሊንክ መሰረት)
-  window.toggleOwnerMode = function() {
-    if (!isOwnerLoggedIn) {
-      let inputPass = prompt("እባክዎ የባለቤት መግቢያ የይለፍ ቃል (Password) ያስገቡ፦");
-      if (inputPass === OWNER_PASSWORD) {
-        isOwnerLoggedIn = true;
-        alert("እንኳን በደህና መጡ ባለቤት! 🎉 አሁን ዋጋ እና ስም ማስተካከያ ቁልፎች ይበራሉ።");
-        enableAdminUI(true);
-      } else if (inputPass !== null) {
-        alert("ስህተት፡ የተሳሳተ የይለፍ ቃል አስገብተዋል!");
-      }
-    } else {
-      isOwnerLoggedIn = false;
-      alert("ከባለቤት ገጽ ወጥተዋል።");
-      enableAdminUI(false);
-    }
-  };
-
-  // 2. የስም እና የዋጋ ማስተካከያ ፈንክሽን (Edit)
-  window.editItemPriceName = function(itemId, currentName, currentPrice) {
-    if (!isOwnerLoggedIn) return alert("ይህንን ለማድረግ መጀመሪያ እንደ ባለቤት መግባት አለብዎት!");
-    
-    const newName = prompt("አዲሱን የምግብ/መጠጥ ስም ያስገቡ፦", currentName);
-    if (newName === null || newName.trim() === "") return;
-
-    const newPrice = prompt("አዲሱን ዋጋ ያስገቡ፦", currentPrice);
-    if (newPrice === null || isNaN(newPrice) || newPrice.trim() === "") return;
-
-    // ወደ Firebase ደመና ቀጥታ መላኪያ
-    const db = getDatabase();
-    const itemRef = ref(db, 'menu/' + itemId);
-    
-    update(itemRef, {
-      name: newName,
-      price: Number(newPrice)
-    }).then(() => {
-      alert("ስም እና ዋጋ በትክክል ተስተካክሏል! 🔄");
-    }).catch(err => alert("ስህተት ተከስቷል፦ " + err));
-  };
-
-  // 3. እቃ ከዝርዝር ማጥፊያ ፈንክሽን (Delete)
-  window.deleteItemFromMenu = function(itemId) {
-    if (!isOwnerLoggedIn) return alert("ይህንን ለማድረግ መጀመሪያ እንደ ባለቤት መግባት አለብዎት!");
-    
-    if (confirm("እርግጠኛ ነዎት ይህንን እቃ ከምናሌው ውስጥ ሙሉ በሙሉ ማጥፋት ይፈልጋሉ?")) {
-      const db = getDatabase();
-      const itemRef = ref(db, 'menu/' + itemId);
-      
-      remove(itemRef).then(() => {
-        alert("እቃው ከሲስተሙ ጠፍቷል! 🗑️");
-      }).catch(err => alert("ማጥፋት አልተሳካም፦ " + err));
-    }
-  };
-
-  // ማስተካከያ ቁልፎቹን ለባለቤት ብቻ ማሳያ/መደበቂያ ህግ
-  function enableAdminUI(show) {
-    const controls = document.querySelectorAll('.admin-controls');
-    controls.forEach(box => {
-      box.style.display = show ? 'flex' : 'none';
-    });
-  }
-</script>
-    <script type="module">
-  import { getDatabase, ref, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  // የባለቤት መግቢያ ፓስወርድ
-  const ADMIN_PASSWORD = "1234"; 
-  let isOwner = false;
-
-  // 1. የድሮዎቹን 6 ምግቦች በግዳጅ ማጥፊያ እና አዲሶቹን ከFirebase መሳቢያ
-  window.addEventListener('DOMContentLoaded', () => {
-    // በኮድዎ ውስጥ የነበረውን የድሮ ምግቦች መደርደሪያ (menuItems array ወይም grid) ያጸዳዋል
-    const menuGrid = document.getElementById('menu-grid') || document.getElementById('menuGrid') || document.querySelector('.menu-grid');
-    if (menuGrid) menuGrid.innerHTML = ""; 
-    
-    // ከላይ የሰሩትን ቁልፍ ወደ "የባለቤት ገጽ 🔐" ይቀይረዋል
-    const adminBtn = document.getElementById('adminToggleBtn') || document.querySelector('.admin-btn');
-    if (adminBtn) {
-      adminBtn.setAttribute('onclick', 'toggleOwnerMode()');
-    }
-  });
-
-  // 2. የባለቤት ገጽ መግቢያ ህግ
-  window.toggleOwnerMode = function() {
-    if (!isOwner) {
-      let pass = prompt("እባክዎ የባለቤት መግቢያ የይለፍ ቃል (Password) ያስገቡ፦");
-      if (pass === ADMIN_PASSWORD) {
-        isOwner = true;
-        alert("እንኳን በደህና መጡ ባለቤት! 🎉 አሁን ማስተካከያ ቁልፎች ይበራሉ።");
-        document.querySelectorAll('.admin-controls').forEach(el => el.style.display = 'flex');
-        const box = document.getElementById('adminPanel') || document.querySelector('.admin-box');
-        if (box) box.style.display = 'block';
-      } else if (pass !== null) {
-        alert("የተሳሳተ የይለፍ ቃል ነው!");
-      }
-    } else {
-      isOwner = false;
-      alert("ከባለቤት ገጽ ወጥተዋል።");
-      document.querySelectorAll('.admin-controls').forEach(el => el.style.display = 'none');
-      const box = document.getElementById('adminPanel') || document.querySelector('.admin-box');
-      if (box) box.style.display = 'none';
-    }
-  };
-
-  // 3. የዋጋ እና የስም ማስተካከያ (Edit)
-  window.editItemPriceName = function(itemId, currentName, currentPrice) {
-    event.stopPropagation();
-    if (!isOwner) return alert("እባክዎ መጀመሪያ እንደ ባለቤት ይግቡ!");
-    
-    const newName = prompt("አዲሱን የምግብ/መጠጥ ስም ያስገቡ፦", currentName);
-    if (newName === null || newName.trim() === "") return;
-
-    const newPrice = prompt("አዲሱን ዋጋ ያስገቡ፦", currentPrice);
-    if (newPrice === null || isNaN(newPrice) || newPrice.trim() === "") return;
-
-    const db = getDatabase();
-    update(ref(db, 'menu/' + itemId), { name: newName, price: Number(newPrice) })
-      .then(() => alert("በደመና ላይ በትክክል ተስተካክሏል! 🔄"));
-  };
-
-  // 4. ምግብ ማጥፊያ (Delete)
-  window.deleteItemFromMenu = function(itemId) {
-    event.stopPropagation();
-    if (!isOwner) return alert("እባክዎ መጀመሪያ እንደ ባለቤት ይግቡ!");
-    
-    if (confirm("እርግጠኛ ነዎት ይህንን እቃ ሙሉ በሙሉ ማጥፋት ይፈልጋሉ?")) {
-      const db = getDatabase();
-      remove(ref(db, 'menu/' + itemId))
-        .then(() => alert("እቃው ከደመና ላይ ጠፍቷል! 🗑️"));
-    }
-  };
-</script>
 </body>
 </html>
-
