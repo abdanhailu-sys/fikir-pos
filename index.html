@@ -1983,4 +1983,74 @@
     });
   }
 </script>
+    <script type="module">
+  import { getDatabase, ref, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // የባለቤት መግቢያ ፓስወርድ
+  const ADMIN_PASSWORD = "1234"; 
+  let isOwner = false;
+
+  // 1. የድሮዎቹን 6 ምግቦች በግዳጅ ማጥፊያ እና አዲሶቹን ከFirebase መሳቢያ
+  window.addEventListener('DOMContentLoaded', () => {
+    // በኮድዎ ውስጥ የነበረውን የድሮ ምግቦች መደርደሪያ (menuItems array ወይም grid) ያጸዳዋል
+    const menuGrid = document.getElementById('menu-grid') || document.getElementById('menuGrid') || document.querySelector('.menu-grid');
+    if (menuGrid) menuGrid.innerHTML = ""; 
+    
+    // ከላይ የሰሩትን ቁልፍ ወደ "የባለቤት ገጽ 🔐" ይቀይረዋል
+    const adminBtn = document.getElementById('adminToggleBtn') || document.querySelector('.admin-btn');
+    if (adminBtn) {
+      adminBtn.setAttribute('onclick', 'toggleOwnerMode()');
+    }
+  });
+
+  // 2. የባለቤት ገጽ መግቢያ ህግ
+  window.toggleOwnerMode = function() {
+    if (!isOwner) {
+      let pass = prompt("እባክዎ የባለቤት መግቢያ የይለፍ ቃል (Password) ያስገቡ፦");
+      if (pass === ADMIN_PASSWORD) {
+        isOwner = true;
+        alert("እንኳን በደህና መጡ ባለቤት! 🎉 አሁን ማስተካከያ ቁልፎች ይበራሉ።");
+        document.querySelectorAll('.admin-controls').forEach(el => el.style.display = 'flex');
+        const box = document.getElementById('adminPanel') || document.querySelector('.admin-box');
+        if (box) box.style.display = 'block';
+      } else if (pass !== null) {
+        alert("የተሳሳተ የይለፍ ቃል ነው!");
+      }
+    } else {
+      isOwner = false;
+      alert("ከባለቤት ገጽ ወጥተዋል።");
+      document.querySelectorAll('.admin-controls').forEach(el => el.style.display = 'none');
+      const box = document.getElementById('adminPanel') || document.querySelector('.admin-box');
+      if (box) box.style.display = 'none';
+    }
+  };
+
+  // 3. የዋጋ እና የስም ማስተካከያ (Edit)
+  window.editItemPriceName = function(itemId, currentName, currentPrice) {
+    event.stopPropagation();
+    if (!isOwner) return alert("እባክዎ መጀመሪያ እንደ ባለቤት ይግቡ!");
+    
+    const newName = prompt("አዲሱን የምግብ/መጠጥ ስም ያስገቡ፦", currentName);
+    if (newName === null || newName.trim() === "") return;
+
+    const newPrice = prompt("አዲሱን ዋጋ ያስገቡ፦", currentPrice);
+    if (newPrice === null || isNaN(newPrice) || newPrice.trim() === "") return;
+
+    const db = getDatabase();
+    update(ref(db, 'menu/' + itemId), { name: newName, price: Number(newPrice) })
+      .then(() => alert("በደመና ላይ በትክክል ተስተካክሏል! 🔄"));
+  };
+
+  // 4. ምግብ ማጥፊያ (Delete)
+  window.deleteItemFromMenu = function(itemId) {
+    event.stopPropagation();
+    if (!isOwner) return alert("እባክዎ መጀመሪያ እንደ ባለቤት ይግቡ!");
+    
+    if (confirm("እርግጠኛ ነዎት ይህንን እቃ ሙሉ በሙሉ ማጥፋት ይፈልጋሉ?")) {
+      const db = getDatabase();
+      remove(ref(db, 'menu/' + itemId))
+        .then(() => alert("እቃው ከደመና ላይ ጠፍቷል! 🗑️"));
+    }
+  };
+</script>
 </html>
