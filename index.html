@@ -1192,7 +1192,12 @@ onValue(menuCloudRef, (snapshot) => {
         const div = document.getElementById('menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.innerHTML += `
+            div.i
+                nnerHTML += `
+                <div class="admin-controls" style="display: none; margin-top: 10px; justify-content: space-around; width: 100%;">
+    <button onclick="editItemPriceName('${item.id}', '${item.name}', ${item.price})" style="background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ አሻሽል</button>
+    <button onclick="deleteItemFromMenu('${item.id}')" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ አጥፋ</button>
+</div>
             <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
