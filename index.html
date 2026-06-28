@@ -596,7 +596,7 @@
                 <label>ጠቅላላ ድምር (Total)</label>
                 <input type="number" id="calc-item-total" readonly style="font-weight:bold; color:var(--success); font-size:1.1rem;">
             </div>
-            <button onclick="saveCalcTransactionSecure()" style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">ሽያጩን መዝግብ (Save) 💾</button>
+            <button onclick="sendCalcToCashier()" style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">ሽያጩን ወደ ካሼር ላክ 🚀</button>
         </div>
 
         <div class="card" style="background:#f8fafc; border:2px solid var(--warning); text-align:center;">
@@ -656,7 +656,7 @@
             </div>
             <div class="balance-block">
                 <small>ንጹሕ ቀሪ ሒሳብ (Remaining)</small>
-                <h1 id="net-balance-box" style="color:white; font-size:1.6rem;">0.00 ETB</h1>
+                <h1 id="net-balance-box" style="font-size:1.6rem;">0.00 ETB</h1>
             </div>
             <div style="grid-column: span 3; padding-top: 5px;">
                 <button style="background:rgba(255,255,255,0.2); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:bold;" onclick="runAiAnalysis()">🤖 AI አጠቃላይ ትንተና አሂድ</button>
@@ -882,7 +882,7 @@
     }
 
     function renderMasterTable(role, dataList) {
-        const tbody = document.getElementById(`${role}-master-table-body`);
+        const tbody = document.getElementById(role + '-master-table-body');
         if (!tbody) return;
         tbody.innerHTML = '';
 
@@ -966,7 +966,7 @@
     }
 
     function searchMasterList(role) {
-        const query = document.getElementById(`${role}-master-search`).value.toLowerCase().trim();
+        const query = document.getElementById(role + '-master-search').value.toLowerCase().trim();
         
         if (!query) {
             renderMasterTable(role, masterIndexList);
@@ -1005,8 +1005,8 @@
                     <button class="reply-btn" onclick="submitFeedbackReply(${idx})">ላክ ↩️</button>
                 </div>`;
 
-            container.innerHTML += `
-                <div class="feedback-item ${alertClass}">
+            container.innerHTML += 
+                `<div class="feedback-item ${alertClass}">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <strong>${fb.name} (${fb.order})</strong>
                         <span>${badgeText}</span>
@@ -1020,7 +1020,7 @@
     }
 
     function submitFeedbackReply(idx) {
-        const input = document.getElementById(`fb-reply-input-${idx}`);
+        const input = document.getElementById('fb-reply-input-' + idx);
         const text = input.value.trim();
         if (!text) return alert("እባክዎ መጀመሪያ ምላሽዎን ይጻፉ!");
         
@@ -1037,8 +1037,8 @@
         if (tableBody) {
             tableBody.innerHTML = '';
             suppliersData.forEach(sup => {
-                tableBody.innerHTML += `
-                    <tr>
+                tableBody.innerHTML += 
+                    `<tr>
                         <td><b>${sup.name}</b></td>
                         <td>${sup.item}</td>
                         <td>${sup.phone}</td>
@@ -1055,8 +1055,8 @@
                 alertsBox.innerHTML = '<div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; padding:10px; border-radius:6px; font-weight:bold; font-size:0.85rem;">✅ በአሁኑ ሰዓት ሁሉም ጥሬ ዕቃዎች በበቂ ሁኔታ መጋዘን ውስጥ ይገኛሉ። የሚያሰጋ እጥረት የለም።</div>';
             } else {
                 lowItems.forEach(i => {
-                    alertsBox.innerHTML += `
-                        <div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
+                    alertsBox.innerHTML += 
+                        `<div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
                             <span>⚠️ ሊያልቅ ነው፦ "${i.name}" የቀረው ${i.remaining} ብቻ ነው!</span>
                             <span class="badge badge-danger" style="padding:4px 8px;">እባክዎ ይዘዙ</span>
                         </div>`;
@@ -1118,8 +1118,8 @@
         const div = document.getElementById('menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.innerHTML += `
-            <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
+            div.innerHTML += 
+            `<div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
                     <span class="name">${item.name}</span>
@@ -1134,8 +1134,8 @@
         const div = document.getElementById('customer-menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.innerHTML += `
-            <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
+            div.innerHTML += 
+            `<div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
                     <span class="name">${item.name}</span>
@@ -1296,7 +1296,7 @@
         
         const todayStr = new Date().toISOString().split('T')[0];
         salesLedger.push({
-            desc: `${name} (ጥሬ ዕቃ ገዢ ወጪ)`,
+            desc: `${name} (ጥሬ ዕቃ ገቢ)`,
             amount: -cost,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
@@ -1428,7 +1428,7 @@
     function changeTaxPeriod(period) {
         currentTaxPeriod = period;
         document.querySelectorAll('#sec-tax .tab-sub-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`tax-btn-${period}`).classList.add('active');
+        document.getElementById('tax-btn-' + period).classList.add('active');
         
         let t = "ጠቅላላ ሽያጭ";
         if(period==='day') t="የዛሬ ጠቅላላ ሽያጭ (Gross)";
@@ -1464,7 +1464,7 @@
     function changeRankPeriod(period) {
         currentRankPeriod = period;
         document.querySelectorAll('#owner-sub-rank .tab-sub-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`rank-btn-${period}`).classList.add('active');
+        document.getElementById('rank-btn-' + period).classList.add('active');
         renderTopSalesRank();
     }
 
@@ -1494,8 +1494,8 @@
     function switchOwnerSubSection(sub) {
         document.querySelectorAll('.owner-sub-content').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.owner-tabs .tab-sub-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`owner-sub-${sub}`).style.display = 'block';
-        document.getElementById(`sub-btn-${sub}`).classList.add('active');
+        document.getElementById('owner-sub-' + sub).style.display = 'block';
+        document.getElementById('sub-btn-' + sub).classList.add('active');
     }
 
     function runAiAnalysis() {
@@ -1574,7 +1574,7 @@
     function renderGlobalNotes() {
         const targets = ['customer', 'waiter', 'menu', 'inv', 'appr', 'disp', 'owner'];
         targets.forEach(t => {
-            const container = document.getElementById(`notes-container-${t}`);
+            const container = document.getElementById('notes-container-' + t);
             if (container) {
                 container.innerHTML = '';
                 globalNotes.forEach((note, index) => {
@@ -1589,7 +1589,7 @@
     }
 
     function saveGlobalNote(pageCode) {
-        const input = document.getElementById(`note-input-${pageCode}`);
+        const input = document.getElementById('note-input-' + pageCode);
         const text = input.value.trim();
         if (!text) return;
         globalNotes.push(text);
@@ -1631,7 +1631,7 @@
         document.getElementById('calc-item-total').value = price * qty;
     }
 
-    function saveCalcTransactionSecure() {
+    function sendCalcToCashier() {
         const idx = document.getElementById('calc-item-select').value;
         const qty = parseFloat(document.getElementById('calc-item-qty').value) || 1;
         const total = parseFloat(document.getElementById('calc-item-total').value) || 0;
@@ -1639,21 +1639,22 @@
         if(idx === "") return alert("እባክዎ መጀመሪያ ዕቃ ይምረጡ!");
 
         const item = currentMenu[idx];
-        const todayStr = new Date().toISOString().split('T')[0];
+        const dateString = new Date().toISOString().split('T')[0];
 
-        salesLedger.push({
-            desc: `${item.name} (${qty}x - ካልኩሌተር ሽያጭ)`,
-            amount: total,
-            time: new Date().toLocaleTimeString('am-ET'),
-            date: todayStr,
-            qty: qty,
-            itemCat: item.cat
+        pendingOrders.push({ 
+            id: Date.now(), 
+            table: "ባለቤት (Calculator)", 
+            name: item.name + " (" + qty + "x)", 
+            price: total, 
+            cat: item.cat, 
+            notes: 'ከካልኩሌተር የተላከ ሽያጭ', 
+            date: dateString 
         });
 
         cloudSyncSimulator();
         updateAllDisplays();
-        playBeep(800, 0.2);
-        alert("✅ ሽያጩ በካሽ ቡክ ላይ በተሳካ ሁኔታ ተመዝግቧል!");
+        playBeep(900, 0.2);
+        alert("✅ ሽያጩ ለካሼር ማጽደቂያ ተልኳል!");
     }
 
     function saveDirectExpenseSecure() {
@@ -1682,8 +1683,8 @@
     }
 
     function searchSalesByDate(role) {
-        const dateInput = document.getElementById(`${role}-search-date-input`).value;
-        const resultDiv = document.getElementById(`${role}-search-results-box`);
+        const dateInput = document.getElementById(role + '-search-date-input').value;
+        const resultDiv = document.getElementById(role + '-search-results-box');
         
         if (!dateInput) return alert("እባክዎ መጀመሪያ ቀኑን ይምረጡ!");
 
