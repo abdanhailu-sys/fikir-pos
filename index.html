@@ -375,6 +375,14 @@
         <div id="cashier-search-results-box" style="margin-top:12px;"></div>
     </div>
 
+    <div class="card" style="background: #f1f5f9; border-left: 5px solid var(--primary);">
+        <h3>🛡️ የባለቤቱ የእለት ወጪ መግለጫ (Read-Only)</h3>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>የባለቤቱ የእለት ወጪ (በካሼር አይቀየርም)</label>
+            <input type="text" id="cashier-owner-expense-view" readonly style="background: #e2e8f0; color: #000; font-weight: bold;" value="0.00 ብር">
+        </div>
+    </div>
+
     <div class="card" style="border: 2px solid #8b5cf6;">
         <h3>📋 የምግብና መጠጥ ማህደር ዝርዝር መፈለጊያ (ካሼር - Read Only)</h3>
         <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">በባለቤቱ የተመዘገቡ እስከ 200 የሚደርሱ እቃዎችን በተራ ቁጥር ወይም በስም እዚህ መፈለግ ይችላሉ።</p>
@@ -787,7 +795,11 @@
 
     const PIN_CONFIG = { "all": "1111", "cashier": "2222", "waiter": "3333", "barman": "4444", "chef": "4444" };
 
-    let currentMenu = [];
+    let currentMenu = JSON.parse(localStorage.getItem('f_menu_v4')) || [
+        { name: "ጥብስ ስጋ ልዩ", price: 450, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300", salesDay: 0, salesWeek: 0, salesMonth: 0, salesYear: 0 },
+        { name: "ክትፎ በቅቤ", price: 500, cat: "kitchen", status: "available", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300", salesDay: 0, salesWeek: 0, salesMonth: 0, salesYear: 0 },
+        { name: "ጊዮርጊስ ቢራ", price: 100, cat: "bar", status: "available", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300", salesDay: 0, salesWeek: 0, salesMonth: 0, salesYear: 0 }
+    ];
 
     let inventory = JSON.parse(localStorage.getItem('f_inventory_v4')) || [
         { name: "ስጋ (ኪሎ)", in: 100, cost: 35000, out: 45, remaining: 55 },
@@ -1395,6 +1407,7 @@
         
         document.getElementById('total-cash-box').innerText = todaySales.toFixed(2) + " ETB";
         document.getElementById('owner-expense-box').innerText = todayExpenses.toFixed(2) + " ETB";
+        document.getElementById('cashier-owner-expense-view').value = todayExpenses.toFixed(2) + " ብር";
         
         let netCashBalance = todaySales - todayExpenses;
         document.getElementById('net-balance-box').innerText = netCashBalance.toFixed(2) + " ETB";
@@ -1521,8 +1534,7 @@
             nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-display') a.style.display='none'; });
             showSection('sec-display');
         } else if (role === 'cashier') {
-            // ካሼር ሲሆን እነኚህ ገጾች ብቻ እንዲታዩ ተደርጓል
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook') a.style.display='none'; });
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook' && a.id !== 'nav-tax') a.style.display='none'; });
             showSection('sec-cashier-approval');
         } else {
             showSection('sec-cashbook');
