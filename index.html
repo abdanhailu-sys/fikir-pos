@@ -150,7 +150,7 @@
 <div class="fixed-top">
     <header>
         <span>Fikir Bar & Restaurant</span>
-        <span class="app-mode" id="net-status-badge">Offline Ready / Enterprise v4.6</span>
+        <span class="app-mode" id="net-status-badge">Enterprise v4.6</span>
     </header>
     <div class="live-notifier">
         <span class="signal-light" id="owner-signal"></span>
@@ -171,7 +171,7 @@
         <a href="javascript:void(0)" id="nav-inventory" onclick="showSection('sec-inventory')" style="display:none;">መጋዘን ቁጥጥር</a>
         <a href="javascript:void(0)" id="nav-approval" onclick="showSection('sec-cashier-approval')" style="display:none;">ትዕዛዝ ማጽደቂያ</a>
         <a href="javascript:void(0)" id="nav-display" onclick="showSection('sec-display')" style="display:none;">ኩሽና/ባር ማሳያ</a>
-        <a href="javascript:void(0)" id="nav-cashbook" onclick="showSection('sec-cashbook')" style="display:none;">👑 ማናجر ሰሌዳ</a>
+        <a href="javascript:void(0)" id="nav-cashbook" onclick="showSection('sec-cashbook')" style="display:none;">ማናጀር ሰሌዳ</a>
         <a href="javascript:void(0)" id="nav-tax" onclick="showSection('sec-tax')" style="display:none;">ግብርና ቫት</a>
     </nav>
 </div>
@@ -419,7 +419,7 @@
 </section>
 
 <section id="sec-cashbook" class="page-section">
-    <div class="page-title">👑 የማናجر / የባለቤት ዋና ሰሌዳ</div>
+    <div class="page-title">ማናጀር ሰሌዳ</div>
     
     <div class="card" style="background: #fffdeb;">
         <h3>📝 ፈጣን ልዩ ማስታወሻ መፃፊያ (Notes)</h3>
@@ -1534,7 +1534,7 @@
             nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-display') a.style.display='none'; });
             showSection('sec-display');
         } else if (role === 'cashier') {
-            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-cashbook' && a.id !== 'nav-tax') a.style.display='none'; });
+            nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-approval' && a.id !== 'nav-tax') a.style.display='none'; });
             showSection('sec-cashier-approval');
         } else {
             showSection('sec-cashbook');
