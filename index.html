@@ -1,4 +1,3 @@
-Abdan Hailu Dibaba:
 <!DOCTYPE html>
 <html lang="am">
 <head>
@@ -21,42 +20,35 @@ Abdan Hailu Dibaba:
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: var(--light-bg); color: #334155; padding-top: 200px; padding-bottom: 60px; -webkit-tap-highlight-color: transparent; }
         
-        /* የላይኛው ቋሚ መቆጣጠሪያ */
         .fixed-top { position: fixed; top: 0; left: 0; width: 100%; z-index: 3000; background: var(--primary); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         header { color: white; padding: 12px 20px; text-align: center; font-size: 1.3rem; font-weight: 800; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0f172a, #1e293b); letter-spacing: 0.5px; }
         .app-mode { font-size: 0.75rem; background: var(--success); padding: 4px 12px; border-radius: 50px; color: white; font-weight: bold; text-transform: uppercase; }
         
-        /* የቀጥታ ሁኔታ መግለጫ */
         .live-notifier { background: #020617; color: #cbd5e1; padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1e293b; }
         .signal-light { width: 10px; height: 10px; border-radius: 50%; background: #64748b; display: inline-block; transition: all 0.3s ease; }
         .signal-light.active-blue { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
         .signal-light.active-green { background: var(--success); box-shadow: 0 0 12px var(--success); }
         .signal-light.active-orange { background: var(--warning); box-shadow: 0 0 12px var(--warning); }
 
-        /* የሰራተኞች ክፍል መለወጫ */
         .role-bar { display: flex; background: #1e293b; overflow-x: auto; padding: 6px; gap: 6px; scrollbar-width: none; }
         .role-bar::-webkit-scrollbar { display: none; }
         .role-btn { background: #334155; color: #94a3b8; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .role-btn.active { background: var(--warning); color: #020617; font-weight: bold; transform: scale(1.02); }
         
-        /* ዋናው የገጽ መምረጫ ማውጫ */
         nav { display: flex; overflow-x: auto; white-space: nowrap; background: #0f172a; padding: 4px; scrollbar-width: none; }
         nav::-webkit-scrollbar { display: none; }
         nav a { display: inline-block; text-decoration: none; color: #94a3b8; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 6px; margin: 0 2px; transition: all 0.2s; }
         nav a.active { color: white; background: var(--accent); }
         
-        /* የሰራተኞች የቀጥታ መልዕክት ሰሌዳ */
         .broadcast-banner { background: #fef3c7; border-left: 5px solid var(--warning); padding: 10px 15px; margin: 10px 12px 0 12px; border-radius: 6px; font-size: 0.9rem; color: #92400e; font-weight: 600; display: none; }
 
-        /* የገጾች አቀማመጥ */
         .page-section { display: none; padding: 12px; animation: fadeIn 0.3s ease-in-out; }
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-.card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
+        .card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
         .page-title { font-size: 1.25rem; margin-bottom: 15px; color: var(--primary); font-weight: 800; padding-bottom: 6px; border-bottom: 3px solid var(--accent); display: flex; align-items: center; justify-content: space-between; }
         
-        /* የምግብ እቃዎች ግሪድ ዲዛይን */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
         .btn-item { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; transition: all 0.2s; position: relative; border-bottom: 4px solid var(--accent); }
         .btn-item.bar { border-bottom-color: var(--warning); }
@@ -66,13 +58,11 @@ Abdan Hailu Dibaba:
         .btn-item .name { font-weight: 700; font-size: 0.9rem; color: var(--primary); margin-bottom: 4px; }
         .btn-item .price { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
         
-        /* ምግብ ሲያልቅ የሚመጣ ዲዛይን */
         .btn-item.sold-out { border-bottom-color: var(--danger) !important; background: #fff5f5; opacity: 0.75; }
         .btn-item.sold-out .name { color: #94a3b8; text-decoration: line-through; }
         .btn-item.sold-out .price { color: var(--danger); }
         .badge-sold-out { background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; position: absolute; top: 6px; right: 6px; z-index: 5; }
 
-        /* የምግብና መጠጥ ጎን ለጎን ማሳያ */
         .menu-split-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
         .menu-column { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; max-height: 400px; overflow-y: auto; }
         .menu-column h3 { font-size: 0.9rem; color: var(--primary); padding-bottom: 6px; border-bottom: 2px solid #cbd5e0; margin-bottom: 8px; position: sticky; top: 0; background: #f8fafc; z-index: 10; }
@@ -85,25 +75,20 @@ Abdan Hailu Dibaba:
         .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
         .search-bar { border: 2px solid var(--accent); margin-bottom: 12px; background: #fff; }
         
-        /* የቲኬት አወቃቀር */
         .ticket { background: #fffdeb; border-left: 5px solid var(--warning); padding: 12px; margin-bottom: 10px; border-radius: 8px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .btn-action { background: var(--success); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; position: absolute; right: 10px; top: 12px; font-weight: bold; font-size: 0.85rem; }
         .btn-action.blue { background: var(--accent); }
         .btn-action.danger { background: var(--danger); }
         
-        /* ፖፕአፕ መልዕክት */
         .thank-you-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 20px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2); z-index: 5000; text-align: center; width: 85%; max-width: 340px; border: 3px solid var(--success); }
-
-.thank-you-popup h2 { color: var(--success); font-size: 1.4rem; margin-bottom: 10px; }
+        .thank-you-popup h2 { color: var(--success); font-size: 1.4rem; margin-bottom: 10px; }
         .thank-you-popup p { color: var(--primary); font-weight: 600; font-size: 1.05rem; margin-bottom: 15px; }
         .thank-you-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4999; }
 
-        /* የባንክ አማራጮች */
         .payment-box { display: none; background: #f0fdf4; border: 2px dashed var(--success); padding: 14px; border-radius: 10px; margin-top: 12px; }
         .bank-details { background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--success); font-size: 0.9rem; cursor: pointer; display: block; text-decoration: none; color: inherit; transition: background 0.2s; }
         .bank-details:hover { background: #f8fafc; }
         
-        /* የካሽ ቡክ ስክሪን */
         .balance-summary { background: linear-gradient(135deg, var(--primary), #1e293b); color: white; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: center; }
         .balance-block { padding: 5px; }
         .balance-block h2 { font-size: 1.3rem; margin-top: 4px; }
@@ -133,8 +118,7 @@ Abdan Hailu Dibaba:
         .btn-share-qr { background: #8b5cf6; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.85rem; margin-top: 6px; }
 
         .note-item-box { background: #fffdeb; padding: 10px; border-left: 4px solid var(--warning); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-
-.note-del-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .note-del-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         
         .feedback-item { background: #f8fafc; border-left: 4px solid #8b5cf6; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
         .feedback-item.alert-complaint { border-left-color: var(--danger); background: #fff5f5; animation: pulseBorder 2s infinite; }
@@ -249,7 +233,7 @@ Abdan Hailu Dibaba:
                 <input type="file" id="cust-receipt-file" accept="image/*" style="padding:5px; border:2px dashed var(--accent);">
             </div>
 
-<div class="form-group">
+            <div class="form-group">
                 <label style="color:var(--danger);">የክፍያ ማረጋገጫ ቁጥር (Transaction ID)፦</label>
                 <input type="text" id="cust-tx-id" placeholder="የደረሰኝ ቁጥር ያስገቡ...">
             </div>
@@ -319,8 +303,7 @@ Abdan Hailu Dibaba:
         </div>
         <div class="form-group"><label>የምስል ሊንክ (የፎቶ URL)</label><input type="text" id="menu-image-url" placeholder="https://example.com/photo.jpg"></div>
         <button style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;" onclick="addNewMenuItem()">ወደ ማውጫው አክል</button>
-
-</div>
+    </div>
     
     <div class="card">
         <h3>የምግብና መጠጥ ወቅታዊ ሁኔታ ቁጥጥር</h3>
@@ -391,7 +374,7 @@ Abdan Hailu Dibaba:
         <h3>📋 የምግብና መጠጥ ማህደር ዝርዝር መፈለጊያ (ካሼር - Read Only)</h3>
         <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">በባለቤቱ የተመዘገቡ እስከ 200 የሚደርሱ እቃዎችን በተራ ቁጥር ወይም በስም እዚህ መፈለግ ይችላሉ።</p>
 
-<input type="text" id="cashier-master-search" class="form-group" placeholder="በተራ ቁጥር ወይም በስም ይፈልጉ..." oninput="searchMasterList('cashier')" style="border: 2px solid #8b5cf6; margin-bottom: 8px;">
+        <input type="text" id="cashier-master-search" class="form-group" placeholder="በተራ ቁጥር ወይም በስም ይፈልጉ..." oninput="searchMasterList('cashier')" style="border: 2px solid #8b5cf6; margin-bottom: 8px;">
         <div class="master-scroll-box">
             <table class="master-table">
                 <thead>
@@ -455,7 +438,7 @@ Abdan Hailu Dibaba:
         <button class="tab-sub-btn" id="sub-btn-suppliers" onclick="switchOwnerSubSection('suppliers')">🤝 አቅራቢዎችና ክምችት</button>
     </div>
 
-<div id="owner-sub-master-list" class="owner-sub-content" style="display:none;">
+    <div id="owner-sub-master-list" class="owner-sub-content" style="display:none;">
         <div class="card" style="border: 2px solid var(--accent);">
             <h3>✍️ አዲስ ዕቃ በተራ ቁጥር መመዝገቢያ (እስከ 200 እቃዎች)</h3>
             <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">እዚህ የሚመዘግቡት መረጃ በካሼሪው ገጽ ላይ በቀጥታ (Read-Only) ሆኖ ይታያል።</p>
@@ -532,8 +515,7 @@ Abdan Hailu Dibaba:
         <div class="card" style="border: 2px solid var(--accent); background: #f8fafc;">
             <h3>🔍 የላቀ ጠቅላላ ማጠቃለያ ሪፖርት (ቀንና በአይነት መፍለጊያ)</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-
-<div class="form-group">
+                <div class="form-group">
                     <label>የመጀመሪያ ቀን</label>
                     <input type="date" id="adv-start-date">
                 </div>
@@ -601,8 +583,7 @@ Abdan Hailu Dibaba:
             <div class="form-group">
                 <label>ጠቅላላ ድምር (Total)</label>
                 <input type="number" id="calc-item-total" readonly style="font-weight:bold; color:var(--success); font-size:1.1rem;">
-
-</div>
+            </div>
             <button onclick="sendCalcToCashier()" style="background:var(--success); color:white; border:none; padding:12px; width:100%; font-weight:bold; border-radius:8px; cursor:pointer;">ሽያጩን ወደ ካሼር ላክ 🚀</button>
         </div>
 
@@ -642,9 +623,7 @@ Abdan Hailu Dibaba:
 
         <div class="card" style="border: 2px solid #8b5cf6;">
             <h2>3. የደንበኞች አስተያየት ማጠቃለያ (Feedback)</h2>
-            <div style="background:#f3e8ff; padding:8px; border-radius:6px; margin-bottom:6px; font-size:0.85rem;">
-                <strong>⭐⭐⭐⭐⭐ (5/5)</strong> - "ጥብስ ስጋው በጣም ቆንጆ ነው!"
-            </div>
+            <div id="owner-live-feedback-container" style="max-height: 350px; overflow-y: auto;"></div>
         </div>
 
         <div class="card" style="border: 2px solid var(--danger);">
@@ -670,7 +649,7 @@ Abdan Hailu Dibaba:
             </div>
         </div>
 
-<div class="card" style="background:#f0fdf4;">
+        <div class="card" style="background:#f0fdf4;">
             <h3>🔐 የደህንነት መረጃ ባካፕ (System Backup)</h3>
             <a href="javascript:void(0)" class="btn-backup" onclick="downloadSystemBackup()">የሬስቶራንቱን ሙሉ ዳታ ባካፕ አውርድ (JSON)</a>
         </div>
@@ -748,8 +727,7 @@ Abdan Hailu Dibaba:
                         <tr>
                             <th>የሰራተኛ ስም</th>
                             <th>ቀን</th>
-
-<th>ሰዓት</th>
+                            <th>ሰዓት</th>
                             <th>ሁኔታ</th>
                         </tr>
                     </thead>
@@ -816,7 +794,7 @@ Abdan Hailu Dibaba:
         { name: "ዘይት (ሊትር)", in: 20, cost: 3200, out: 5, remaining: 15 }
     ];
 
-let globalNotes = JSON.parse(localStorage.getItem('f_global_notes_v4')) || [
+    let globalNotes = JSON.parse(localStorage.getItem('f_global_notes_v4')) || [
         "ለሊት 4 ሰዓት ላይ ስቶክ ቼክ ይደረግ።",
         "የሽንኩርት አቅርቦት ዛሬ ማታ ይገባል።"
     ];
@@ -888,38 +866,33 @@ let globalNotes = JSON.parse(localStorage.getItem('f_global_notes_v4')) || [
         renderOwnerDashboardPanels();
         renderOwnerFeedbackPage();
         renderOwnerSuppliersPage();
-        
         renderMasterTable('owner', masterIndexList);
         renderMasterTable('cashier', masterIndexList);
     }
 
-function renderMasterTable(role, dataList) {
+    function renderMasterTable(role, dataList) {
         const tbody = document.getElementById(role + '-master-table-body');
         if (!tbody) return;
         tbody.innerHTML = '';
-
         if (dataList.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">ምንም የተመዘገበ እቃ የለም።</td></tr>';
             return;
         }
-
         let sortedList = [...dataList].sort((a, b) => a.id - b.id);
-
         sortedList.forEach(item => {
             let actionTd = '';
             if (role === 'owner') {
-                actionTd = <td>
+                actionTd = `<td>
                     <button onclick="editMasterItem(${item.id}, '${item.name}', '${item.cat}')" style="background:var(--warning); color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer; margin-right:4px;">ቀይር ✏️</button>
                     <button onclick="deleteMasterItem(${item.id})" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;">አጥፋ ✕</button>
-                </td>;
+                </td>`;
             }
-
-            tbody.innerHTML += <tr>
+            tbody.innerHTML += `<tr>
                 <td><b># ${item.id}</b></td>
                 <td>${item.name}</td>
                 <td><span class="badge ${item.cat.includes('ምግብ') ? 'badge-success' : 'badge-warning'}">${item.cat}</span></td>
                 ${actionTd}
-            </tr>;
+            </tr>`;
         });
     }
 
@@ -927,38 +900,24 @@ function renderMasterTable(role, dataList) {
         const idInput = document.getElementById('master-id-input');
         const nameInput = document.getElementById('master-name-input');
         const catInput = document.getElementById('master-cat-input');
-
         const id = parseInt(idInput.value);
         const name = nameInput.value.trim();
         const cat = catInput.value;
-
-        if (isNaN(id)  id < 1  id > 200) {
-            return alert("⚠️ ተራ ቁጥር (ID) ከ 1 እስከ 200 መሆን አለበት!");
-        }
-        if (!name) {
-            return alert("⚠️ እባክዎ የምግቡን ወይም የመጠጡን ስም ያስገቡ!");
-        }
-
+        if (isNaN(id) || id < 1 || id > 200) return alert("⚠️ ተራ ቁጥር (ID) ከ 1 እስከ 200 መሆን አለበት!");
+        if (!name) return alert("⚠️ እባክዎ የምግቡን ወይም የመጠጡን ስም ያስገቡ!");
         let existingIndex = masterIndexList.findIndex(item => item.id === id);
-
         if (existingIndex !== -1) {
-            if (confirm(⚠️ ከተራ ቁጥር #${id} ላይ ቀደም ሲል "${masterIndexList[existingIndex].name}" ተመዝግቧል። በአዲሱ ስም ለመቀየር እርግጠኛ ነዎት?)) {
+            if (confirm(`⚠️ ከተራ ቁጥር #${id} ላይ ቀደም ሲል "${masterIndexList[existingIndex].name}" ተመዝግቧል። በአዲሱ ስም ለመቀየር እርግጠኛ ነዎት?`)) {
                 masterIndexList[existingIndex].name = name;
                 masterIndexList[existingIndex].cat = cat;
-            } else {
-                return;
-            }
-        } else {
-            masterIndexList.push({ id, name, cat });
-        }
-
+            } else return;
+        } else masterIndexList.push({ id, name, cat });
         cloudSyncSimulator();
         updateAllDisplays();
-
         idInput.value = '';
         nameInput.value = '';
         playBeep(700, 0.15);
-        alert(✅ እቃ ቁጥር #${id} በተሳካ ሁኔታ ማህደር ላይ ተቀምጧል!);
+        alert(`✅ እቃ ቁጥር #${id} በተሳካ ሁኔታ ማህደር ላይ ተቀምጧል!`);
     }
 
     function editMasterItem(id, name, cat) {
@@ -969,7 +928,7 @@ function renderMasterTable(role, dataList) {
     }
 
     function deleteMasterItem(id) {
-        if (confirm(⚠️ ተራ ቁጥር #${id} ማህደርን ሙሉ በሙሉ ለማጥፋት እርግጠኛ ነዎት?)) {
+        if (confirm(`⚠️ ተራ ቁጥር #${id} ማህደርን ሙሉ በሙሉ ለማጥፋት እርግጠኛ ነዎት?`)) {
             masterIndexList = masterIndexList.filter(item => item.id !== id);
             cloudSyncSimulator();
             updateAllDisplays();
@@ -979,46 +938,37 @@ function renderMasterTable(role, dataList) {
 
     function searchMasterList(role) {
         const query = document.getElementById(role + '-master-search').value.toLowerCase().trim();
-        
         if (!query) {
             renderMasterTable(role, masterIndexList);
             return;
         }
-
-        let filtered = masterIndexList.filter(item => {
-            return item.id.toString() === query || item.name.toLowerCase().includes(query);
-        });
-
+        let filtered = masterIndexList.filter(item => item.id.toString() === query || item.name.toLowerCase().includes(query));
         renderMasterTable(role, filtered);
     }
 
-function renderOwnerFeedbackPage() {
+    function renderOwnerFeedbackPage() {
         const container = document.getElementById('owner-live-feedback-container');
         if (!container) return;
         container.innerHTML = '';
-        
         if (customerFeedback.length === 0) {
             container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:10px;">እስካሁን ምንም አስተያየት አልተሰጠም።</p>';
             return;
         }
-        
         customerFeedback.forEach((fb, idx) => {
             let stars = '⭐'.repeat(fb.rating);
             let alertClass = fb.isUrgent ? 'alert-complaint' : '';
             let badgeText = fb.isUrgent ? '<span class="badge badge-danger">⚠️ አስቸኳይ ቅሬታ (Alert)</span>' : '<span class="badge badge-success">✅ መደበኛ</span>';
-            
             let replyContent = fb.reply ? 
-                <div style="background:#e0f2fe; padding:6px; border-radius:4px; margin-top:6px; border-left:3px solid var(--accent);">
+                `<div style="background:#e0f2fe; padding:6px; border-radius:4px; margin-top:6px; border-left:3px solid var(--accent);">
                     <small style="color:var(--accent); font-weight:bold; display:block;">የባለቤቱ ምላሽ፦</small>
                     <span style="font-size:0.8rem; font-weight:600;">${fb.reply}</span>
-                </div> : 
-                <div class="reply-box">
+                </div>` : 
+                `<div class="reply-box">
                     <input type="text" id="fb-reply-input-${idx}" class="reply-input" placeholder="ለደንበኛው ፈጣን ምላሽ ይጻፉ...">
                     <button class="reply-btn" onclick="submitFeedbackReply(${idx})">ላክ ↩️</button>
-                </div>;
-
+                </div>`;
             container.innerHTML += 
-                <div class="feedback-item ${alertClass}">
+                `<div class="feedback-item ${alertClass}">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
                         <strong>${fb.name} (${fb.order})</strong>
                         <span>${badgeText}</span>
@@ -1027,7 +977,7 @@ function renderOwnerFeedbackPage() {
                     <p style="font-weight:600; color:var(--primary); font-size:0.9rem;">"${fb.text}"</p>
                     <small style="color:#64748b; display:block; margin-top:4px;">የመጣበት ሰዓት፦ ${fb.time}</small>
                     ${replyContent}
-                </div>;
+                </div>`;
         });
     }
 
@@ -1035,7 +985,6 @@ function renderOwnerFeedbackPage() {
         const input = document.getElementById('fb-reply-input-' + idx);
         const text = input.value.trim();
         if (!text) return alert("እባክዎ መጀመሪያ ምላሽዎን ይጻፉ!");
-        
         customerFeedback[idx].reply = text;
         customerFeedback[idx].isUrgent = false; 
         cloudSyncSimulator();
@@ -1050,15 +999,14 @@ function renderOwnerFeedbackPage() {
             tableBody.innerHTML = '';
             suppliersData.forEach(sup => {
                 tableBody.innerHTML += 
-                    <tr>
+                    `<tr>
                         <td><b>${sup.name}</b></td>
                         <td>${sup.item}</td>
                         <td>${sup.phone}</td>
                         <td style="color:var(--danger); font-weight:bold;">${sup.balance}</td>
-                    </tr>;
+                    </tr>`;
             });
         }
-        
         const alertsBox = document.getElementById('owner-inventory-alerts-box');
         if (alertsBox) {
             alertsBox.innerHTML = '';
@@ -1067,12 +1015,11 @@ function renderOwnerFeedbackPage() {
                 alertsBox.innerHTML = '<div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; padding:10px; border-radius:6px; font-weight:bold; font-size:0.85rem;">✅ በአሁኑ ሰዓት ሁሉም ጥሬ ዕቃዎች በበቂ ሁኔታ መጋዘን ውስጥ ይገኛሉ። የሚያሰጋ እጥረት የለም።</div>';
             } else {
                 lowItems.forEach(i => {
-                    alertsBox.innerHTML +=
-
-<div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
+                    alertsBox.innerHTML += `
+                        <div style="background:#fff5f5; border:1px solid var(--danger); padding:10px; border-radius:6px; margin-bottom:6px; font-size:0.85rem; font-weight:bold; color:var(--danger); display:flex; justify-content:space-between; align-items:center;">
                             <span>⚠️ ሊያልቅ ነው፦ "${i.name}" የቀረው ${i.remaining} ብቻ ነው!</span>
                             <span class="badge badge-danger" style="padding:4px 8px;">እባክዎ ይዘዙ</span>
-                        </div>;
+                        </div>`;
                 });
             }
         }
@@ -1098,20 +1045,18 @@ function renderOwnerFeedbackPage() {
     function renderCommentBoard() {
         const board = document.getElementById('staff-noticeboard');
         const archive = document.getElementById('owner-comment-archive');
-        
         if(ownerComments.length > 0) {
             let latest = ownerComments[ownerComments.length - 1];
-            board.innerText = 📢 ማናجر መመሪያ [${latest.time}]፦ ${latest.text};
+            board.innerText = `📢 ማናجر መመሪያ [${latest.time}]፦ ${latest.text}`;
             board.style.display = 'block';
         } else {
             board.style.display = 'none';
         }
-
         archive.innerHTML = '';
         [...ownerComments].reverse().forEach(c => {
-            archive.innerHTML += <div style="font-size:0.8rem; border-bottom:1px solid #e2e8f0; padding:4px 0;">
+            archive.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #e2e8f0; padding:4px 0;">
                 <span style="color:#64748b;">[${c.time}]</span> <b>${c.text}</b>
-            </div>;
+            </div>`;
         });
     }
 
@@ -1131,7 +1076,7 @@ function renderOwnerFeedbackPage() {
         const div = document.getElementById('menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.innerHTML += 
+            div.innerHTML += `
             <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="placeOrder(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
@@ -1139,7 +1084,7 @@ function renderOwnerFeedbackPage() {
                     <span class="price">${Number(item.price).toFixed(2)} ብር</span>
                 </div>
                 ${isSoldOut ? '<span class="badge-sold-out">ያለቀ</span>' : ''}
-            </div>;
+            </div>`;
         });
     }
 
@@ -1147,17 +1092,16 @@ function renderOwnerFeedbackPage() {
         const div = document.getElementById('customer-menu-grid'); div.innerHTML = '';
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            div.innerHTML += 
-            `<div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
+            div.innerHTML += `
+            <div class="btn-item ${item.cat} ${isSoldOut ? 'sold-out' : ''}" onclick="openPaymentGateway(${index})">
                 <img src="${item.img}" class="item-img">
                 <div class="item-details">
                     <span class="name">${item.name}</span>
-
-<span class="price">${Number(item.price).toFixed(2)} ብር</span>
+                    <span class="price">${Number(item.price).toFixed(2)} ብር</span>
                     <span style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">${isSoldOut ? '❌ አልቋል' : '🛒 ለመግዛት ይጫኑ'}</span>
                 </div>
                 ${isSoldOut ? '<span class="badge-sold-out">ያለቀ</span>' : ''}
-            </div>;
+            </div>`;
         });
     }
 
@@ -1165,16 +1109,13 @@ function renderOwnerFeedbackPage() {
         const item = currentMenu[index];
         if(item.status === 'sold_out') {
             playBeep(300, 0.4);
-            alert(⚠️ ይቅርታ፣ "${item.name}" በአሁን ሰአት አልቋል።);
+            alert(`⚠️ ይቅርታ፣ "${item.name}" በአሁን ሰአት አልቋል።`);
             return;
         }
-
         const name = document.getElementById('cust-name').value.trim();
         const phone = document.getElementById('cust-phone').value.trim();
         const address = document.getElementById('cust-address').value.trim();
-
         if(!name || !phone || !address) return alert("እባክዎ መጀመሪያ ከላይ ሙሉ ስም፣ ስልክ ቁጥር እና አድራሻዎን ያስገቡ!");
-        
         selectedCustomerItem = item;
         document.getElementById('payment-gateway-box').style.display = 'block';
         document.getElementById('payment-gateway-box').scrollIntoView({ behavior: 'smooth' });
@@ -1194,14 +1135,11 @@ function renderOwnerFeedbackPage() {
         const txId = document.getElementById('cust-tx-id').value.trim();
         const notes = document.getElementById('cust-notes').value.trim(); 
         const receiptFileInput = document.getElementById('cust-receipt-file');
-
         if(!txId) return alert("እባክዎ የከፈሉበትን የትራንዛክሽን ቁጥር ያስገቡ!");
         if(receiptFileInput.files.length === 0) {
             if(!confirm("የክፍያ ደረሰኝ ፎቶ አላያያዙም፣ ያለ ደረሰኝ ፎቶ ማለፍ ይፈልጋሉ?")) return;
         }
-
         const dateString = new Date().toISOString().split('T')[0];
-
         if(routing === 'owner') {
             triggerSignal("ደንበኛ፦ " + name + " አዘዘ፦ [" + selectedCustomerItem.name + "]", 'active-blue');
         } else {
@@ -1213,7 +1151,6 @@ function renderOwnerFeedbackPage() {
             cloudSyncSimulator();
             updateAllDisplays();
         }
-        
         document.getElementById('payment-gateway-box').style.display = 'none';
         document.getElementById('cust-tx-id').value = '';
         document.getElementById('cust-notes').value = '';
@@ -1236,19 +1173,17 @@ function renderOwnerFeedbackPage() {
         const foodDiv = document.getElementById('food-column-list');
         const drinkDiv = document.getElementById('drink-column-list');
         foodDiv.innerHTML = ''; drinkDiv.innerHTML = '';
-        
         currentMenu.forEach((item, index) => {
             let isSoldOut = item.status === 'sold_out';
-            let html = <div class="list-row">
-
-<div>
+            let html = `<div class="list-row">
+                <div>
                     <span style="${isSoldOut ? 'text-decoration:line-through; color:#94a3b8;' : 'font-weight:600;'}">${item.name}</span><br>
                     <small style="color:var(--accent);">${item.price} ብር</small>
                 </div>
                 <button style="background:${isSoldOut ? 'var(--success)' : 'var(--danger)'}; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="toggleMenuStatus(${index})">
                     ${isSoldOut ? 'አለ አድርግ' : 'አልቋል በል'}
                 </button>
-            </div>;
+            </div>`;
             if(item.cat === 'kitchen') foodDiv.innerHTML += html; else drinkDiv.innerHTML += html;
         });
     }
@@ -1267,7 +1202,6 @@ function renderOwnerFeedbackPage() {
         let img = document.getElementById('menu-image-url').value.trim();
         if(!img) img = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300";
         if(!name || isNaN(price)) return alert("እባክዎ መረጃ በትክክል ያስገቡ!");
-        
         currentMenu.push({ name, price, cat, status: "available", img: img, salesDay: 0, salesWeek: 0, salesMonth: 0, salesYear: 0 });
         cloudSyncSimulator(); updateAllDisplays();
         document.getElementById('menu-name').value = ''; document.getElementById('menu-price').value = ''; document.getElementById('menu-image-url').value = '';
@@ -1277,14 +1211,14 @@ function renderOwnerFeedbackPage() {
         const tbody = document.getElementById('owner-inventory-table'); tbody.innerHTML = '';
         data.forEach((item) => {
             let isLow = item.remaining < 15;
-            tbody.innerHTML += <tr>
+            tbody.innerHTML += `<tr>
                 <td><b>${item.name}</b></td>
                 <td>${item.in}</td>
                 <td>${Number(item.cost).toLocaleString()} ብር</td>
                 <td>${item.out}</td>
                 <td><b style="color:var(--accent);">${item.remaining}</b></td>
                 <td><span class="badge ${isLow ? 'badge-danger' : 'badge-success'}">${isLow ? '⚠️ አነስተኛ' : '✅ በቂ ነው'}</span></td>
-            </tr>;
+            </tr>`;
         });
     }
 
@@ -1299,7 +1233,6 @@ function renderOwnerFeedbackPage() {
         const qty = parseFloat(document.getElementById('inv-item-qty').value);
         const cost = parseFloat(document.getElementById('inv-item-cost').value);
         if(!name || isNaN(qty) || isNaN(cost)) return alert("እባክዎ መረጃ በትክክል ያስገቡ!");
-        
         let found = inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
         if(found) { 
             found.in += qty; 
@@ -1308,23 +1241,21 @@ function renderOwnerFeedbackPage() {
         } else { 
             inventory.push({ name, in: qty, cost: cost, out: 0, remaining: qty }); 
         }
-        
         const todayStr = new Date().toISOString().split('T')[0];
         salesLedger.push({
-            desc: ${name} (ጥሬ ዕቃ ገቢ)`,
+            desc: `${name} (ጥሬ ዕቃ ገቢ)`,
             amount: -cost,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
             qty: qty,
             itemCat: "expense"
         });
-
         cloudSyncSimulator(); updateAllDisplays();
         document.getElementById('inv-item-name').value = ''; document.getElementById('inv-item-qty').value = ''; document.getElementById('inv-item-cost').value = '';
         alert("✅ የጥሬ ዕቃ ገቢ በትክክል ተመዝግቧል!");
     }
 
-function placeOrder(index) {
+    function placeOrder(index) {
         const item = currentMenu[index];
         if(item.status === 'sold_out') {
             alert("⚠️ 👑 ሼፍ/ባርማን ይህ ዕቃ አልቋል ስላለ ማዘዝ አይቻልም!");
@@ -1342,27 +1273,26 @@ function placeOrder(index) {
         const div = document.getElementById('pending-approval-list'); div.innerHTML = '';
         if(pendingOrders.length === 0) { div.innerHTML = '<p style="color:#94a3b8; text-align:center;">የሚጠበቅ ትዕዛዝ የለም።</p>'; return; }
         pendingOrders.forEach((order, index) => {
-            div.innerHTML += <div class="ticket">
+            div.innerHTML += `
+            <div class="ticket">
                 <strong>${order.table}</strong> ➔ ${order.name}<br>
                 <small>${order.price} ብር | Tx: ${order.tx || 'የለም'}</small><br>
-                ${order.notes ? <small style="color:var(--danger);">💬 ${order.notes}</small> : ''}
+                ${order.notes ? `<small style="color:var(--danger);">💬 ${order.notes}</small>` : ''}
                 <button class="btn-action" onclick="approveOrder(${index})">አጽድቅ</button>
-            </div>;
+            </div>`;
         });
     }
 
     function approveOrder(index) {
         const order = pendingOrders[index];
         activeOrders.push(order);
-        
         let menuMatch = currentMenu.find(m => m.name === order.name);
         if(menuMatch) {
             menuMatch.salesDay += 1; menuMatch.salesWeek += 1; menuMatch.salesMonth += 1; menuMatch.salesYear += 1;
         }
-
         const todayDate = order.date || new Date().toISOString().split('T')[0];
         salesLedger.push({ 
-            desc: ${order.name} (${order.table}), 
+            desc: `${order.name} (${order.table})`, 
             amount: order.price, 
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayDate,
@@ -1378,11 +1308,12 @@ function placeOrder(index) {
         const kList = document.getElementById('kitchen-list'); kList.innerHTML = '';
         const bList = document.getElementById('bar-list'); bList.innerHTML = '';
         activeOrders.forEach((order, index) => {
-            let html = <div class="ticket">
+            let html = `
+            <div class="ticket">
                 <strong>${order.table}</strong> ➔ <b>${order.name}</b><br>
-                ${order.notes ? <span style="color:var(--danger); font-size:0.8rem;">💬 ማስታወሻ፦ ${order.notes}</span> : ''}
+                ${order.notes ? `<span style="color:var(--danger); font-size:0.8rem;">💬 ማስታወሻ፦ ${order.notes}</span>` : ''}
                 <button class="btn-action blue" onclick="completeOrder(${index})">ዝግጁ ነው</button>
-            </div>;
+            </div>`;
             if(order.cat === 'kitchen') kList.innerHTML += html; else bList.innerHTML += html;
         });
     }
@@ -1398,42 +1329,34 @@ function placeOrder(index) {
         let todayExpenses = 0;
         const todayStr = new Date().toISOString().split('T')[0];
         const ledgerDiv = document.getElementById('ledger-history'); ledgerDiv.innerHTML = '';
-        
         salesLedger.forEach((log) => {
             let amt = Number(log.amount);
             if(log.date === todayStr || !log.date) {
                 if(amt > 0) todaySales += amt;
                 else todayExpenses += Math.abs(amt);
             }
-            
             let isExpense = amt < 0;
             ledgerDiv.innerHTML += `<div class="list-row">
                 <span>${log.date || todayStr} ${log.time}</span> 
                 <span>${log.desc}</span>
-
-<strong style="color:${isExpense ? 'var(--danger)' : 'var(--success)'};">
+                <strong style="color:${isExpense ? 'var(--danger)' : 'var(--success)'};">
                     ${isExpense ? '' : '+'}${amt.toFixed(2)}
                 </strong>
-            </div>;
+            </div>`;
         });
-        
         document.getElementById('total-cash-box').innerText = todaySales.toFixed(2) + " ETB";
         document.getElementById('owner-expense-box').innerText = todayExpenses.toFixed(2) + " ETB";
         document.getElementById('cashier-owner-expense-view').value = todayExpenses.toFixed(2) + " ብር";
-        
         let netCashBalance = todaySales - todayExpenses;
         document.getElementById('net-balance-box').innerText = netCashBalance.toFixed(2) + " ETB";
-        
         let targetSales = todaySales;
         if(currentTaxPeriod === 'week') targetSales = todaySales * 5.8;
         if(currentTaxPeriod === 'month') targetSales = todaySales * 26;
         if(currentTaxPeriod === 'year') targetSales = todaySales * 312;
-
         let baseSales = targetSales / 1.25; 
         let vatCollected = baseSales * 0.15;
         let serviceCollected = baseSales * 0.10;
         let netProfit = baseSales * 0.40; 
-
         document.getElementById('tax-bruto').innerText = targetSales.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
         document.getElementById('tax-vat-collected').innerText = vatCollected.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
         document.getElementById('tax-service-collected').innerText = serviceCollected.toLocaleString(undefined, {minimumFractionDigits: 2}) + " ብር";
@@ -1445,7 +1368,6 @@ function placeOrder(index) {
         currentTaxPeriod = period;
         document.querySelectorAll('#sec-tax .tab-sub-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tax-btn-' + period).classList.add('active');
-        
         let t = "ጠቅላላ ሽያጭ";
         if(period==='day') t="የዛሬ ጠቅላላ ሽያጭ (Gross)";
         if(period==='week') t="የሳምንቱ ጠቅላላ ሽያጭ (ግምት)";
@@ -1463,12 +1385,11 @@ function placeOrder(index) {
             if(currentRankPeriod === 'month') return b.salesMonth - a.salesMonth;
             return b.salesYear - a.salesYear;
         });
-
         sorted.forEach((item, index) => {
             let qty = item.salesDay;
             if(currentRankPeriod === 'week') qty = item.salesWeek;
             if(currentRankPeriod === 'month') qty = item.salesMonth;
-            tbody.innerHTML += <tr>
+            tbody.innerHTML += `<tr>
                 <td>🏆 ${index + 1}</td>
                 <td><b>${item.name}</b></td>
                 <td>${qty} ጊዜ</td>
@@ -1486,14 +1407,13 @@ function placeOrder(index) {
 
     function renderAttendanceTable() {
         const tbody = document.getElementById('owner-attendance-table'); tbody.innerHTML = '';
-
-attendanceData.forEach(a => {
-            tbody.innerHTML += <tr>
+        attendanceData.forEach(a => {
+            tbody.innerHTML += `<tr>
                 <td><b>${a.name}</b></td>
                 <td>${a.date}</td>
                 <td>${a.time}</td>
                 <td><span class="badge ${a.status==='ስራ ገባ'?'badge-success':'badge-danger'}">${a.status}</span></td>
-            </tr>;
+            </tr>`;
         });
     }
 
@@ -1502,7 +1422,6 @@ attendanceData.forEach(a => {
         const now = new Date();
         const dateStr = now.toISOString().split('T')[0];
         const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
         attendanceData.unshift({ name: staff, date: dateStr, time: timeStr, status: status });
         cloudSyncSimulator(); updateAllDisplays();
         alert("✅ " + staff + " በትክክል " + status + " ተብሎ ተመዝግቧል!");
@@ -1532,11 +1451,9 @@ attendanceData.forEach(a => {
         currentRole = role;
         document.querySelectorAll('.role-bar button').forEach(b => b.classList.remove('active'));
         document.getElementById('role-' + role).classList.add('active');
-        
         const nav = document.getElementById('top-nav');
         nav.querySelectorAll('a').forEach(a => a.style.display = 'inline-block');
         document.getElementById('nav-customer-view').style.display = 'none';
-        
         if (role === 'customer') {
             nav.querySelectorAll('a').forEach(a => { if(a.id !== 'nav-customer-view') a.style.display='none'; });
             showSection('sec-customer-view');
@@ -1564,8 +1481,7 @@ attendanceData.forEach(a => {
     function downloadSystemBackup() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
             menu: currentMenu, inventory: inventory, ledger: salesLedger, comments: ownerComments, attendance: attendanceData, globalNotes: globalNotes, suppliers: suppliersData, feedback: customerFeedback, masterIndex: masterIndexList
-
-}, null, 4));
+        }, null, 4));
         let dl = document.createElement('a');
         dl.setAttribute("href", dataStr);
         dl.setAttribute("download", "Fikir_Enterprise_Backup.json");
@@ -1577,7 +1493,6 @@ attendanceData.forEach(a => {
             if (typeof QRCode !== 'undefined') {
                 document.getElementById("qr-owner-box").innerHTML = "";
                 new QRCode(document.getElementById("qr-owner-box"), { text: window.location.href, width: 140, height: 140 });
-                
                 document.getElementById("qr-customer-share-box").innerHTML = "";
                 new QRCode(document.getElementById("qr-customer-share-box"), { text: window.location.href, width: 140, height: 140 });
             }
@@ -1597,10 +1512,10 @@ attendanceData.forEach(a => {
                 container.innerHTML = '';
                 globalNotes.forEach((note, index) => {
                     container.innerHTML += 
-                    <div class="note-item-box">
+                    `<div class="note-item-box">
                         <span>📌 ${note}</span>
                         <button class="note-del-btn" onclick="deleteGlobalNote(${index})">✕</button>
-                    </div>;
+                    </div>`;
                 });
             }
         });
@@ -1628,7 +1543,7 @@ attendanceData.forEach(a => {
         if (!select) return;
         select.innerHTML = '<option value="">-- ይምረጡ --</option>';
         currentMenu.forEach((item, index) => {
-            select.innerHTML += <option value="${index}">${item.name}</option>;
+            select.innerHTML += `<option value="${index}">${item.name}</option>`;
         });
     }
 
@@ -1653,12 +1568,9 @@ attendanceData.forEach(a => {
         const idx = document.getElementById('calc-item-select').value;
         const qty = parseFloat(document.getElementById('calc-item-qty').value) || 1;
         const total = parseFloat(document.getElementById('calc-item-total').value) || 0;
-        
         if(idx === "") return alert("እባክዎ መጀመሪያ ዕቃ ይምረጡ!");
-
         const item = currentMenu[idx];
         const dateString = new Date().toISOString().split('T')[0];
-
         pendingOrders.push({ 
             id: Date.now(), 
             table: "ባለቤት (Calculator)", 
@@ -1668,32 +1580,27 @@ attendanceData.forEach(a => {
             notes: 'ከካልኩሌተር የተላከ ሽያጭ', 
             date: dateString 
         });
-
         cloudSyncSimulator();
         updateAllDisplays();
         playBeep(900, 0.2);
         alert("✅ ሽያጩ ለካሼር ማጽደቂያ ተልኳል!");
     }
 
-function saveDirectExpenseSecure() {
+    function saveDirectExpenseSecure() {
         const reason = document.getElementById('exp-reason').value.trim();
         const amount = parseFloat(document.getElementById('exp-amount').value);
-
         if(!reason || isNaN(amount)) return alert("እባክዎ የወጪውን ምክንያትና መጠን በትክክል ያስገቡ!");
-
         const todayStr = new Date().toISOString().split('T')[0];
         salesLedger.push({
-            desc: ${reason} (ቀጥታ ወጪ),
+            desc: `${reason} (ቀጥታ ወጪ)`,
             amount: -amount,
             time: new Date().toLocaleTimeString('am-ET'),
             date: todayStr,
             qty: 1,
             itemCat: "expense"
         });
-
         document.getElementById('exp-reason').value = '';
         document.getElementById('exp-amount').value = '';
-
         cloudSyncSimulator();
         updateAllDisplays();
         playBeep(400, 0.3);
@@ -1703,31 +1610,25 @@ function saveDirectExpenseSecure() {
     function searchSalesByDate(role) {
         const dateInput = document.getElementById(role + '-search-date-input').value;
         const resultDiv = document.getElementById(role + '-search-results-box');
-        
         if (!dateInput) return alert("እባክዎ መጀመሪያ ቀኑን ይምረጡ!");
-
         let filtered = salesLedger.filter(log => log.date === dateInput);
         resultDiv.innerHTML = '';
-
         if (filtered.length === 0) {
             resultDiv.innerHTML = '<p style="color:var(--danger); font-weight:bold;">ℹ️ በዚህ ቀን የተመዘገበ ምንም አይነት ሽያጭ ወይም ወጪ የለም።</p>';
             return;
         }
-
-        let tableHtml = <table><thead><tr><th>ሰዓት</th><th>ዝርዝር መግለጫ</th><th>ሂሳብ</th></tr></thead><tbody>;
+        let tableHtml = `<table><thead><tr><th>ሰዓት</th><th>ዝርዝር መግለጫ</th><th>ሂሳብ</th></tr></thead><tbody>`;
         let grandTotal = 0;
-
         filtered.forEach(log => {
             let amt = Number(log.amount);
             grandTotal += amt;
-            tableHtml += <tr>
+            tableHtml += `<tr>
                 <td>${log.time}</td>
                 <td>${log.desc}</td>
                 <td style="color:${amt >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">${amt.toFixed(2)} ብር</td>
-            </tr>;
+            </tr>`;
         });
-
-        tableHtml += <tr><td colspan="2" style="text-align:right; font-weight:bold;">የቀኑ ንጹሕ ቀሪ (Net Total)፦</td><td style="color:${grandTotal >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">${grandTotal.toFixed(2)} ብር</td></tr></tbody></table>;
+        tableHtml += `<tr><td colspan="2" style="text-align:right; font-weight:bold;">የቀኑ ንጹሕ ቀሪ (Net Total)፦</td><td style="color:${grandTotal >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">${grandTotal.toFixed(2)} ብር</td></tr></tbody></table>`;
         resultDiv.innerHTML = tableHtml;
     }
 
@@ -1737,45 +1638,36 @@ function saveDirectExpenseSecure() {
         const selectedType = document.getElementById('adv-type-select').value;
         const summaryBox = document.getElementById('adv-summary-cards-box');
         const tableBox = document.getElementById('adv-report-table-box');
-
         if (!start || !end) {
             alert("⚠️ እባክዎ መጀመሪያ የፍለጋውን መጀመሪያ እና መጨረሻ ቀን ይምረጡ!");
             return;
         }
-
         let filtered = salesLedger.filter(log => {
             let logDate = log.date;
             if (!logDate) return false;
             let isWithinDate = (logDate >= start && logDate <= end);
-            
             if (!isWithinDate) return false;
-
             if (selectedType === 'all') return true;
             if (selectedType === 'food') return log.itemCat === 'kitchen';
             if (selectedType === 'drink') return log.itemCat === 'bar';
             if (selectedType === 'expense') return log.itemCat === 'expense' || Number(log.amount) < 0;
             return true;
         });
-
         let totalRev = 0;
         let totalExp = 0;
-
         filtered.forEach(log => {
             let val = Number(log.amount);
             if (val > 0) totalRev += val;
             else totalExp += Math.abs(val);
         });
-
         document.getElementById('adv-total-rev-txt').innerText = totalRev.toFixed(2) + " ብር";
         document.getElementById('adv-total-exp-txt').innerText = totalExp.toFixed(2) + " ብር";
-
-if (filtered.length === 0) {
+        if (filtered.length === 0) {
             tableBox.innerHTML = '<p style="color:var(--warning); font-weight:bold; padding:10px; text-align:center;">ℹ️ በተመረጠው ክልል ውስጥ ምንም መፈላጊ አልተገኘም።</p>';
             summaryBox.style.display = 'block';
             return;
         }
-
-        let tableHtml = <table>
+        let tableHtml = `<table>
             <thead>
                 <tr>
                     <th>ቀን</th>
@@ -1784,29 +1676,26 @@ if (filtered.length === 0) {
                     <th>ገቢ / ወጪ</th>
                 </tr>
             </thead>
-            <tbody>;
-
+            <tbody>`;
         filtered.forEach(log => {
             let amt = Number(log.amount);
             let isExpense = amt < 0;
-            tableHtml += <tr>
+            tableHtml += `<tr>
                 <td>${log.date}</td>
                 <td>${log.time || '--:--'}</td>
                 <td><b>${log.desc}</b></td>
                 <td style="color:${isExpense ? 'var(--danger)' : 'var(--success)'}; font-weight:bold;">
                     ${isExpense ? '' : '+'}${amt.toFixed(2)} ብር
                 </td>
-            </tr>;
+            </tr>`;
         });
-
         let netResult = totalRev - totalExp;
-        tableHtml += <tr>
+        tableHtml += `<tr>
             <td colspan="3" style="text-align:right; font-weight:bold;">የተጣራ ቀሪ (Net Total)፦</td>
             <td style="color:${netResult >= 0 ? 'var(--accent)' : 'var(--danger)'}; font-weight:bold; font-size:1rem;">
                 ${netResult.toFixed(2)} ብር
             </td>
-        </tr></tbody></table>;
-
+        </tr></tbody></table>`;
         tableBox.innerHTML = tableHtml;
         summaryBox.style.display = 'block';
         playBeep(700, 0.15);
@@ -1816,33 +1705,27 @@ if (filtered.length === 0) {
         let totalRevenue = 0;
         let totalExpenses = 0;
         const todayStr = new Date().toISOString().split('T')[0];
-
         salesLedger.forEach(log => {
             let amt = Number(log.amount);
             if (amt > 0) totalRevenue += amt;
             else if (log.date === todayStr) totalExpenses += Math.abs(amt);
         });
-
         let totalCost = 0;
         inventory.forEach(inv => totalCost += Number(inv.cost));
         let netProfit = totalRevenue - totalCost;
-
         document.getElementById('rep-total-revenue').innerText = totalRevenue.toFixed(2) + " ብር";
         document.getElementById('rep-total-cost').innerText = totalCost.toFixed(2) + " ብር";
-        
         const netEl = document.getElementById('rep-net-profit');
         netEl.innerText = netProfit.toFixed(2) + " ብር";
         netEl.style.color = netProfit >= 0 ? 'var(--success)' : 'var(--danger)';
-
         const miniAttBody = document.querySelector('#mini-attendance-table tbody');
         if (miniAttBody) {
             miniAttBody.innerHTML = '';
             let latestAtt = attendanceData.slice(0, 3);
             latestAtt.forEach(a => {
-                miniAttBody.innerHTML += <tr><td><b>${a.name}</b></td><td>${a.time}</td><td><span class="badge ${a.status==='ስራ ገባ'?'badge-success':'badge-danger'}">${a.status}</span></td></tr>;
+                miniAttBody.innerHTML += `<tr><td><b>${a.name}</b></td><td>${a.time}</td><td><span class="badge ${a.status==='ስራ ገባ'?'badge-success':'badge-danger'}">${a.status}</span></td></tr>`;
             });
         }
-
         const alertsBox = document.getElementById('stock-alerts-box');
         if (alertsBox) {
             alertsBox.innerHTML = '';
@@ -1851,7 +1734,7 @@ if (filtered.length === 0) {
                 alertsBox.innerHTML = '<p style="color:var(--success); font-weight:bold; font-size:0.85rem;">✅ በአሁን ሰዓት የሚያሰጋ እጥረት የለም።</p>';
             } else {
                 lowItems.forEach(i => {
-                    alertsBox.innerHTML += <div style="background:#fff5f5; border:1px solid var(--danger); padding:6px; border-radius:6px; margin-bottom:5px; font-size:0.85rem; font-weight:bold; color:var(--danger);">⚠️ አስቸኳይ ማሳሰቢያ፦ "${i.name}" የቀረው ${i.remaining} ብቻ ስለሆነ አቅርቦት ይጨመር!</div>;
+                    alertsBox.innerHTML += `<div style="background:#fff5f5; border:1px solid var(--danger); padding:6px; border-radius:6px; margin-bottom:5px; font-size:0.85rem; font-weight:bold; color:var(--danger);">⚠️ አስቸኳይ ማሳሰቢያ፦ "${i.name}" የቀረው ${i.remaining} ብቻ ስለሆነ አቅርቦት ይጨመር!</div>`;
                 });
             }
         }
